@@ -81,9 +81,20 @@ public class AppelContract {
 
         public static final String COLUMN_CLASS_ID = "class_student_class_id";
         public static final String COLUMN_STUDENT_ID = "class_student_student_id";
+        public static final String COLUMN_GRADE = "grade";
 
-        public static Uri buildClassStudentLinkUri(long id) {
+        public static Uri buildClassStudentLinkFromUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+        public static Uri buildClassStudentLinkFromClassUri(long classId) {
+            Uri.Builder builder = CONTENT_URI.buildUpon();
+            builder.appendPath(PATH_CLASS);
+            return ContentUris.withAppendedId(builder.build(), classId);
+        }
+        public static Uri buildClassStudentLinkFromStudentUri(long studentId) {
+            Uri.Builder builder = CONTENT_URI.buildUpon();
+            builder.appendPath(PATH_STUDENT);
+            return ContentUris.withAppendedId(builder.build(), studentId);
         }
     }
 
@@ -103,6 +114,13 @@ public class AppelContract {
 
         public static Uri buildCallStudentLinkUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+        public static Uri buildCallStudentLinkUriWithCallAndClass(long classId, long callId) { return ContentUris.withAppendedId(ContentUris.withAppendedId(CONTENT_URI, classId), callId); }
+        public static long getCallId(Uri uri){
+            return Long.parseLong(uri.getPathSegments().get(2));
+        }
+        public static long getClassId(Uri uri){
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
     }
 }

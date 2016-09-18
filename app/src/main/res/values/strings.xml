@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Capstone Project</string>
+    <string name="content_authority">com.sylvainautran.nanodegree.capstoneproject</string>
 </resources>

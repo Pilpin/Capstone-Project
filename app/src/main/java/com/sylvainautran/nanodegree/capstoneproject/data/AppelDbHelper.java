@@ -23,8 +23,8 @@ public class AppelDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         final String SQL_CREATE_STUDENT_TABLE = "CREATE TABLE " + StudentEntry.TABLE_NAME + " (" +
                 StudentEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                StudentEntry.COLUMN_FIRSTNAME + " TEXT UNIQUE NOT NULL, " +
-                StudentEntry.COLUMN_LASTNAME + " TEXT UNIQUE NOT NULL, " +
+                StudentEntry.COLUMN_FIRSTNAME + " TEXT NOT NULL, " +
+                StudentEntry.COLUMN_LASTNAME + " TEXT NOT NULL, " +
                 StudentEntry.COLUMN_BIRTHDATE + " INTEGER NOT NULL, " +
 
                 " UNIQUE (" +
@@ -52,6 +52,7 @@ public class AppelDbHelper extends SQLiteOpenHelper {
                 ClassStudentLinkEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ClassStudentLinkEntry.COLUMN_CLASS_ID + " INTEGER NOT NULL, " +
                 ClassStudentLinkEntry.COLUMN_STUDENT_ID + " INTEGER NOT NULL, " +
+                ClassStudentLinkEntry.COLUMN_GRADE + " TEXT, " +
 
                 " FOREIGN KEY (" + ClassStudentLinkEntry.COLUMN_CLASS_ID + ") REFERENCES " + ClassEntry.TABLE_NAME + "(" + ClassEntry._ID + "), " +
                 " FOREIGN KEY (" + ClassStudentLinkEntry.COLUMN_STUDENT_ID + ") REFERENCES " + StudentEntry.TABLE_NAME + "(" + StudentEntry._ID + "), " +

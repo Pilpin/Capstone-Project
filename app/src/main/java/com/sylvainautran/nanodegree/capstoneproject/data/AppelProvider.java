@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 public class AppelProvider extends ContentProvider {
 
@@ -21,8 +24,13 @@ public class AppelProvider extends ContentProvider {
     static final int STUDENTS = 201;
     static final int CALL = 300;
     static final int CALLS = 301;
-    static final int CLASS_STUDENT_LINKS = 101201;
-    static final int CALL_STUDENT_LINKS = 301201;
+    static final int CLASS_STUDENT = 100200;
+    static final int CLASS_STUDENTS = 101201;
+    static final int CLASS_STUDENT_FROM_CLASS = 1012010;
+    static final int CLASS_STUDENT_FROM_STUDENT = 1012011;
+    static final int CALL_STUDENT = 300200;
+    static final int CALL_STUDENTS = 301201;
+    static final int CALL_STUDENT_WITH_CLASS = 3012010;
 
     static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -34,8 +42,13 @@ public class AppelProvider extends ContentProvider {
         matcher.addURI(authority, AppelContract.PATH_STUDENT + "/#", STUDENT);
         matcher.addURI(authority, AppelContract.PATH_CALL, CALLS);
         matcher.addURI(authority, AppelContract.PATH_CALL + "/#", CALL);
-        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/#", CLASS_STUDENT_LINKS);
-        matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL + "/#", CALL_STUDENT_LINKS);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS, CLASS_STUDENTS);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/#", CLASS_STUDENT);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/" + AppelContract.PATH_CLASS + "/#", CLASS_STUDENT_FROM_CLASS);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/" + AppelContract.PATH_STUDENT + "/#", CLASS_STUDENT_FROM_STUDENT);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL, CALL_STUDENTS);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL + "/#", CALL_STUDENT);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL + "/#/#", CALL_STUDENT_WITH_CLASS);
 
         return matcher;
     }
@@ -56,6 +69,10 @@ public class AppelProvider extends ContentProvider {
             case CLASSES:
                 builder.setTables(AppelContract.ClassEntry.TABLE_NAME);
                 break;
+            case CLASS:
+                builder.setTables(AppelContract.ClassEntry.TABLE_NAME);
+                builder.appendWhere(AppelContract.ClassEntry._ID + " = " + uri.getLastPathSegment());
+                break;
             case STUDENTS:
                 builder.setTables(AppelContract.StudentEntry.TABLE_NAME);
                 break;
@@ -66,17 +83,25 @@ public class AppelProvider extends ContentProvider {
             case CALLS:
                 builder.setTables(AppelContract.CallEntry.TABLE_NAME);
                 break;
-            case CALL_STUDENT_LINKS:
-                builder.setTables(AppelContract.CallStudentLinkEntry.TABLE_NAME +
-                        " JOIN " + AppelContract.StudentEntry.TABLE_NAME + " ON " + AppelContract.StudentEntry.TABLE_NAME + "." + AppelContract.StudentEntry._ID + " = " +
-                        AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID);
-                builder.appendWhere(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID + " = " + uri.getLastPathSegment());
+            case CALL:
+                builder.setTables(AppelContract.CallEntry.TABLE_NAME);
+                builder.appendWhere(AppelContract.CallEntry._ID + " = " + uri.getLastPathSegment());
                 break;
-            case CLASS_STUDENT_LINKS:
+            case CALL_STUDENT_WITH_CLASS:
+                builder.setTables(AppelContract.ClassStudentLinkEntry.TABLE_NAME +
+                        " JOIN " + AppelContract.StudentEntry.TABLE_NAME + " ON " + AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID + " = " + AppelContract.StudentEntry.TABLE_NAME + "." +
+                        AppelContract.StudentEntry._ID +
+                        " JOIN " + AppelContract.CallEntry.TABLE_NAME + " ON " + AppelContract.CallEntry.COLUMN_CLASS_ID + " = " + AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID +
+                        " LEFT JOIN " + AppelContract.CallStudentLinkEntry.TABLE_NAME + " ON " + AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + AppelContract.ClassStudentLinkEntry
+                        .COLUMN_STUDENT_ID + " AND " + AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID + " = " + AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID);
+                builder.appendWhere(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID + " = " + AppelContract.CallStudentLinkEntry.getCallId(uri));
+                builder.appendWhere(" AND " + AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID + " = " + AppelContract.CallStudentLinkEntry.getClassId(uri));
+                break;
+            case CLASS_STUDENT_FROM_CLASS:
                 builder.setTables(AppelContract.ClassStudentLinkEntry.TABLE_NAME +
                         " JOIN " + AppelContract.StudentEntry.TABLE_NAME + " ON " + AppelContract.StudentEntry.TABLE_NAME + "." + AppelContract.StudentEntry._ID + " = " +
                         AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID);
-                builder.appendWhere(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID + " = " + uri.getLastPathSegment());
+                builder.appendWhere(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID + " = " + uri.getLastPathSegment());
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -104,9 +129,19 @@ public class AppelProvider extends ContentProvider {
                 return AppelContract.CallEntry.CONTENT_TYPE;
             case CALL:
                 return AppelContract.CallEntry.CONTENT_ITEM_TYPE;
-            case CALL_STUDENT_LINKS:
+            case CALL_STUDENTS:
                 return AppelContract.CallStudentLinkEntry.CONTENT_TYPE;
-            case CLASS_STUDENT_LINKS:
+            case CALL_STUDENT:
+                return AppelContract.CallStudentLinkEntry.CONTENT_ITEM_TYPE;
+            case CALL_STUDENT_WITH_CLASS:
+                return AppelContract.CallStudentLinkEntry.CONTENT_TYPE;
+            case CLASS_STUDENTS:
+                return AppelContract.ClassStudentLinkEntry.CONTENT_TYPE;
+            case CLASS_STUDENT:
+                return AppelContract.ClassStudentLinkEntry.CONTENT_ITEM_TYPE;
+            case CLASS_STUDENT_FROM_CLASS:
+                return AppelContract.ClassStudentLinkEntry.CONTENT_TYPE;
+            case CLASS_STUDENT_FROM_STUDENT:
                 return AppelContract.ClassStudentLinkEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -128,26 +163,11 @@ public class AppelProvider extends ContentProvider {
                 break;
             case CALLS:
                 id = db.insert(AppelContract.CallEntry.TABLE_NAME, null, contentValues);
-                long classId = contentValues.getAsLong(AppelContract.CallEntry.COLUMN_CLASS_ID);
-                String[] projection = {AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID};
-                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-                builder.setTables(AppelContract.ClassStudentLinkEntry.TABLE_NAME);
-                builder.appendWhere(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID + " = " + classId);
-                Cursor cursor = builder.query(db, projection, null, null, null, null, null);
-                ContentValues[] cvs = new ContentValues[cursor.getCount()];
-                int i = 0;
-                while(cursor.moveToNext()){
-                    ContentValues cv = new ContentValues();
-                    cv.put(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID, id);
-                    cv.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, cursor.getColumnName(cursor.getColumnIndex(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID)));
-                    cvs[i] = cv;
-                }
-                bulkInsert(AppelContract.CallStudentLinkEntry.CONTENT_URI, cvs);
                 break;
-            case CALL_STUDENT_LINKS:
+            case CALL_STUDENTS:
                 id = db.insert(AppelContract.CallStudentLinkEntry.TABLE_NAME, null, contentValues);
                 break;
-            case CLASS_STUDENT_LINKS:
+            case CLASS_STUDENTS:
                 id = db.insert(AppelContract.ClassStudentLinkEntry.TABLE_NAME, null, contentValues);
                 break;
             default:
@@ -178,10 +198,10 @@ public class AppelProvider extends ContentProvider {
             case CALLS:
                 rowsDeleted = db.delete(AppelContract.CallEntry.TABLE_NAME, s, strings);
                 break;
-            case CALL_STUDENT_LINKS:
+            case CALL_STUDENTS:
                 rowsDeleted = db.delete(AppelContract.CallStudentLinkEntry.TABLE_NAME, s, strings);
                 break;
-            case CLASS_STUDENT_LINKS:
+            case CLASS_STUDENTS:
                 rowsDeleted = db.delete(AppelContract.ClassStudentLinkEntry.TABLE_NAME, s, strings);
                 break;
             default:
@@ -196,42 +216,64 @@ public class AppelProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-            final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-            int rowsUpdated;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int rowsUpdated;
+        ArrayList<Uri> urisToNotify = new ArrayList<Uri>();
+        urisToNotify.add(uri);
 
-            switch (sUriMatcher.match(uri)) {
-                case CLASSES:
-                    rowsUpdated = db.update(AppelContract.ClassEntry.TABLE_NAME, contentValues, s, strings);
-                    break;
-                case STUDENTS:
-                    rowsUpdated = db.update(AppelContract.StudentEntry.TABLE_NAME, contentValues, s, strings);
-                    break;
-                case CALLS:
-                    rowsUpdated = db.update(AppelContract.CallEntry.TABLE_NAME, contentValues, s, strings);
-                    break;
-                case CALL_STUDENT_LINKS:
-                    rowsUpdated = db.update(AppelContract.CallStudentLinkEntry.TABLE_NAME, contentValues, s, strings);
-                    break;
-                case CLASS_STUDENT_LINKS:
-                    rowsUpdated = db.update(AppelContract.ClassStudentLinkEntry.TABLE_NAME, contentValues, s, strings);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unknown uri: " + uri);
-            }
+        switch (sUriMatcher.match(uri)) {
+            case CLASSES:
+                rowsUpdated = db.update(AppelContract.ClassEntry.TABLE_NAME, contentValues, s, strings);
+                break;
+            case STUDENTS:
+                rowsUpdated = db.update(AppelContract.StudentEntry.TABLE_NAME, contentValues, s, strings);
+                urisToNotify.add(AppelContract.ClassStudentLinkEntry.CONTENT_URI);
+                urisToNotify.add(AppelContract.CallStudentLinkEntry.CONTENT_URI);
+                break;
+            case CALLS:
+                rowsUpdated = db.update(AppelContract.CallEntry.TABLE_NAME, contentValues, s, strings);
+                break;
+            case CALL_STUDENTS:
+                rowsUpdated = db.update(AppelContract.CallStudentLinkEntry.TABLE_NAME, contentValues, s, strings);
+                break;
+            case CLASS_STUDENTS:
+                rowsUpdated = db.update(AppelContract.ClassStudentLinkEntry.TABLE_NAME, contentValues, s, strings);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
 
-            if (rowsUpdated != 0) {
-                getContext().getContentResolver().notifyChange(uri, null);
+        if (rowsUpdated != 0) {
+            int i = 0;
+            while(!urisToNotify.isEmpty()){
+                getContext().getContentResolver().notifyChange(urisToNotify.remove(i), null);
             }
-            return rowsUpdated;
+        }
+        return rowsUpdated;
     }
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int count = 0;
         switch (sUriMatcher.match(uri)) {
-            case CALL_STUDENT_LINKS:
+            case STUDENTS:
                 db.beginTransaction();
-                int count = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long id = db.insert(AppelContract.StudentEntry.TABLE_NAME, null, value);
+                        if (id != -1) {
+                            count++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return count;
+            case CALL_STUDENTS:
+                db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
                         long id = db.insert(AppelContract.CallStudentLinkEntry.TABLE_NAME, null, value);

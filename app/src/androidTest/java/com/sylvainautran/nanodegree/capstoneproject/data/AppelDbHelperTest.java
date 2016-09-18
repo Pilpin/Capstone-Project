@@ -106,6 +106,7 @@ public class AppelDbHelperTest {
         columnHashSet.add(AppelContract.ClassStudentLinkEntry._ID);
         columnHashSet.add(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID);
         columnHashSet.add(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID);
+        columnHashSet.add(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE);
         columnNameIndex = c.getColumnIndex("name");
         do {
             String columnName = c.getString(columnNameIndex);
@@ -283,6 +284,7 @@ public class AppelDbHelperTest {
         ContentValues testValues = new ContentValues();
         testValues.put(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID, classId);
         testValues.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
+        testValues.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, "grade");
 
         long id =  db.insert(AppelContract.ClassStudentLinkEntry.TABLE_NAME, null, testValues);
 

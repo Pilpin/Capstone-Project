@@ -8,6 +8,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".data.AppelProvider"
+            android:exported="false"
+            android:syncable="true" />
+
     </application>
 
 </manifest>
