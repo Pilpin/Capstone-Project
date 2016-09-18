@@ -12,6 +12,14 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        myconfig {
+            keyAlias 'pilpin'
+            keyPassword 'password'
+            storeFile file('keystore.jks')
+            storePassword 'password'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false

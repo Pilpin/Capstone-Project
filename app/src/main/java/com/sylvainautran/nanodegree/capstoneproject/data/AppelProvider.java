@@ -21,7 +21,6 @@ public class AppelProvider extends ContentProvider {
     static final int STUDENTS = 201;
     static final int CALL = 300;
     static final int CALLS = 301;
-    static final int CLASS_STUDENT_LINK = 100200;
     static final int CLASS_STUDENT_LINKS = 101201;
     static final int CALL_STUDENT_LINKS = 301201;
 
@@ -35,8 +34,7 @@ public class AppelProvider extends ContentProvider {
         matcher.addURI(authority, AppelContract.PATH_STUDENT + "/#", STUDENT);
         matcher.addURI(authority, AppelContract.PATH_CALL, CALLS);
         matcher.addURI(authority, AppelContract.PATH_CALL + "/#", CALL);
-        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS, CLASS_STUDENT_LINKS);
-        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/#", CLASS_STUDENT_LINK);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/#", CLASS_STUDENT_LINKS);
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL + "/#", CALL_STUDENT_LINKS);
 
         return matcher;
@@ -110,8 +108,6 @@ public class AppelProvider extends ContentProvider {
                 return AppelContract.CallStudentLinkEntry.CONTENT_TYPE;
             case CLASS_STUDENT_LINKS:
                 return AppelContract.ClassStudentLinkEntry.CONTENT_TYPE;
-            case CLASS_STUDENT_LINK:
-                return AppelContract.ClassStudentLinkEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
