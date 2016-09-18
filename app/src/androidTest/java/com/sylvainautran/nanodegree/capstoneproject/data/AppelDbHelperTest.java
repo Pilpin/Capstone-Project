@@ -5,9 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +35,7 @@ public class AppelDbHelperTest {
         tableNameHashSet.add(AppelContract.CallStudentLinkEntry.TABLE_NAME);
 
         SQLiteDatabase db = new AppelDbHelper(InstrumentationRegistry.getTargetContext()).getWritableDatabase();
+        db.setForeignKeyConstraintsEnabled(true);
         assertEquals(true, db.isOpen());
 
         Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
@@ -139,8 +138,70 @@ public class AppelDbHelperTest {
 
     @Test
     public void testStudentTable() {
+        insertStudent();
+    }
+
+    @Test
+    public void testClassTable() {
+        insertClass();
+    }
+
+    @Test
+    public void testCallTable() {
+        insertCall(insertClass());
+    }
+
+    @Test
+    public void testClassStudentTable() {
+        long classId = insertClass();
+        long studentIt = insertStudent();
+        insertClassStudent(classId, studentIt);
+    }
+
+    @Test
+    public void testCallStudentTable() {
+        long studentIt = insertStudent();
+        long callId = insertCall(insertClass());
+        insertCallStudent(callId, studentIt);
+    }
+
+    private long insertClass(){
         AppelDbHelper dbHelper = new AppelDbHelper(InstrumentationRegistry.getTargetContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.setForeignKeyConstraintsEnabled(true);
+
+        ContentValues testValues = new ContentValues();
+        testValues.put(AppelContract.ClassEntry.COLUMN_NAME, "6b");
+
+        long id = db.insert(AppelContract.ClassEntry.TABLE_NAME, null, testValues);
+
+        assertTrue(id != -1);
+
+        Cursor cursor = db.query(AppelContract.ClassEntry.TABLE_NAME, null, null, null, null, null, null);
+
+        assertTrue( "Error: No Records returned from " + AppelContract.ClassEntry.TABLE_NAME + " query", cursor.moveToFirst() );
+        String error = "Error: " + AppelContract.ClassEntry.TABLE_NAME + " query validation failed";
+        Set<Map.Entry<String, Object>> valueSet = testValues.valueSet();
+        for (Map.Entry<String, Object> entry : valueSet) {
+            String columnName = entry.getKey();
+            int idx = cursor.getColumnIndex(columnName);
+            assertFalse("Column '" + columnName + "' not found. " + error, idx == -1);
+            String expectedValue = entry.getValue().toString();
+            assertEquals("Value '" + entry.getValue().toString() + "' did not match the expected value '" + expectedValue + "'. " + error, expectedValue, cursor.getString(idx));
+        }
+
+        assertFalse( "Error: More than one record returned from " + AppelContract.ClassEntry.TABLE_NAME + " query", cursor.moveToNext() );
+
+        cursor.close();
+        db.close();
+
+        return id;
+    }
+
+    private long insertStudent(){
+        AppelDbHelper dbHelper = new AppelDbHelper(InstrumentationRegistry.getTargetContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.setForeignKeyConstraintsEnabled(true);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2013);
@@ -158,8 +219,8 @@ public class AppelDbHelperTest {
 
         Cursor cursor = db.query(AppelContract.StudentEntry.TABLE_NAME, null, null, null, null, null, null);
 
-        assertTrue( "Error: No Records returned from student query", cursor.moveToFirst() );
-        String error = "Error: Student Query Validation Failed";
+        assertTrue( "Error: No Records returned from " + AppelContract.StudentEntry.TABLE_NAME + " query", cursor.moveToFirst() );
+        String error = "Error: " + AppelContract.StudentEntry.TABLE_NAME + " query validation failed";
         Set<Map.Entry<String, Object>> valueSet = testValues.valueSet();
         for (Map.Entry<String, Object> entry : valueSet) {
             String columnName = entry.getKey();
@@ -169,63 +230,34 @@ public class AppelDbHelperTest {
             assertEquals("Value '" + entry.getValue().toString() + "' did not match the expected value '" + expectedValue + "'. " + error, expectedValue, cursor.getString(idx));
         }
 
-        assertFalse( "Error: More than one record returned from student query", cursor.moveToNext() );
+        assertFalse( "Error: More than one record returned from " + AppelContract.StudentEntry.TABLE_NAME + " query", cursor.moveToNext() );
 
         cursor.close();
         db.close();
+
+        return id;
     }
 
-    @Test
-    public void testClassTable() {
+    private long insertCall(long classId){
         AppelDbHelper dbHelper = new AppelDbHelper(InstrumentationRegistry.getTargetContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        ContentValues testValues = new ContentValues();
-        testValues.put(AppelContract.ClassEntry.COLUMN_NAME, "6b");
-
-        long id = db.insert(AppelContract.ClassEntry.TABLE_NAME, null, testValues);
-
-        assertTrue(id != -1);
-
-        Cursor cursor = db.query(AppelContract.ClassEntry.TABLE_NAME, null, null, null, null, null, null);
-
-        assertTrue( "Error: No Records returned from class query", cursor.moveToFirst() );
-        String error = "Error: Class Query Validation Failed";
-        Set<Map.Entry<String, Object>> valueSet = testValues.valueSet();
-        for (Map.Entry<String, Object> entry : valueSet) {
-            String columnName = entry.getKey();
-            int idx = cursor.getColumnIndex(columnName);
-            assertFalse("Column '" + columnName + "' not found. " + error, idx == -1);
-            String expectedValue = entry.getValue().toString();
-            assertEquals("Value '" + entry.getValue().toString() + "' did not match the expected value '" + expectedValue + "'. " + error, expectedValue, cursor.getString(idx));
-        }
-
-        assertFalse( "Error: More than one record returned from class query", cursor.moveToNext() );
-
-        cursor.close();
-        db.close();
-    }
-
-    @Test
-    public void testCallTable() {
-        AppelDbHelper dbHelper = new AppelDbHelper(InstrumentationRegistry.getTargetContext());
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.setForeignKeyConstraintsEnabled(true);
 
         Calendar cal = Calendar.getInstance();
 
         ContentValues testValues = new ContentValues();
-        testValues.put(AppelContract.CallEntry.COLUMN_CLASS_ID, 1);
+        testValues.put(AppelContract.CallEntry.COLUMN_CLASS_ID, classId);
         testValues.put(AppelContract.CallEntry.COLUMN_DATETIME, cal.getTimeInMillis());
         testValues.put(AppelContract.CallEntry.COLUMN_LEAVING_TIME_OPTION, 0);
 
-        long id =  db.insertOrThrow(AppelContract.CallEntry.TABLE_NAME, null, testValues);
+        long id =  db.insert(AppelContract.CallEntry.TABLE_NAME, null, testValues);
 
         assertTrue(id != -1);
 
         Cursor cursor = db.query(AppelContract.CallEntry.TABLE_NAME, null, null, null, null, null, null);
 
-        assertTrue( "Error: No Records returned from call query", cursor.moveToFirst() );
-        String error = "Error: Call Query Validation Failed";
+        assertTrue( "Error: No Records returned from " + AppelContract.CallEntry.TABLE_NAME + " query", cursor.moveToFirst() );
+        String error = "Error: " + AppelContract.CallEntry.TABLE_NAME + " query validation failed";
         Set<Map.Entry<String, Object>> valueSet = testValues.valueSet();
         for (Map.Entry<String, Object> entry : valueSet) {
             String columnName = entry.getKey();
@@ -235,9 +267,79 @@ public class AppelDbHelperTest {
             assertEquals("Value '" + entry.getValue().toString() + "' did not match the expected value '" + expectedValue + "'. " + error, expectedValue, cursor.getString(idx));
         }
 
-        assertFalse( "Error: More than one record returned from call query", cursor.moveToNext() );
+        assertFalse( "Error: More than one record returned from " + AppelContract.CallEntry.TABLE_NAME + " query", cursor.moveToNext() );
 
         cursor.close();
         db.close();
+
+        return id;
+    }
+
+    private long insertClassStudent(long classId, long studentId){
+        AppelDbHelper dbHelper = new AppelDbHelper(InstrumentationRegistry.getTargetContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.setForeignKeyConstraintsEnabled(true);
+
+        ContentValues testValues = new ContentValues();
+        testValues.put(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID, classId);
+        testValues.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
+
+        long id =  db.insert(AppelContract.ClassStudentLinkEntry.TABLE_NAME, null, testValues);
+
+        assertTrue(id != -1);
+
+        Cursor cursor = db.query(AppelContract.ClassStudentLinkEntry.TABLE_NAME, null, null, null, null, null, null);
+
+        assertTrue( "Error: No Records returned from " + AppelContract.ClassStudentLinkEntry.TABLE_NAME + " query", cursor.moveToFirst() );
+        String error = "Error: " + AppelContract.ClassStudentLinkEntry.TABLE_NAME + " query validation failed";
+        Set<Map.Entry<String, Object>> valueSet = testValues.valueSet();
+        for (Map.Entry<String, Object> entry : valueSet) {
+            String columnName = entry.getKey();
+            int idx = cursor.getColumnIndex(columnName);
+            assertFalse("Column '" + columnName + "' not found. " + error, idx == -1);
+            String expectedValue = entry.getValue().toString();
+            assertEquals("Value '" + entry.getValue().toString() + "' did not match the expected value '" + expectedValue + "'. " + error, expectedValue, cursor.getString(idx));
+        }
+
+        assertFalse( "Error: More than one record returned from " + AppelContract.ClassStudentLinkEntry.TABLE_NAME + " query", cursor.moveToNext() );
+
+        cursor.close();
+        db.close();
+
+        return id;
+    }
+
+    private long insertCallStudent(long callId, long studentId){
+        AppelDbHelper dbHelper = new AppelDbHelper(InstrumentationRegistry.getTargetContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.setForeignKeyConstraintsEnabled(true);
+
+        ContentValues testValues = new ContentValues();
+        testValues.put(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID, callId);
+        testValues.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
+
+        long id =  db.insert(AppelContract.CallStudentLinkEntry.TABLE_NAME, null, testValues);
+
+        assertTrue(id != -1);
+
+        Cursor cursor = db.query(AppelContract.CallStudentLinkEntry.TABLE_NAME, null, null, null, null, null, null);
+
+        assertTrue( "Error: No Records returned from " + AppelContract.CallStudentLinkEntry.TABLE_NAME + " query", cursor.moveToFirst() );
+        String error = "Error: " + AppelContract.CallStudentLinkEntry.TABLE_NAME + " query validation failed";
+        Set<Map.Entry<String, Object>> valueSet = testValues.valueSet();
+        for (Map.Entry<String, Object> entry : valueSet) {
+            String columnName = entry.getKey();
+            int idx = cursor.getColumnIndex(columnName);
+            assertFalse("Column '" + columnName + "' not found. " + error, idx == -1);
+            String expectedValue = entry.getValue().toString();
+            assertEquals("Value '" + entry.getValue().toString() + "' did not match the expected value '" + expectedValue + "'. " + error, expectedValue, cursor.getString(idx));
+        }
+
+        assertFalse( "Error: More than one record returned from " + AppelContract.CallStudentLinkEntry.TABLE_NAME + " query", cursor.moveToNext() );
+
+        cursor.close();
+        db.close();
+
+        return id;
     }
 }

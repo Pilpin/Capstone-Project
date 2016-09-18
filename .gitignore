@@ -1,6 +1,8 @@
 
 # Created by https://www.gitignore.io/api/android,gradle
 
+google-services.json
+
 ### Android ###
 # Built application files
 *.apk

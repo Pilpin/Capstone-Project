@@ -132,6 +132,21 @@ public class AppelProvider extends ContentProvider {
                 break;
             case CALLS:
                 id = db.insert(AppelContract.CallEntry.TABLE_NAME, null, contentValues);
+                long classId = contentValues.getAsLong(AppelContract.CallEntry.COLUMN_CLASS_ID);
+                String[] projection = {AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID};
+                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+                builder.setTables(AppelContract.ClassStudentLinkEntry.TABLE_NAME);
+                builder.appendWhere(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID + " = " + classId);
+                Cursor cursor = builder.query(db, projection, null, null, null, null, null);
+                ContentValues[] cvs = new ContentValues[cursor.getCount()];
+                int i = 0;
+                while(cursor.moveToNext()){
+                    ContentValues cv = new ContentValues();
+                    cv.put(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID, id);
+                    cv.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, cursor.getColumnName(cursor.getColumnIndex(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID)));
+                    cvs[i] = cv;
+                }
+                bulkInsert(AppelContract.CallStudentLinkEntry.CONTENT_URI, cvs);
                 break;
             case CALL_STUDENT_LINKS:
                 id = db.insert(AppelContract.CallStudentLinkEntry.TABLE_NAME, null, contentValues);
