@@ -1,4 +1,40 @@
-<resources>
-    <string name="app_name">Capstone Project</string>
-    <string name="content_authority">com.sylvainautran.nanodegree.capstoneproject</string>
+<resources xmlns:xliff="http://schemas.android.com/tools">
+    <string name="classes">Classes</string>
+    <string name="students">Students</string>
+    <string name="calls">Calls</string>
+    <string name="openDrawer">Open Navigation Drawer</string>
+    <string name="closeDrawer">Close Navigation Drawer</string>
+
+    // CLASSES
+    <string name="add_class">New class</string>
+    <string name="delete_class">Delete class</string>
+    <string name="edit_class">Edit class</string>
+    <string name="empty_class_list">No class has been created yet\nAdd one by clicking on the plus sign up there !</string>
+
+    // STUDENTS
+    <string name="add_student">New student</string>
+    <string name="delete_student">Delete student</string>
+    <string name="edit_student">Edit student</string>
+    <string name="empty_student_list">No student has been created yet\nAdd one by clicking on the plus sign up there !</string>
+    <string name="age_to_string"><xliff:g id="age">%1$s</xliff:g> years old</string>
+    <string name="age_and_grade_to_string"><xliff:g id="age">%1$s</xliff:g> year\'s old - <xliff:g id="grade">%1$s</xliff:g></string>
+
+    // CALLS
+    <string name="start_call">Start call</string>
+    <string name="delete_call">Delete call</string>
+    <string name="edit_call">Edit call</string>
+    <string name="empty_call_list">No call has been done yet</string>
+
+    // STUDENT-CLASS SUBSCRIPTION
+    <string name="add_student_to_class">Add student to class</string>
+    <string name="remove_student_from_class">Remove student from class</string>
+    <string name="edit_grade">Edit student\'s grade</string>
+    <string name="empty_class_student_list">No student has been added to the class yet</string>
+
+    // CALLS DETAILS
+    <string name="empty_call_student_list">No student has been added to the class yet</string>
+
+    // SYSTEM
+    <string name="app_name" translatable="false">Capstone Project</string>
+    <string name="content_authority" translatable="false">com.sylvainautran.nanodegree.capstoneproject</string>
 </resources>

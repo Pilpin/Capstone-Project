@@ -14,7 +14,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 public class AppelProvider extends ContentProvider {
-
+    private final String LOG_TAG = this.getClass().getSimpleName();
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private AppelDbHelper mOpenHelper;
 
@@ -26,13 +26,13 @@ public class AppelProvider extends ContentProvider {
     static final int CALLS = 301;
     static final int CLASS_STUDENT = 100200;
     static final int CLASS_STUDENTS = 101201;
-    static final int CLASS_STUDENT_FROM_CLASS = 1012010;
+    public static final int CLASS_STUDENT_FROM_CLASS = 1012010;
     static final int CLASS_STUDENT_FROM_STUDENT = 1012011;
     static final int CALL_STUDENT = 300200;
     static final int CALL_STUDENTS = 301201;
     static final int CALL_STUDENT_WITH_CLASS = 3012010;
 
-    static UriMatcher buildUriMatcher() {
+    public static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = AppelContract.CONTENT_AUTHORITY;
 
@@ -44,7 +44,7 @@ public class AppelProvider extends ContentProvider {
         matcher.addURI(authority, AppelContract.PATH_CALL + "/#", CALL);
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS, CLASS_STUDENTS);
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/#", CLASS_STUDENT);
-        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/" + AppelContract.PATH_CLASS + "/#", CLASS_STUDENT_FROM_CLASS);
+        matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS_FROM_CLASS + "/#", CLASS_STUDENT_FROM_CLASS);
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CLASS + "/" + AppelContract.PATH_STUDENT + "/#", CLASS_STUDENT_FROM_STUDENT);
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL, CALL_STUDENTS);
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL + "/#", CALL_STUDENT);
@@ -81,7 +81,9 @@ public class AppelProvider extends ContentProvider {
                 builder.appendWhere(AppelContract.StudentEntry._ID + " = " + uri.getLastPathSegment());
                 break;
             case CALLS:
-                builder.setTables(AppelContract.CallEntry.TABLE_NAME);
+                builder.setTables(AppelContract.CallEntry.TABLE_NAME +
+                        " JOIN " + AppelContract.ClassEntry.TABLE_NAME + " ON " + AppelContract.CallEntry.COLUMN_CLASS_ID + " = " + AppelContract.ClassEntry.TABLE_NAME + "." + AppelContract
+                        .ClassEntry._ID);
                 break;
             case CALL:
                 builder.setTables(AppelContract.CallEntry.TABLE_NAME);
@@ -92,8 +94,9 @@ public class AppelProvider extends ContentProvider {
                         " JOIN " + AppelContract.StudentEntry.TABLE_NAME + " ON " + AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID + " = " + AppelContract.StudentEntry.TABLE_NAME + "." +
                         AppelContract.StudentEntry._ID +
                         " JOIN " + AppelContract.CallEntry.TABLE_NAME + " ON " + AppelContract.CallEntry.COLUMN_CLASS_ID + " = " + AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID +
-                        " LEFT JOIN " + AppelContract.CallStudentLinkEntry.TABLE_NAME + " ON " + AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + AppelContract.ClassStudentLinkEntry
-                        .COLUMN_STUDENT_ID + " AND " + AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID + " = " + AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID);
+                        " LEFT JOIN " + AppelContract.CallStudentLinkEntry.TABLE_NAME +
+                        " ON " + AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID + " = " + AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID +
+                        " AND " + AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID + " = " + AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID);
                 builder.appendWhere(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID + " = " + AppelContract.CallStudentLinkEntry.getCallId(uri));
                 builder.appendWhere(" AND " + AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID + " = " + AppelContract.CallStudentLinkEntry.getClassId(uri));
                 break;
@@ -108,6 +111,7 @@ public class AppelProvider extends ContentProvider {
         }
 
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        Log.w(LOG_TAG, builder.buildQuery(projection, selection, null, null, sortOrder, null));
         Cursor cursor = builder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;

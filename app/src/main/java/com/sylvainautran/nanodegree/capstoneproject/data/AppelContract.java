@@ -16,6 +16,7 @@ public class AppelContract {
     public static final String PATH_CALL = "call";
     public static final String PATH_STUDENT_CALL = "student_call";
     public static final String PATH_STUDENT_CLASS = "student_class";
+    public static final String PATH_STUDENT_CLASS_FROM_CLASS = PATH_STUDENT_CLASS + "/" + PATH_CLASS;
 
 
     public static final class StudentEntry implements BaseColumns {
@@ -30,6 +31,8 @@ public class AppelContract {
         public static final String COLUMN_FIRSTNAME = "first_name";
         public static final String COLUMN_LASTNAME = "last_name";
         public static final String COLUMN_BIRTHDATE = "birth_date";
+
+        public static final String DEFAULT_SORT = COLUMN_LASTNAME + " ASC, " + COLUMN_FIRSTNAME + " ASC";
 
         public static Uri buildStudentUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -46,6 +49,8 @@ public class AppelContract {
         public static final String TABLE_NAME = "class";
 
         public static final String COLUMN_NAME = "class_name";
+
+        public static final String DEFAULT_SORT = COLUMN_NAME + " ASC";
 
         public static Uri buildClassUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -64,6 +69,9 @@ public class AppelContract {
         public static final String COLUMN_CLASS_ID = "call_class_id";
         public static final String COLUMN_DATETIME = "date_time";
         public static final String COLUMN_LEAVING_TIME_OPTION = "leaving_time_option";
+
+        public static final String DEFAULT_SORT = COLUMN_DATETIME + " DESC";
+        public static final String MULTIPLE_SORT = COLUMN_DATETIME + " DESC, " + ClassEntry.COLUMN_NAME + " ASC";
 
         public static Uri buildCallUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

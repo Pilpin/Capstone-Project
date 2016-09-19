@@ -242,7 +242,7 @@ public class AppelProviderTest {
         Cursor cursor = mContext.getContentResolver().query(
                 AppelContract.CallEntry.CONTENT_URI,
                 null,   // projection
-                AppelContract.CallEntry._ID + " = " + callId,
+                AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID + " = " + callId,
                 null,   // Values for the "where" clause
                 null    // sort order
         );

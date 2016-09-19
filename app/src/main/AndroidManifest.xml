@@ -8,6 +8,55 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity
+            android:name="ClassesListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/com.sylvainautran.nanodegree.capstoneproject/class" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".StudentsListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/com.sylvainautran.nanodegree.capstoneproject/student" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ClassStudentsListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/com.sylvainautran.nanodegree.capstoneproject/student_class" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".CallsListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/com.sylvainautran.nanodegree.capstoneproject/call" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".CallsDetailsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/com.sylvainautran.nanodegree.capstoneproject/student_call" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:authorities="@string/content_authority"
             android:name=".data.AppelProvider"
