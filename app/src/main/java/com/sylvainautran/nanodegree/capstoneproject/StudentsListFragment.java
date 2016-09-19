@@ -22,9 +22,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class StudentsListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private final String LOG_CAT = this.getClass().getSimpleName();
+
     public final int ALL_STUDENTS = 15;
     public final int STUDENTS_FROM_CLASS = 30;
-    private final String LOG_CAT = this.getClass().getSimpleName();
+
+    public static final String CLASS_ID = "class_id";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -39,6 +42,14 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
         return fragment;
     }
 
+    public static StudentsListFragment newInstance(long classId) {
+        StudentsListFragment fragment = new StudentsListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong(CLASS_ID, classId);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,16 +60,8 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
         View view = inflater.inflate(R.layout.fragment_students_list, container, false);
         ButterKnife.bind(this, view);
 
-        if(getActivity().getIntent() != null && getActivity().getIntent().getData() != null){
-
-            switch(AppelProvider.buildUriMatcher().match(getActivity().getIntent().getData())){
-                case AppelProvider.CLASS_STUDENT_FROM_CLASS:
-                    getLoaderManager().initLoader(STUDENTS_FROM_CLASS, null, this);
-                    break;
-                default:
-                    getLoaderManager().initLoader(ALL_STUDENTS, null, this);
-            }
-
+        if(getArguments() != null && getArguments().containsKey(CLASS_ID)){
+            getLoaderManager().initLoader(STUDENTS_FROM_CLASS, null, this);
         }else{
             getLoaderManager().initLoader(ALL_STUDENTS, null, this);
         }
@@ -70,7 +73,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
     public CursorLoader onCreateLoader(int id, Bundle args) {
         switch (id) {
             case STUDENTS_FROM_CLASS:
-                return StudentsLoader.getAllStudentsInClass(getActivity(), getActivity().getIntent().getData());
+                return StudentsLoader.getAllStudentsInClass(getActivity(), getArguments().getLong(CLASS_ID));
             default:
                 return StudentsLoader.getAllStudents(getActivity());
         }

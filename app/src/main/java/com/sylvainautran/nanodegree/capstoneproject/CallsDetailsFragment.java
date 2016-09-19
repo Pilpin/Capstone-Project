@@ -20,6 +20,10 @@ import butterknife.ButterKnife;
 
 public class CallsDetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private final String LOG_TAG = this.getClass().getSimpleName();
+
+    public static final String CLASS_ID = "class_id";
+    public static final String CALL_ID = "call_id";
+
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.empty_view)
@@ -28,8 +32,12 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
     public CallsDetailsFragment() {
     }
 
-    public static CallsDetailsFragment newInstance() {
+    public static CallsDetailsFragment newInstance(long callId, long classId) {
         CallsDetailsFragment fragment = new CallsDetailsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong(CLASS_ID, classId);
+        bundle.putLong(CALL_ID, callId);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -42,14 +50,16 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calls_details, container, false);
         ButterKnife.bind(this, view);
-        Log.e(LOG_TAG, getActivity().getIntent().getDataString());
-        getLoaderManager().initLoader(0, null, this);
+
+        if(getArguments() != null && getArguments().containsKey(CLASS_ID) && getArguments().containsKey(CALL_ID)) {
+            getLoaderManager().initLoader(0, null, this);
+        }
         return view;
     }
 
     @Override
     public CursorLoader onCreateLoader(int id, Bundle args) {
-        return CallsLoader.getAllCallsFromClass(getActivity(), getActivity().getIntent().getData());
+        return CallsLoader.getAllCallsFromClass(getActivity(), getArguments().getLong(CALL_ID), getArguments().getLong(CLASS_ID));
     }
 
     @Override

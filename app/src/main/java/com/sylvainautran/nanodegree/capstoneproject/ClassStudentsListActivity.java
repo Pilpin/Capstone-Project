@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ClassStudentsListActivity extends AppCompatActivity {
+    private static final String STUDENTS_LIST = "students_list";
     public static final String CLASS_NAME = "class_name";
 
     @BindView(R.id.toolbar)
@@ -58,6 +59,13 @@ public class ClassStudentsListActivity extends AppCompatActivity {
         cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
         cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, "MS");
         getContentResolver().insert(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv);
+
+        if(savedInstanceState == null) {
+            StudentsListFragment fragment = StudentsListFragment.newInstance(classId);
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, fragment, STUDENTS_LIST)
+                    .commit();
+        }
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();

@@ -50,7 +50,7 @@ public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-        holder.textView.setText(mCursor.getString(ClassesLoader.Query.COLUMN_NAME) + " - " + holder.getAdapterPosition());
+        holder.textView.setText(mCursor.getString(ClassesLoader.Query.COLUMN_NAME));
     }
 
     @Override

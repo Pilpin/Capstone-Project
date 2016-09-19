@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ClassesListActivity extends AppCompatActivity {
+    private final String CLASSES_LIST = "classes_list";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
@@ -41,6 +42,13 @@ public class ClassesListActivity extends AppCompatActivity {
         cv = new ContentValues();
         cv.put(AppelContract.ClassEntry.COLUMN_NAME, "Garderie 2015-16");
         getContentResolver().insert(AppelContract.ClassEntry.CONTENT_URI, cv);
+
+        if(savedInstanceState == null) {
+            ClassesListFragment fragment = ClassesListFragment.newInstance();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, fragment, CLASSES_LIST)
+                    .commit();
+        }
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();

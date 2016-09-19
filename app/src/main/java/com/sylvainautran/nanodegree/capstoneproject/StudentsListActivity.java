@@ -24,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class StudentsListActivity extends AppCompatActivity{
+    private static final String STUDENTS_LIST = "students_list";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -47,6 +48,13 @@ public class StudentsListActivity extends AppCompatActivity{
         cal.set(1987, 11, 9 , 0, 0, 0);
         cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
         getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv);
+
+        if(savedInstanceState == null) {
+            StudentsListFragment fragment = StudentsListFragment.newInstance();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, fragment, STUDENTS_LIST)
+                    .commit();
+        }
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();

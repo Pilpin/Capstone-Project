@@ -9,7 +9,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
+
+import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -18,6 +21,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class CallsDetailsActivity extends AppCompatActivity {
+    private final String LOG_CAT = this.getClass().getSimpleName();
+    private static final String CALL_DETAILS = "call_details";
     public static final String CLASS_NAME = "class_name";
     public static final String CALL_DATE = "call_date";
 
@@ -39,6 +44,16 @@ public class CallsDetailsActivity extends AppCompatActivity {
         if(getIntent() != null){
             className = getIntent().getStringExtra(CLASS_NAME);
             callDate = getIntent().getLongExtra(CALL_DATE, 0);
+
+            long callId = AppelContract.CallStudentLinkEntry.getCallId(getIntent().getData());
+            long classId = AppelContract.CallStudentLinkEntry.getClassId(getIntent().getData());
+
+            if(savedInstanceState == null) {
+                CallsDetailsFragment fragment = CallsDetailsFragment.newInstance(callId, classId);
+                getFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, fragment, CALL_DETAILS)
+                        .commit();
+            }
         }
 
         ButterKnife.bind(this);

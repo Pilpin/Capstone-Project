@@ -21,6 +21,8 @@ import butterknife.ButterKnife;
 
 public class CallsListActivity extends AppCompatActivity {
     private final String LOG_TAG = this.getClass().getSimpleName();
+    private final String CALLS_LIST = "calls_list";
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.drawer_layout)
@@ -63,6 +65,13 @@ public class CallsListActivity extends AppCompatActivity {
         cv.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
         String callStudentId = getContentResolver().insert(AppelContract.CallStudentLinkEntry.CONTENT_URI, cv).getLastPathSegment();
         Log.e(LOG_TAG, "Student ID : " + studentId + ", Class Id : " + classId + ", ClassStudent Id : " + classStudentId + ", Call Id : " + callId + ", CallStudent Id : " + callStudentId);
+
+        if(savedInstanceState == null) {
+            CallsListFragment fragment = CallsListFragment.newInstance();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, fragment, CALLS_LIST)
+                    .commit();
+        }
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
