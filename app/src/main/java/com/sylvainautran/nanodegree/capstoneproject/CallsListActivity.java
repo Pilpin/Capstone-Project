@@ -34,7 +34,7 @@ public class CallsListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calls_list);
+        setContentView(R.layout.activity_generic_list);
         ButterKnife.bind(this);
 
         getContentResolver().delete(AppelContract.ClassEntry.CONTENT_URI, null, null);
@@ -64,6 +64,20 @@ public class CallsListActivity extends AppCompatActivity {
         cv.put(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID, callId);
         cv.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
         String callStudentId = getContentResolver().insert(AppelContract.CallStudentLinkEntry.CONTENT_URI, cv).getLastPathSegment();
+        Log.e(LOG_TAG, "Student ID : " + studentId + ", Class Id : " + classId + ", ClassStudent Id : " + classStudentId + ", Call Id : " + callId + ", CallStudent Id : " + callStudentId);
+
+        cv = new ContentValues();
+        cv.put(AppelContract.StudentEntry.COLUMN_FIRSTNAME, "Lee");
+        cv.put(AppelContract.StudentEntry.COLUMN_LASTNAME, "Autran");
+        cal = Calendar.getInstance();
+        cal.set(2013, 2, 25 , 0, 0, 0);
+        cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
+        studentId = getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv).getLastPathSegment();
+        cv = new ContentValues();
+        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
+        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID, classId);
+        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, "MS");
+        classStudentId = getContentResolver().insert(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv).getLastPathSegment();
         Log.e(LOG_TAG, "Student ID : " + studentId + ", Class Id : " + classId + ", ClassStudent Id : " + classStudentId + ", Call Id : " + callId + ", CallStudent Id : " + callStudentId);
 
         if(savedInstanceState == null) {

@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.loaders.CallsLoader;
-import com.sylvainautran.nanodegree.capstoneproject.loaders.ClassesLoader;
-import com.sylvainautran.nanodegree.capstoneproject.loaders.StudentsLoader;
 
 import java.util.Calendar;
 
@@ -37,7 +35,7 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.card_item_call, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_cardview_call, parent, false);
         final ViewHolder vh = new ViewHolder(view);
         return vh;
     }

@@ -6,10 +6,12 @@
     <string name="closeDrawer">Close Navigation Drawer</string>
 
     // CLASSES
-    <string name="add_class">New class</string>
+    <string name="add_class">Add class</string>
     <string name="delete_class">Delete class</string>
     <string name="edit_class">Edit class</string>
     <string name="empty_class_list">No class has been created yet\nAdd one by clicking on the plus sign up there !</string>
+
+    <string name="class_name">Class name</string>
 
     // STUDENTS
     <string name="add_student">New student</string>

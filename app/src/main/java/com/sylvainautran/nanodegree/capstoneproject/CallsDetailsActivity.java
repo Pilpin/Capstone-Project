@@ -37,7 +37,7 @@ public class CallsDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calls_details);
+        setContentView(R.layout.activity_generic_list);
 
         String className = "Unknown Class";
         long callDate = 0;

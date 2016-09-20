@@ -39,8 +39,11 @@ public class CallsListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_calls_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_generic, container, false);
         ButterKnife.bind(this, view);
+
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
+
         getLoaderManager().initLoader(0, null, this);
         return view;
     }
@@ -54,7 +57,10 @@ public class CallsListFragment extends Fragment implements LoaderManager.LoaderC
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
         if(cursor != null && cursor.getCount() > 0){
             emptyView.setVisibility(View.GONE);
+        }else{
+            emptyView.setText(R.string.empty_call_list);
         }
+
         RecyclerView.Adapter adapter = new CallsAdapter(getActivity(), cursor);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);

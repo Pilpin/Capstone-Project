@@ -57,8 +57,10 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_students_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_generic, container, false);
         ButterKnife.bind(this, view);
+
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
 
         if(getArguments() != null && getArguments().containsKey(CLASS_ID)){
             getLoaderManager().initLoader(STUDENTS_FROM_CLASS, null, this);
@@ -82,18 +84,24 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
-        if(cursor != null && cursor.getCount() > 0){
-            emptyView.setVisibility(View.GONE);
-        }
+        int emptyText = R.string.empty_student_list;
 
         RecyclerView.Adapter adapter;
         switch (loader.getId()){
             case STUDENTS_FROM_CLASS:
                 adapter = new ClassStudentsAdapter(getActivity(), cursor);
+                emptyText = R.string.empty_class_student_list;
                 break;
             default:
                 adapter = new StudentsAdapter(getActivity(), cursor);
         }
+
+        if(cursor != null && cursor.getCount() > 0){
+            emptyView.setVisibility(View.GONE);
+        }else{
+            emptyView.setText(emptyText);
+        }
+
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
     }

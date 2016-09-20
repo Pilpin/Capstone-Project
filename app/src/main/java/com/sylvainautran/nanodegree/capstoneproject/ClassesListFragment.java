@@ -39,7 +39,7 @@ public class ClassesListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_classes_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_generic, container, false);
         ButterKnife.bind(this, view);
         getLoaderManager().initLoader(0, null, this);
         return view;
@@ -54,10 +54,14 @@ public class ClassesListFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
         if(cursor != null && cursor.getCount() > 0){
             emptyView.setVisibility(View.GONE);
+        }else{
+            emptyView.setText(R.string.empty_class_list);
         }
+
         RecyclerView.Adapter adapter = new ClassesAdapter(getActivity(), cursor);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
     }
 
     @Override

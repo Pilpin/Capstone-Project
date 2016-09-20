@@ -6,7 +6,6 @@ import android.content.CursorLoader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +47,10 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_calls_details, container, false);
+        View view = inflater.inflate(R.layout.fragment_generic, container, false);
         ButterKnife.bind(this, view);
 
+        mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(48));
         if(getArguments() != null && getArguments().containsKey(CLASS_ID) && getArguments().containsKey(CALL_ID)) {
             getLoaderManager().initLoader(0, null, this);
         }
@@ -66,6 +66,8 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
         if(cursor != null && cursor.getCount() > 0){
             emptyView.setVisibility(View.GONE);
+        }else{
+            emptyView.setText(R.string.empty_call_student_list);
         }
         RecyclerView.Adapter adapter = new CallStudentsAdapter(getActivity(), cursor);
         adapter.setHasStableIds(true);

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.CallsDetailsActivity;
+import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.loaders.CallsLoader;
 import com.sylvainautran.nanodegree.capstoneproject.loaders.ClassesLoader;
@@ -38,14 +39,14 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(android.R.layout.simple_list_item_2, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_call, parent, false);
         final ViewHolder vh = new ViewHolder(view);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(getClassId(vh.getAdapterPosition()), getItemId(vh.getAdapterPosition()
                 )));
-                intent.putExtra(CallsDetailsActivity.CLASS_NAME, vh.text1.getText());
+                intent.putExtra(CallsDetailsActivity.CLASS_NAME, vh.class_name.getText());
                 intent.putExtra(CallsDetailsActivity.CALL_DATE, getCallDate(vh.getAdapterPosition()));
                 mContext.startActivity(intent);
             }
@@ -60,8 +61,8 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
         cal.setTimeInMillis(mCursor.getLong(CallsLoader.Query.COLUMN_DATETIME));
         DateFormat df = DateFormat.getInstance();
         String time = df.format(cal.getTime());
-        holder.text1.setText(mCursor.getString(CallsLoader.Query.COLUMN_CLASS_NAME));
-        holder.text2.setText(time);
+        holder.class_name.setText(mCursor.getString(CallsLoader.Query.COLUMN_CLASS_NAME));
+        holder.call_date.setText(time);
     }
 
     @Override
@@ -70,8 +71,8 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(android.R.id.text1) public TextView text1;
-        @BindView(android.R.id.text2) public TextView text2;
+        @BindView(R.id.class_name) public TextView class_name;
+        @BindView(R.id.call_date) public TextView call_date;
 
         public ViewHolder(View view) {
             super(view);

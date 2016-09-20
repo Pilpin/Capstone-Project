@@ -1,10 +1,8 @@
 package com.sylvainautran.nanodegree.capstoneproject;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -37,7 +35,7 @@ public class StudentsListActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_students_list);
+        setContentView(R.layout.activity_generic_list);
         ButterKnife.bind(this);
 
         getContentResolver().delete(AppelContract.StudentEntry.CONTENT_URI, null, null);
@@ -46,6 +44,13 @@ public class StudentsListActivity extends AppCompatActivity{
         cv.put(AppelContract.StudentEntry.COLUMN_LASTNAME, "Autran");
         Calendar cal = Calendar.getInstance();
         cal.set(1987, 11, 9 , 0, 0, 0);
+        cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
+        getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv);
+        cv = new ContentValues();
+        cv.put(AppelContract.StudentEntry.COLUMN_FIRSTNAME, "Lee");
+        cv.put(AppelContract.StudentEntry.COLUMN_LASTNAME, "Autran");
+        cal = Calendar.getInstance();
+        cal.set(2013, 2, 25 , 0, 0, 0);
         cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
         getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv);
 

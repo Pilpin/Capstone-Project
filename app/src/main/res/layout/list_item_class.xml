@@ -20,16 +20,16 @@
         android:layout_alignParentStart="true"
         android:textSize="@dimen/item_big_text_size"
         android:fontFamily="sans-serif"
-        tools:text="Lee Autran"/>
+        tools:text="Garderie 2016-17"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/age_grade"
+        android:id="@+id/subscribers"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@id/name"
         android:textSize="@dimen/item_small_text_size"
         android:fontFamily="sans-serif-light"
-        tools:text="5 ans - Moyenne Section"/>
+        tools:text="12 élèves"/>
 </RelativeLayout>

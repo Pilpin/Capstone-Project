@@ -1,20 +1,23 @@
 package com.sylvainautran.nanodegree.capstoneproject;
 
 import android.content.ContentValues;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
@@ -32,16 +35,8 @@ public class ClassesListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_classes_list);
+        setContentView(R.layout.activity_generic_list);
         ButterKnife.bind(this);
-
-        getContentResolver().delete(AppelContract.ClassEntry.CONTENT_URI, null, null);
-        ContentValues cv = new ContentValues();
-        cv.put(AppelContract.ClassEntry.COLUMN_NAME, "Garderie 2016-17");
-        getContentResolver().insert(AppelContract.ClassEntry.CONTENT_URI, cv);
-        cv = new ContentValues();
-        cv.put(AppelContract.ClassEntry.COLUMN_NAME, "Garderie 2015-16");
-        getContentResolver().insert(AppelContract.ClassEntry.CONTENT_URI, cv);
 
         if(savedInstanceState == null) {
             ClassesListFragment fragment = ClassesListFragment.newInstance();
@@ -73,7 +68,24 @@ public class ClassesListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.add_class){
-            Toast.makeText(this, "New Class", Toast.LENGTH_SHORT).show();
+            LayoutInflater inflater = getLayoutInflater();
+            View view = inflater.inflate(R.layout.dialog_class_new, null);
+            TextView title = ButterKnife.findById(view, R.id.title);
+            title.setText(R.string.add_class);
+            final TextInputEditText editText = ButterKnife.findById(view, R.id.name);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog);
+            builder.setView(view);
+            builder.setPositiveButton(R.string.add_class, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(AppelContract.ClassEntry.COLUMN_NAME, editText.getText().toString());
+                    getApplicationContext().getContentResolver().insert(AppelContract.ClassEntry.CONTENT_URI, cv);
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel, null);
+            builder.show();
         }
         return super.onOptionsItemSelected(item);
     }

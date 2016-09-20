@@ -97,7 +97,7 @@ public class AppelProvider extends ContentProvider {
                         " LEFT JOIN " + AppelContract.CallStudentLinkEntry.TABLE_NAME +
                         " ON " + AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID + " = " + AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID +
                         " AND " + AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID + " = " + AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID);
-                builder.appendWhere(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID + " = " + AppelContract.CallStudentLinkEntry.getCallId(uri));
+                builder.appendWhere(AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID + " = " + AppelContract.CallStudentLinkEntry.getCallId(uri));
                 builder.appendWhere(" AND " + AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID + " = " + AppelContract.CallStudentLinkEntry.getClassId(uri));
                 break;
             case CLASS_STUDENT_FROM_CLASS:
