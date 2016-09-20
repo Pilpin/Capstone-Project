@@ -2,6 +2,7 @@
     <string name="classes">Classes</string>
     <string name="students">Students</string>
     <string name="calls">Calls</string>
+    <string name="save">save</string>
     <string name="openDrawer">Open Navigation Drawer</string>
     <string name="closeDrawer">Close Navigation Drawer</string>
 
@@ -21,11 +22,21 @@
     <string name="age_to_string"><xliff:g id="age">%1$s</xliff:g> years old</string>
     <string name="age_and_grade_to_string"><xliff:g id="age">%1$s</xliff:g> year\'s old - <xliff:g id="grade">%1$s</xliff:g></string>
 
+    <string name="student_first_name">First Name</string>
+    <string name="student_last_name">Last Name</string>
+    <string name="student_birth_date">Birth date</string>
+    <string name="add_student_failed">First name and/or last name were missing, no student added.</string>
+
     // CALLS
     <string name="start_call">Start call</string>
     <string name="delete_call">Delete call</string>
     <string name="edit_call">Edit call</string>
     <string name="empty_call_list">No call has been done yet</string>
+
+    <string-array name="call_select_option">
+        <item name="no_leaving_time">I only need to take the register</item>
+        <item name="record_leaving_time">I need to take note of students\' leaving time</item>
+    </string-array>
 
     // STUDENT-CLASS SUBSCRIPTION
     <string name="add_student_to_class">Add student to class</string>

@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -93,7 +94,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
                 emptyText = R.string.empty_class_student_list;
                 break;
             default:
-                adapter = new StudentsAdapter(getActivity(), cursor);
+                adapter = new StudentsAdapter((AppCompatActivity) getActivity(), cursor);
         }
 
         if(cursor != null && cursor.getCount() > 0){

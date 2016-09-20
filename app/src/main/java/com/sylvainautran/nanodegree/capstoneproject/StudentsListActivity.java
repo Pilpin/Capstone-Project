@@ -5,6 +5,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,7 +23,7 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StudentsListActivity extends AppCompatActivity{
+public class StudentsListActivity extends AppCompatActivity {
     private static final String STUDENTS_LIST = "students_list";
 
     @BindView(R.id.toolbar)
@@ -84,7 +86,12 @@ public class StudentsListActivity extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.add_student){
-            Toast.makeText(this, getString(R.string.add_student), Toast.LENGTH_SHORT).show();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            StudentsNewDialog newFragment = StudentsNewDialog.newInstance(R.string.add_student);
+
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.add(R.id.container, newFragment, "dialog").addToBackStack(null).commit();
         }
         return super.onOptionsItemSelected(item);
     }

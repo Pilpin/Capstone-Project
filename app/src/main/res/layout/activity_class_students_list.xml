@@ -33,7 +33,7 @@ android:layout_height="match_parent">
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/share_fab"
+        android:id="@+id/fab"
         app:fabSize="normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,6 +42,7 @@ android:layout_height="match_parent">
         android:contentDescription="@string/start_call"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"
+        app:rippleColor="@color/colorPrimary"
         android:src="@android:drawable/ic_media_play"/>
 
 </android.support.design.widget.CoordinatorLayout>

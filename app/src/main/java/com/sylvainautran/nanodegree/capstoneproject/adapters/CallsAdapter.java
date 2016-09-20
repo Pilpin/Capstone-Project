@@ -13,7 +13,6 @@ import com.sylvainautran.nanodegree.capstoneproject.CallsDetailsActivity;
 import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.loaders.CallsLoader;
-import com.sylvainautran.nanodegree.capstoneproject.loaders.ClassesLoader;
 
 import java.text.DateFormat;
 import java.util.Calendar;

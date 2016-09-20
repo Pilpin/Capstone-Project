@@ -34,7 +34,10 @@ public class AppelDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_CLASS_TABLE = "CREATE TABLE " + ClassEntry.TABLE_NAME + " (" +
                 ClassEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ClassEntry.COLUMN_NAME + " TEXT UNIQUE NOT NULL );";
+                ClassEntry.COLUMN_NAME + " TEXT NOT NULL," +
+
+                " UNIQUE (" +
+                ClassEntry.COLUMN_NAME + ") ON CONFLICT IGNORE);";
 
         final String SQL_CREATE_CALL_TABLE = "CREATE TABLE " + CallEntry.TABLE_NAME + " (" +
                 CallEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +

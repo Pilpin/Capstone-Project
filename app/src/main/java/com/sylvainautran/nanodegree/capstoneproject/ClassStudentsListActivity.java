@@ -1,17 +1,27 @@
 package com.sylvainautran.nanodegree.capstoneproject;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
@@ -20,8 +30,10 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class ClassStudentsListActivity extends AppCompatActivity {
+    private final String LOG_TAG = this.getClass().getSimpleName();
     private static final String STUDENTS_LIST = "students_list";
     public static final String CLASS_NAME = "class_name";
 
@@ -31,14 +43,19 @@ public class ClassStudentsListActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
     ActionBarDrawerToggle mDrawerToggle;
+
+    private long classId;
+    private String className;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_class_students_list);
-        long classId = 0;
-        String className = "Unknown Class";
+        classId = 0;
+        className = "Unknown Class";
         if(getIntent() != null){
             classId = Long.parseLong(getIntent().getData().getLastPathSegment());
             className = getIntent().getStringExtra(CLASS_NAME);
@@ -104,5 +121,33 @@ public class ClassStudentsListActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @OnClick(R.id.fab)
+    public void fabOnClick(){
+        Log.d(LOG_TAG, "startCall");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog);
+        builder.setTitle(R.string.start_call)
+                .setItems(R.array.call_select_option, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startCall(which);
+
+                    }
+                });
+        builder.create().show();
+    }
+
+    private void startCall(int option){
+        Calendar cal = Calendar.getInstance();
+        ContentValues cv = new ContentValues();
+        cv.put(AppelContract.CallEntry.COLUMN_CLASS_ID, classId);
+        cv.put(AppelContract.CallEntry.COLUMN_DATETIME, cal.getTimeInMillis());
+        cv.put(AppelContract.CallEntry.COLUMN_LEAVING_TIME_OPTION, option);
+        long callId = Long.parseLong(getContentResolver().insert(AppelContract.CallEntry.CONTENT_URI, cv).getLastPathSegment());
+        Intent intent = new Intent(Intent.ACTION_VIEW, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(classId, callId));
+        intent.putExtra(CallsDetailsActivity.CLASS_NAME, className);
+        intent.putExtra(CallsDetailsActivity.CALL_DATE, cal.getTimeInMillis());
+        startActivity(intent);
     }
 }

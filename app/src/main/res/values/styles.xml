@@ -19,6 +19,11 @@
 
     <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowTitleStyle">@style/AppTheme.AlertDialog.Title</item>
+    </style>
+
+    <style name="AppTheme.AlertDialog.Title" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.AlertDialog.Title.Text" parent="TextAppearance.AppCompat.Title">
