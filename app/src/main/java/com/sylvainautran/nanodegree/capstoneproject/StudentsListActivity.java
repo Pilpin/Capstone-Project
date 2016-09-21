@@ -14,10 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.StudentsNewDialog;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 
 import butterknife.BindView;
@@ -39,22 +40,6 @@ public class StudentsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generic_list);
         ButterKnife.bind(this);
-
-        getContentResolver().delete(AppelContract.StudentEntry.CONTENT_URI, null, null);
-        ContentValues cv = new ContentValues();
-        cv.put(AppelContract.StudentEntry.COLUMN_FIRSTNAME, "Sylvain");
-        cv.put(AppelContract.StudentEntry.COLUMN_LASTNAME, "Autran");
-        Calendar cal = Calendar.getInstance();
-        cal.set(1987, 11, 9 , 0, 0, 0);
-        cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
-        getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv);
-        cv = new ContentValues();
-        cv.put(AppelContract.StudentEntry.COLUMN_FIRSTNAME, "Lee");
-        cv.put(AppelContract.StudentEntry.COLUMN_LASTNAME, "Autran");
-        cal = Calendar.getInstance();
-        cal.set(2013, 2, 25 , 0, 0, 0);
-        cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
-        getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv);
 
         if(savedInstanceState == null) {
             StudentsListFragment fragment = StudentsListFragment.newInstance();
@@ -91,7 +76,7 @@ public class StudentsListActivity extends AppCompatActivity {
 
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            transaction.add(R.id.container, newFragment, "dialog").addToBackStack(null).commit();
+            transaction.add(R.id.drawer_layout, newFragment, "dialog").addToBackStack(null).commit();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -107,4 +92,6 @@ public class StudentsListActivity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+
+
 }

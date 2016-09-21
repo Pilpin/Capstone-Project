@@ -9,4 +9,10 @@
         app:showAsAction="always"
         />
 
+    <item
+        android:id="@+id/add_dummy_values"
+        android:title="@string/add_class"
+        app:showAsAction="never"
+        />
+
 </menu>

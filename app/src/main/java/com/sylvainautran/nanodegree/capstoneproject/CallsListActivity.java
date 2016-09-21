@@ -37,49 +37,6 @@ public class CallsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_generic_list);
         ButterKnife.bind(this);
 
-        getContentResolver().delete(AppelContract.ClassEntry.CONTENT_URI, null, null);
-        getContentResolver().delete(AppelContract.CallEntry.CONTENT_URI, null, null);
-        getContentResolver().delete(AppelContract.StudentEntry.CONTENT_URI, null, null);
-        ContentValues cv = new ContentValues();
-        cv.put(AppelContract.StudentEntry.COLUMN_FIRSTNAME, "Sylvain");
-        cv.put(AppelContract.StudentEntry.COLUMN_LASTNAME, "Autran");
-        Calendar cal = Calendar.getInstance();
-        cal.set(1987, 11, 9 , 0, 0, 0);
-        cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
-        String studentId = getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv).getLastPathSegment();
-        cv = new ContentValues();
-        cv.put(AppelContract.ClassEntry.COLUMN_NAME, "Garderie 2016-17");
-        String classId = getContentResolver().insert(AppelContract.ClassEntry.CONTENT_URI, cv).getLastPathSegment();
-        cv = new ContentValues();
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID, classId);
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, "CM2");
-        String classStudentId = getContentResolver().insert(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv).getLastPathSegment();
-        cv = new ContentValues();
-        cv.put(AppelContract.CallEntry.COLUMN_DATETIME, Calendar.getInstance().getTimeInMillis());
-        cv.put(AppelContract.CallEntry.COLUMN_LEAVING_TIME_OPTION, 1);
-        cv.put(AppelContract.CallEntry.COLUMN_CLASS_ID, classId);
-        String callId = getContentResolver().insert(AppelContract.CallEntry.CONTENT_URI, cv).getLastPathSegment();
-        cv = new ContentValues();
-        cv.put(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID, callId);
-        cv.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
-        String callStudentId = getContentResolver().insert(AppelContract.CallStudentLinkEntry.CONTENT_URI, cv).getLastPathSegment();
-        Log.e(LOG_TAG, "Student ID : " + studentId + ", Class Id : " + classId + ", ClassStudent Id : " + classStudentId + ", Call Id : " + callId + ", CallStudent Id : " + callStudentId);
-
-        cv = new ContentValues();
-        cv.put(AppelContract.StudentEntry.COLUMN_FIRSTNAME, "Lee");
-        cv.put(AppelContract.StudentEntry.COLUMN_LASTNAME, "Autran");
-        cal = Calendar.getInstance();
-        cal.set(2013, 2, 25 , 0, 0, 0);
-        cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
-        studentId = getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv).getLastPathSegment();
-        cv = new ContentValues();
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID, classId);
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, "MS");
-        classStudentId = getContentResolver().insert(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv).getLastPathSegment();
-        Log.e(LOG_TAG, "Student ID : " + studentId + ", Class Id : " + classId + ", ClassStudent Id : " + classStudentId + ", Call Id : " + callId + ", CallStudent Id : " + callStudentId);
-
         if(savedInstanceState == null) {
             CallsListFragment fragment = CallsListFragment.newInstance();
             getFragmentManager().beginTransaction()

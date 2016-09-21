@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,15 +18,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsNewDialog;
 
 import java.util.Calendar;
 
@@ -39,13 +37,8 @@ public class ClassStudentsListActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
-    @BindView(R.id.navigation_view)
-    NavigationView navigationView;
     @BindView(R.id.fab)
     FloatingActionButton fab;
-    ActionBarDrawerToggle mDrawerToggle;
 
     private long classId;
     private String className;
@@ -62,21 +55,6 @@ public class ClassStudentsListActivity extends AppCompatActivity {
         }
         ButterKnife.bind(this);
 
-        getContentResolver().delete(AppelContract.StudentEntry.CONTENT_URI, null, null);
-        getContentResolver().delete(AppelContract.ClassStudentLinkEntry.CONTENT_URI, null, null);
-        ContentValues cv = new ContentValues();
-        cv.put(AppelContract.StudentEntry.COLUMN_FIRSTNAME, "Sylvain");
-        cv.put(AppelContract.StudentEntry.COLUMN_LASTNAME, "Autran");
-        Calendar cal = Calendar.getInstance();
-        cal.set(1987, 11, 9 , 0, 0, 0);
-        cv.put(AppelContract.StudentEntry.COLUMN_BIRTHDATE, cal.getTimeInMillis());
-        String studentId = getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv).getLastPathSegment();
-        cv = new ContentValues();
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID, classId);
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, studentId);
-        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, "MS");
-        getContentResolver().insert(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv);
-
         if(savedInstanceState == null) {
             StudentsListFragment fragment = StudentsListFragment.newInstance(classId);
             getFragmentManager().beginTransaction()
@@ -91,10 +69,6 @@ public class ClassStudentsListActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(className);
         }
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
-        drawerLayout.addDrawerListener(mDrawerToggle);
-        navigationView.setNavigationItemSelectedListener(new DrawerNavigationItemListener(this));
     }
 
     @Override
@@ -105,22 +79,20 @@ public class ClassStudentsListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.add_student){
-            Toast.makeText(this, getString(R.string.add_student), Toast.LENGTH_SHORT).show();
+        switch(item.getItemId()){
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.id.add_student:
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                ClassStudentsNewDialog newFragment = ClassStudentsNewDialog.newInstance(R.string.add_student_to_class, classId);
+
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                transaction.add(R.id.container, newFragment, "dialog").addToBackStack(null).commit();
+                break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @OnClick(R.id.fab)

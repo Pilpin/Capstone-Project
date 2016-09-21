@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NavUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
@@ -29,13 +32,8 @@ public class CallsDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
-    @BindView(R.id.navigation_view)
-    NavigationView navigationView;
     @BindView(R.id.bottomBar)
     Toolbar bottomBar;
-    ActionBarDrawerToggle mDrawerToggle;
 
     private BottomSheetBehavior mBottomSheetBehavior;
 
@@ -76,22 +74,14 @@ public class CallsDetailsActivity extends AppCompatActivity {
             DateFormat df = DateFormat.getDateInstance();
             actionBar.setTitle(className + " - " + df.format(cal.getTime()));
         }
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
-        drawerLayout.addDrawerListener(mDrawerToggle);
-        navigationView.setNavigationItemSelectedListener(new DrawerNavigationItemListener(this));
-        navigationView.setCheckedItem(R.id.navigation_calls);
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

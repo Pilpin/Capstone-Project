@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.adapters.CallStudentsAdapter;
-import com.sylvainautran.nanodegree.capstoneproject.loaders.CallsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.data.loaders.CallsLoader;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,7 +50,6 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
         View view = inflater.inflate(R.layout.fragment_generic, container, false);
         ButterKnife.bind(this, view);
 
-        mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(48));
         if(getArguments() != null && getArguments().containsKey(CLASS_ID) && getArguments().containsKey(CALL_ID)) {
             getLoaderManager().initLoader(0, null, this);
         }
@@ -67,6 +66,7 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
         if(cursor != null && cursor.getCount() > 0){
             emptyView.setVisibility(View.GONE);
         }else{
+            emptyView.setVisibility(View.VISIBLE);
             emptyView.setText(R.string.empty_call_student_list);
         }
         RecyclerView.Adapter adapter = new CallStudentsAdapter(getActivity(), cursor);

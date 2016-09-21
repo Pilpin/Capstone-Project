@@ -13,10 +13,15 @@ public class AppelContract {
 
     public static final String PATH_STUDENT = "student";
     public static final String PATH_CLASS = "class";
+    public static final String PATH_NOT_CLASS = "not_class";
     public static final String PATH_CALL = "call";
     public static final String PATH_STUDENT_CALL = "student_call";
     public static final String PATH_STUDENT_CLASS = "student_class";
     public static final String PATH_STUDENT_CLASS_FROM_CLASS = PATH_STUDENT_CLASS + "/" + PATH_CLASS;
+    public static final String PATH_STUDENT_CLASS_NOT_FROM_CLASS = PATH_STUDENT_CLASS + "/" + PATH_NOT_CLASS;
+
+    public static final int DELETED = 1;
+    public static final int PUBLIC = 0;
 
 
     public static final class StudentEntry implements BaseColumns {
@@ -31,6 +36,7 @@ public class AppelContract {
         public static final String COLUMN_FIRSTNAME = "first_name";
         public static final String COLUMN_LASTNAME = "last_name";
         public static final String COLUMN_BIRTHDATE = "birth_date";
+        public static final String COLUMN_DELETED = "student_deleted";
 
         public static final String DEFAULT_SORT = COLUMN_LASTNAME + " ASC, " + COLUMN_FIRSTNAME + " ASC";
 
@@ -49,6 +55,7 @@ public class AppelContract {
         public static final String TABLE_NAME = "class";
 
         public static final String COLUMN_NAME = "class_name";
+        public static final String COLUMN_DELETED = "class_deleted";
 
         public static final String DEFAULT_SORT = COLUMN_NAME + " ASC";
 
@@ -69,6 +76,7 @@ public class AppelContract {
         public static final String COLUMN_CLASS_ID = "call_class_id";
         public static final String COLUMN_DATETIME = "date_time";
         public static final String COLUMN_LEAVING_TIME_OPTION = "leaving_time_option";
+        public static final String COLUMN_DELETED = "call_deleted";
 
         public static final String DEFAULT_SORT = COLUMN_DATETIME + " DESC";
         public static final String MULTIPLE_SORT = COLUMN_DATETIME + " DESC, " + ClassEntry.COLUMN_NAME + " ASC";
@@ -90,6 +98,7 @@ public class AppelContract {
         public static final String COLUMN_CLASS_ID = "class_student_class_id";
         public static final String COLUMN_STUDENT_ID = "class_student_student_id";
         public static final String COLUMN_GRADE = "grade";
+        public static final String COLUMN_DELETED = "class_student_deleted";
 
         public static Uri buildClassStudentLinkFromUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -103,6 +112,11 @@ public class AppelContract {
             Uri.Builder builder = CONTENT_URI.buildUpon();
             builder.appendPath(PATH_STUDENT);
             return ContentUris.withAppendedId(builder.build(), studentId);
+        }
+        public static Uri buildClassStudentLinkNotFromClassUri(long classId) {
+            Uri.Builder builder = CONTENT_URI.buildUpon();
+            builder.appendPath(PATH_NOT_CLASS);
+            return ContentUris.withAppendedId(builder.build(), classId);
         }
     }
 

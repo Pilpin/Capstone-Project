@@ -31,7 +31,8 @@
         </activity>
 
         <activity
-            android:name=".ClassStudentsListActivity">
+            android:name=".ClassStudentsListActivity"
+            android:parentActivityName=".ClassesListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -49,7 +50,8 @@
         </activity>
 
         <activity
-            android:name=".CallsDetailsActivity">
+            android:name=".CallsDetailsActivity"
+            android:parentActivityName=".CallsListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

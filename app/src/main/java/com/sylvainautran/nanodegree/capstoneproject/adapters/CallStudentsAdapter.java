@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.R;
-import com.sylvainautran.nanodegree.capstoneproject.loaders.CallsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.data.loaders.CallsLoader;
 
 import java.util.Calendar;
 
@@ -48,7 +48,12 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
         Calendar today = Calendar.getInstance();
         String name = mCursor.getString(CallsLoader.Query.COLUMN_FIRSTNAME) + " " + mCursor.getString(CallsLoader.Query.COLUMN_LASTNAME);
         int age = today.get(Calendar.YEAR) - cal.get(Calendar.YEAR);
-        String age_grade = mContext.getResources().getString(R.string.age_to_string, age) + " - " + mCursor.getString(CallsLoader.Query.COLUMN_GRADE);
+        String grade = mCursor.getString(CallsLoader.Query.COLUMN_GRADE);
+        grade = grade.isEmpty() ? grade : "- " + grade;
+        String age_grade = mContext.getResources().getString(R.string.age_to_string, age, grade);
+        if(age < 2){
+            age_grade = mContext.getResources().getString(R.string.age_to_string_singular, age, grade);
+        }
         holder.name.setText(name);
         holder.age_grade.setText(age_grade);
     }

@@ -44,7 +44,7 @@
                 android:background="@color/colorPrimary"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:behavior_peekHeight="?actionBarSize"
-                app:layout_behavior="android.support.design.widget.BottomSheetBehavior" />
+                app:layout_behavior="@string/bottom_sheet_behavior" />
 
         </android.support.design.widget.CoordinatorLayout>
 

@@ -8,9 +8,10 @@
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
     android:paddingStart="16dp"
-    android:paddingEnd="16dp" >
+    android:paddingEnd="16dp"
+    android:background="@drawable/students_picker_selector">
 
-    <TextView
+<TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="New Text"

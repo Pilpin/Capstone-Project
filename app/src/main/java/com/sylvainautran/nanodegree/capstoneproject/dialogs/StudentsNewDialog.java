@@ -1,4 +1,4 @@
-package com.sylvainautran.nanodegree.capstoneproject;
+package com.sylvainautran.nanodegree.capstoneproject.dialogs;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
 import java.text.DateFormat;
@@ -49,7 +49,6 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
     @BindView(R.id.save)
     TextView save;
 
-    private Dialog dialog;
     private Calendar cal = Calendar.getInstance();
     private DateFormat df;
 
@@ -85,9 +84,8 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        dialog = super.onCreateDialog(savedInstanceState);
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
         return dialog;
     }
 

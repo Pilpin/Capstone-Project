@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
+import com.sylvainautran.nanodegree.capstoneproject.utils.PopulateDB;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -86,6 +87,9 @@ public class ClassesListActivity extends AppCompatActivity {
             });
             builder.setNegativeButton(android.R.string.cancel, null);
             builder.show();
+        }else if(item.getItemId() == R.id.add_dummy_values){
+            PopulateDB pop = new PopulateDB(this);
+            pop.execute();
         }
         return super.onOptionsItemSelected(item);
     }

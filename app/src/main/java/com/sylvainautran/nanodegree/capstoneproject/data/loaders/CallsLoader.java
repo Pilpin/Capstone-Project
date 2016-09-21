@@ -1,4 +1,4 @@
-package com.sylvainautran.nanodegree.capstoneproject.loaders;
+package com.sylvainautran.nanodegree.capstoneproject.data.loaders;
 
 import android.content.Context;
 import android.content.CursorLoader;

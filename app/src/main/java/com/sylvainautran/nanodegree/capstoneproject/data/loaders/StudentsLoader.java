@@ -1,4 +1,4 @@
-package com.sylvainautran.nanodegree.capstoneproject.loaders;
+package com.sylvainautran.nanodegree.capstoneproject.data.loaders;
 
 import android.content.Context;
 import android.content.CursorLoader;
@@ -15,13 +15,10 @@ public class StudentsLoader extends CursorLoader {
         return new StudentsLoader(context, AppelContract.ClassStudentLinkEntry.buildClassStudentLinkFromClassUri(classId), Query.PROJECTION_FROM_CLASS);
     }
 
-    public static StudentsLoader getAllStudentsInClass(Context context, Uri uri) {
-        return new StudentsLoader(context, uri, Query.PROJECTION_FROM_CLASS);
+    public static StudentsLoader getAllStudentsNotInClass(Context context, long classId) {
+        return new StudentsLoader(context, AppelContract.ClassStudentLinkEntry.buildClassStudentLinkNotFromClassUri(classId), Query.PROJECTION);
     }
 
-    public static StudentsLoader getStudentForId(Context context, long id) {
-        return new StudentsLoader(context, AppelContract.StudentEntry.buildStudentUri(id), Query.PROJECTION);
-    }
 
     private StudentsLoader(Context context, Uri uri, String[] projection) {
         super(context, uri, projection, null, null, AppelContract.StudentEntry.DEFAULT_SORT);
@@ -29,7 +26,7 @@ public class StudentsLoader extends CursorLoader {
 
     public interface Query {
         String[] PROJECTION = {
-                AppelContract.StudentEntry._ID,
+                AppelContract.StudentEntry.TABLE_NAME + "." + AppelContract.StudentEntry._ID,
                 AppelContract.StudentEntry.COLUMN_FIRSTNAME,
                 AppelContract.StudentEntry.COLUMN_LASTNAME,
                 AppelContract.StudentEntry.COLUMN_BIRTHDATE

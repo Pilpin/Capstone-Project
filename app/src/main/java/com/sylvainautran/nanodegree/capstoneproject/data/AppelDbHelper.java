@@ -26,43 +26,31 @@ public class AppelDbHelper extends SQLiteOpenHelper {
                 StudentEntry.COLUMN_FIRSTNAME + " TEXT NOT NULL, " +
                 StudentEntry.COLUMN_LASTNAME + " TEXT NOT NULL, " +
                 StudentEntry.COLUMN_BIRTHDATE + " INTEGER NOT NULL, " +
-
-                " UNIQUE (" +
-                StudentEntry.COLUMN_FIRSTNAME + ", " +
-                StudentEntry.COLUMN_LASTNAME + ", " +
-                StudentEntry.COLUMN_BIRTHDATE + ") ON CONFLICT IGNORE);";
+                StudentEntry.COLUMN_DELETED + " INTEGER DEFAULT 0);";
 
         final String SQL_CREATE_CLASS_TABLE = "CREATE TABLE " + ClassEntry.TABLE_NAME + " (" +
                 ClassEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ClassEntry.COLUMN_NAME + " TEXT NOT NULL," +
-
-                " UNIQUE (" +
-                ClassEntry.COLUMN_NAME + ") ON CONFLICT IGNORE);";
+                ClassEntry.COLUMN_DELETED + " INTEGER DEFAULT 0);";
 
         final String SQL_CREATE_CALL_TABLE = "CREATE TABLE " + CallEntry.TABLE_NAME + " (" +
                 CallEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 CallEntry.COLUMN_CLASS_ID + " INTEGER NOT NULL, " +
                 CallEntry.COLUMN_DATETIME + " INTEGER NOT NULL, " +
-                CallEntry.COLUMN_LEAVING_TIME_OPTION + " INTEGER NOT NULL DEFAULT 0, " +
+                CallEntry.COLUMN_LEAVING_TIME_OPTION + " INTEGER DEFAULT 0, " +
+                CallEntry.COLUMN_DELETED + " INTEGER DEFAULT 0, " +
 
-                "FOREIGN KEY (" + CallEntry.COLUMN_CLASS_ID + ") REFERENCES " + ClassEntry.TABLE_NAME + "(" + ClassEntry._ID  + "), " +
-
-                "UNIQUE (" +
-                CallEntry.COLUMN_CLASS_ID + ", " +
-                CallEntry.COLUMN_DATETIME + ") ON CONFLICT IGNORE);";
+                "FOREIGN KEY (" + CallEntry.COLUMN_CLASS_ID + ") REFERENCES " + ClassEntry.TABLE_NAME + "(" + ClassEntry._ID  + "));";
 
         final String SQL_CREATE_CLASS_STUDENT_TABLE = "CREATE TABLE " + ClassStudentLinkEntry.TABLE_NAME + " (" +
                 ClassStudentLinkEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ClassStudentLinkEntry.COLUMN_CLASS_ID + " INTEGER NOT NULL, " +
                 ClassStudentLinkEntry.COLUMN_STUDENT_ID + " INTEGER NOT NULL, " +
                 ClassStudentLinkEntry.COLUMN_GRADE + " TEXT, " +
+                ClassStudentLinkEntry.COLUMN_DELETED + " INTEGER DEFAULT 0, " +
 
                 " FOREIGN KEY (" + ClassStudentLinkEntry.COLUMN_CLASS_ID + ") REFERENCES " + ClassEntry.TABLE_NAME + "(" + ClassEntry._ID + "), " +
-                " FOREIGN KEY (" + ClassStudentLinkEntry.COLUMN_STUDENT_ID + ") REFERENCES " + StudentEntry.TABLE_NAME + "(" + StudentEntry._ID + "), " +
-
-                " UNIQUE (" +
-                ClassStudentLinkEntry.COLUMN_CLASS_ID + ", " +
-                ClassStudentLinkEntry.COLUMN_STUDENT_ID + ") ON CONFLICT IGNORE);";
+                " FOREIGN KEY (" + ClassStudentLinkEntry.COLUMN_STUDENT_ID + ") REFERENCES " + StudentEntry.TABLE_NAME + "(" + StudentEntry._ID + "));";
 
         final String SQL_CREATE_CALL_STUDENT_TABLE = "CREATE TABLE " + CallStudentLinkEntry.TABLE_NAME + " (" +
                 CallStudentLinkEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -72,11 +60,7 @@ public class AppelDbHelper extends SQLiteOpenHelper {
                 CallStudentLinkEntry.COLUMN_LEAVING_TIME + " INTEGER, " +
 
                 " FOREIGN KEY (" + CallStudentLinkEntry.COLUMN_CALL_ID + ") REFERENCES " + CallEntry.TABLE_NAME + "(" + CallEntry._ID + "), " +
-                " FOREIGN KEY (" + CallStudentLinkEntry.COLUMN_STUDENT_ID + ") REFERENCES " + StudentEntry.TABLE_NAME + "(" + StudentEntry._ID + "), " +
-
-                " UNIQUE (" +
-                CallStudentLinkEntry.COLUMN_CALL_ID + ", " +
-                CallStudentLinkEntry.COLUMN_STUDENT_ID + ") ON CONFLICT IGNORE);";
+                " FOREIGN KEY (" + CallStudentLinkEntry.COLUMN_STUDENT_ID + ") REFERENCES " + StudentEntry.TABLE_NAME + "(" + StudentEntry._ID + "));";
 
         sqLiteDatabase.execSQL(SQL_CREATE_STUDENT_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_CLASS_TABLE);
