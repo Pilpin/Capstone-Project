@@ -7,6 +7,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="colorPresent">#2ac44b</color>
+    <color name="colorAbsent">#e9912d31</color>
+    <color name="colorLeaving">@color/colorAccent</color>
+
     <color name="main_background">#FFFFFF</color>
     <color name="slightly_dark_background">#efefef</color>
 </resources>

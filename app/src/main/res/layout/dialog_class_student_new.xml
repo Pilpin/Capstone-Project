@@ -11,33 +11,39 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?actionBarSize"
         android:background="@color/colorPrimary">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/icon_size_toolbar_left_width"
+                android:layout_height="@dimen/icon_size"
                 android:src="@drawable/ic_clear_white"
                 android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:clickable="true"
-                android:onClick="dismiss"/>
+                android:paddingTop="@dimen/icon_padding"
+                android:paddingBottom="@dimen/icon_padding"
+                android:paddingRight="@dimen/icon_padding"
+                android:paddingEnd="@dimen/icon_padding"
+                android:clickable="true" />
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
                 android:layout_toEndOf="@id/close"
                 android:layout_toRightOf="@id/close"
-                android:paddingLeft="@dimen/text_margin"
-                android:paddingStart="@dimen/text_margin"
+                android:paddingLeft="@dimen/screen_edge_margin"
+                android:paddingStart="@dimen/screen_edge_margin"
+                android:gravity="center_vertical"
                 android:textAppearance="@style/AppTheme.AlertDialog.Title.Text"
                 tools:text="@string/add_student_to_class"/>
 
@@ -46,15 +52,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:gravity="center"
-                android:layout_marginRight="@dimen/text_margin"
-                android:layout_marginEnd="@dimen/text_margin"
+                android:layout_marginRight="@dimen/screen_edge_margin"
+                android:layout_marginEnd="@dimen/screen_edge_margin"
                 android:textColor="@android:color/white"
                 android:textAllCaps="true"
-                android:textSize="16dp"
-                android:text="@string/save" />
+                android:text="@string/save"/>
         </RelativeLayout>
 
     </android.support.v7.widget.Toolbar>
@@ -63,7 +69,7 @@
         android:id="@+id/grade_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin">
+        android:layout_margin="@dimen/screen_edge_margin">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/grade"
@@ -76,22 +82,24 @@
         android:id="@+id/list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/text_margin"
-        android:layout_marginLeft="@dimen/text_margin"
-        android:layout_marginStart="@dimen/text_margin"
-        android:layout_marginRight="@dimen/text_margin"
-        android:layout_marginEnd="@dimen/text_margin"
+        android:layout_marginBottom="@dimen/screen_edge_margin"
+        android:layout_marginLeft="@dimen/screen_edge_margin"
+        android:layout_marginStart="@dimen/screen_edge_margin"
+        android:layout_marginRight="@dimen/screen_edge_margin"
+        android:layout_marginEnd="@dimen/screen_edge_margin"
         android:background="@color/slightly_dark_background"
         android:orientation="vertical"
         android:elevation="4dp">
 
         <TextView
+            android:id="@+id/list_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="@dimen/text_margin"
+            android:padding="@dimen/screen_edge_margin"
             android:text="@string/select_students"
-            android:elevation="4dp"/>
+            android:elevation="4dp"
+            android:background="@color/slightly_dark_background"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

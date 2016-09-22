@@ -56,7 +56,7 @@ public class AppelDbHelper extends SQLiteOpenHelper {
                 CallStudentLinkEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 CallStudentLinkEntry.COLUMN_CALL_ID + " INTEGER NOT NULL, " +
                 CallStudentLinkEntry.COLUMN_STUDENT_ID + " INTEGER NOT NULL, " +
-                CallStudentLinkEntry.COLUMN_IS_PRESENT + " INTEGER, " +
+                CallStudentLinkEntry.COLUMN_IS_PRESENT +  " INTEGER NOT NULL, " +
                 CallStudentLinkEntry.COLUMN_LEAVING_TIME + " INTEGER, " +
 
                 " FOREIGN KEY (" + CallStudentLinkEntry.COLUMN_CALL_ID + ") REFERENCES " + CallEntry.TABLE_NAME + "(" + CallEntry._ID + "), " +

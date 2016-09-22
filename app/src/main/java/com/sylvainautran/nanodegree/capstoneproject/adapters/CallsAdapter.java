@@ -1,6 +1,5 @@
 package com.sylvainautran.nanodegree.capstoneproject.adapters;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
@@ -12,17 +11,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.CallsDetailsActivity;
-import com.sylvainautran.nanodegree.capstoneproject.ClassStudentsListActivity;
 import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.CallsLoader;
-import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,13 +32,15 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
     private AppCompatActivity mActivity;
     private ActionMode mActionMode;
     private FragmentActionModeListener mActionModeListener;
-    private HashMap<Integer, Long> selectedCalls;
+    private HashMap<Integer, Long> mSelectedCalls;
+    private HashMap<Long, String> mHeaders;
 
-    public CallsAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener) {
+    public CallsAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener, HashMap headers) {
         mCursor = cursor;
         mActivity = activity;
         mActionModeListener = actionModeListener;
-        selectedCalls = new HashMap<>();
+        mSelectedCalls = new HashMap<>();
+        mHeaders = headers;
     }
 
     @Override
@@ -84,8 +83,15 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.itemView.setActivated(selectedCalls.keySet().contains(position));
+        holder.itemView.setActivated(mSelectedCalls.keySet().contains(position));
         mCursor.moveToPosition(position);
+
+        if(mHeaders != null && mHeaders.containsKey(mCursor.getLong(ClassesLoader.Query._ID))){
+            holder.month.setText(mHeaders.get(mCursor.getLong(ClassesLoader.Query._ID)));
+        }else{
+            holder.month.setText("");
+        }
+
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(mCursor.getLong(CallsLoader.Query.COLUMN_DATETIME));
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
@@ -101,11 +107,11 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
 
     @Override
     public void clearSelectedItems() {
-        Iterator it = selectedCalls.keySet().iterator();
+        Iterator it = mSelectedCalls.keySet().iterator();
         while(it.hasNext()){
             notifyItemChanged((Integer) it.next());
         }
-        selectedCalls.clear();
+        mSelectedCalls.clear();
         mActionMode = null;
     }
 
@@ -120,19 +126,19 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
 
     public void addSelectedItem(int position, long id){
         mActionModeListener.addSelectedItem(position, id);
-        selectedCalls.put(position, id);
+        mSelectedCalls.put(position, id);
         notifyItemChanged(position);
-        mActionMode.setTitle(Integer.toString(selectedCalls.size()));
-        if(selectedCalls.size() == 2){
+        mActionMode.setTitle(Integer.toString(mSelectedCalls.size()));
+        if(mSelectedCalls.size() == 2){
             mActionMode.invalidate();
         }
     }
 
     public boolean removeSelectedItem(int position, long id){
         mActionModeListener.removeSelectedItem(position, id);
-        if(selectedCalls.remove(position) != null){
-            mActionMode.setTitle(Integer.toString(selectedCalls.size()));
-            if(selectedCalls.size() == 1){
+        if(mSelectedCalls.remove(position) != null){
+            mActionMode.setTitle(Integer.toString(mSelectedCalls.size()));
+            if(mSelectedCalls.size() == 1){
                 mActionMode.invalidate();
             }
             notifyItemChanged(position);
@@ -142,6 +148,7 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.month) public TextView month;
         @BindView(R.id.class_name) public TextView class_name;
         @BindView(R.id.call_date) public TextView call_date;
 

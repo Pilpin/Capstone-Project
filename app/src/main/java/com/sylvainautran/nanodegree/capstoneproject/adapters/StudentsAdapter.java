@@ -1,10 +1,10 @@
 package com.sylvainautran.nanodegree.capstoneproject.adapters;
 
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.view.ActionMode;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +30,15 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
     private AppCompatActivity mActivity;
     private ActionMode mActionMode;
     private FragmentActionModeListener mActionModeListener;
-    private HashMap<Integer, Long> selectedStudents;
+    private HashMap<Integer, Long> mSelectedStudents;
+    private HashMap<Long, Character> mHeaders;
 
-    public StudentsAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener) {
+    public StudentsAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener, @Nullable HashMap headers) {
         mCursor = cursor;
         mActivity = activity;
         mActionModeListener = actionModeListener;
-        selectedStudents = new HashMap<>();
+        mSelectedStudents = new HashMap<>();
+        mHeaders = headers;
     }
 
     @Override
@@ -74,8 +76,15 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.itemView.setActivated(selectedStudents.keySet().contains(position));
+        holder.itemView.setActivated(mSelectedStudents.keySet().contains(position));
         mCursor.moveToPosition(position);
+
+        if(mHeaders != null && mHeaders.containsKey(mCursor.getLong(StudentsLoader.Query._ID))){
+            holder.first_letter.setText(Character.toString(mHeaders.get(mCursor.getLong(StudentsLoader.Query._ID))));
+        }else{
+            holder.first_letter.setText("");
+        }
+
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(mCursor.getLong(StudentsLoader.Query.COLUMN_BIRTHDATE));
         Calendar today = Calendar.getInstance();
@@ -96,11 +105,11 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
 
     @Override
     public void clearSelectedItems() {
-        Iterator it = selectedStudents.keySet().iterator();
+        Iterator it = mSelectedStudents.keySet().iterator();
         while(it.hasNext()){
             notifyItemChanged((Integer) it.next());
         }
-        selectedStudents.clear();
+        mSelectedStudents.clear();
         mActionMode = null;
     }
 
@@ -116,19 +125,19 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
 
     public void addSelectedItem(int position, long id){
         mActionModeListener.addSelectedItem(position, id);
-        selectedStudents.put(position, id);
+        mSelectedStudents.put(position, id);
         notifyItemChanged(position);
-        mActionMode.setTitle(Integer.toString(selectedStudents.size()));
-        if(selectedStudents.size() == 2){
+        mActionMode.setTitle(Integer.toString(mSelectedStudents.size()));
+        if(mSelectedStudents.size() == 2){
             mActionMode.invalidate();
         }
     }
 
     public boolean removeSelectedItem(int position, long id){
         mActionModeListener.removeSelectedItem(position, id);
-        if(selectedStudents.remove(position) != null){
-            mActionMode.setTitle(Integer.toString(selectedStudents.size()));
-            if(selectedStudents.size() == 1){
+        if(mSelectedStudents.remove(position) != null){
+            mActionMode.setTitle(Integer.toString(mSelectedStudents.size()));
+            if(mSelectedStudents.size() == 1){
                 mActionMode.invalidate();
             }
             notifyItemChanged(position);
@@ -138,6 +147,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.first_letter) public TextView first_letter;
         @BindView(R.id.name) public TextView name;
         @BindView(R.id.age_grade) public TextView age_grade;
 

@@ -28,6 +28,7 @@ import com.sylvainautran.nanodegree.capstoneproject.adapters.FragmentActionModeL
 import com.sylvainautran.nanodegree.capstoneproject.adapters.StudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsEditDialog;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsNewDialog;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.StudentsNewDialog;
 
@@ -79,8 +80,6 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
         View view = inflater.inflate(R.layout.fragment_generic, container, false);
         ButterKnife.bind(this, view);
 
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
-
         if(getArguments() != null && getArguments().containsKey(CLASS_ID)){
             getLoaderManager().initLoader(STUDENTS_FROM_CLASS, null, this);
         }else{
@@ -104,17 +103,31 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         int emptyText = R.string.empty_student_list;
+        HashMap<Long, Character> headers = null;
+        if(cursor != null && cursor.moveToFirst()){
+            headers = new HashMap<>();
+            char first_letter = cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0);
+            headers.put(cursor.getLong(StudentsLoader.Query._ID), first_letter);
+            while(cursor.moveToNext()){
+                char new_first_letter = cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0);
+                if(first_letter != new_first_letter){
+                    first_letter = new_first_letter;
+                    headers.put(cursor.getLong(StudentsLoader.Query._ID), first_letter);
+                }
+            }
+
+        }
 
         switch (loader.getId()){
             case STUDENTS_FROM_CLASS:
-                adapter = new ClassStudentsAdapter((AppCompatActivity) getActivity(), cursor, this);
+                adapter = new ClassStudentsAdapter((AppCompatActivity) getActivity(), cursor, this, headers);
                 emptyText = R.string.empty_class_student_list;
                 break;
             default:
-                adapter = new StudentsAdapter((AppCompatActivity) getActivity(), cursor, this);
+                adapter = new StudentsAdapter((AppCompatActivity) getActivity(), cursor, this, headers);
         }
 
-        if(cursor != null && cursor.getCount() > 0){
+        if(adapter.getItemCount() > 0){
             emptyView.setVisibility(View.GONE);
         }else{
             emptyView.setVisibility(View.VISIBLE);
@@ -209,7 +222,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
                     long id1 = selectedStudents.get(position1);
                     HashMap<String, String> values1 = ((AdapterActionModeListener) adapter).getValues(position1);
                     FragmentManager fm = ((AppCompatActivity) getActivity()).getSupportFragmentManager();
-                    ClassStudentsNewDialog frag = ClassStudentsNewDialog.newInstance(R.string.edit_grade, id1, values1.get(ClassStudentsAdapter.GRADE));
+                    ClassStudentsEditDialog frag = ClassStudentsEditDialog.newInstance(R.string.edit_grade, id1, values1.get(ClassStudentsAdapter.GRADE));
                     frag.show(fm, "dialog");
                     break;
                 case R.id.delete_student_from_class:

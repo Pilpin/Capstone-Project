@@ -1,12 +1,7 @@
 package com.sylvainautran.nanodegree.capstoneproject.adapters;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +14,7 @@ import com.sylvainautran.nanodegree.capstoneproject.ClassStudentsListActivity;
 import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
+import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,13 +29,15 @@ public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHold
     private AppCompatActivity mActivity;
     private ActionMode mActionMode;
     private FragmentActionModeListener mActionModeListener;
-    private HashMap<Integer, Long> selectedClasses;
+    private HashMap<Integer, Long> mSelectedClasses;
+    private HashMap<Long, Character> mHeaders;
 
-    public ClassesAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener) {
+    public ClassesAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener, HashMap headers) {
         mCursor = cursor;
         mActivity = activity;
         mActionModeListener = actionModeListener;
-        selectedClasses = new HashMap<>();
+        mSelectedClasses = new HashMap<>();
+        mHeaders = headers;
     }
 
     @Override
@@ -81,8 +79,15 @@ public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.itemView.setActivated(selectedClasses.keySet().contains(position));
+        holder.itemView.setActivated(mSelectedClasses.keySet().contains(position));
         mCursor.moveToPosition(position);
+
+        if(mHeaders != null && mHeaders.containsKey(mCursor.getLong(ClassesLoader.Query._ID))){
+            holder.first_letter.setText(Character.toString(mHeaders.get(mCursor.getLong(ClassesLoader.Query._ID))));
+        }else{
+            holder.first_letter.setText("");
+        }
+
         holder.name.setText(mCursor.getString(ClassesLoader.Query.COLUMN_NAME));
     }
 
@@ -93,11 +98,11 @@ public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHold
 
     @Override
     public void clearSelectedItems() {
-        Iterator it = selectedClasses.keySet().iterator();
+        Iterator it = mSelectedClasses.keySet().iterator();
         while(it.hasNext()){
             notifyItemChanged((Integer) it.next());
         }
-        selectedClasses.clear();
+        mSelectedClasses.clear();
         mActionMode = null;
     }
 
@@ -111,19 +116,19 @@ public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHold
 
     public void addSelectedItem(int position, long id){
         mActionModeListener.addSelectedItem(position, id);
-        selectedClasses.put(position, id);
+        mSelectedClasses.put(position, id);
         notifyItemChanged(position);
-        mActionMode.setTitle(Integer.toString(selectedClasses.size()));
-        if(selectedClasses.size() == 2){
+        mActionMode.setTitle(Integer.toString(mSelectedClasses.size()));
+        if(mSelectedClasses.size() == 2){
             mActionMode.invalidate();
         }
     }
 
     public boolean removeSelectedItem(int position, long id){
         mActionModeListener.removeSelectedItem(position, id);
-        if(selectedClasses.remove(position) != null){
-            mActionMode.setTitle(Integer.toString(selectedClasses.size()));
-            if(selectedClasses.size() == 1){
+        if(mSelectedClasses.remove(position) != null){
+            mActionMode.setTitle(Integer.toString(mSelectedClasses.size()));
+            if(mSelectedClasses.size() == 1){
                 mActionMode.invalidate();
             }
             notifyItemChanged(position);
@@ -133,6 +138,7 @@ public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.first_letter) public TextView first_letter;
         @BindView(R.id.name) public TextView name;
 
         public ViewHolder(View view) {

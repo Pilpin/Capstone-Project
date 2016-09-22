@@ -28,9 +28,13 @@ import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassesAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.adapters.FragmentActionModeListener;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.CallsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,8 +68,6 @@ public class CallsListFragment extends Fragment implements LoaderManager.LoaderC
         View view = inflater.inflate(R.layout.fragment_generic, container, false);
         ButterKnife.bind(this, view);
 
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
-
         getLoaderManager().initLoader(0, null, this);
         return view;
     }
@@ -77,14 +79,32 @@ public class CallsListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
-        if(cursor != null && cursor.getCount() > 0){
+        HashMap<Long, String> headers = null;
+        if(cursor != null && cursor.moveToFirst()){
+            headers = new HashMap<>();
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(cursor.getLong(CallsLoader.Query.COLUMN_DATETIME));
+            String month = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + "\n" + cal.get(Calendar.YEAR);
+            headers.put(cursor.getLong(ClassesLoader.Query._ID), month);
+            while(cursor.moveToNext()){
+                String new_month = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + "\n" + cal.get(Calendar.YEAR);
+                if(!new_month.equals(month)){
+                    month = new_month;
+                    headers.put(cursor.getLong(ClassesLoader.Query._ID), month);
+                }
+            }
+
+        }
+
+        adapter = new CallsAdapter((AppCompatActivity) getActivity(), cursor, this, headers);
+
+        if(adapter.getItemCount() > 0){
             emptyView.setVisibility(View.GONE);
         }else{
             emptyView.setVisibility(View.VISIBLE);
             emptyView.setText(R.string.empty_call_list);
         }
 
-        adapter = new CallsAdapter((AppCompatActivity) getActivity(), cursor, this);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
     }

@@ -55,7 +55,7 @@
     <string name="empty_call_student_list">No student has been added to the class yet</string>
     <string name="absent">Absent</string>
     <string name="present">Present</string>
-    <string name="left">Student left</string>
+    <string name="leaving">Leaving</string>
     <string name="leaving_time">Left at <xliff:g id="time">%s</xliff:g></string>
 
     // SYSTEM

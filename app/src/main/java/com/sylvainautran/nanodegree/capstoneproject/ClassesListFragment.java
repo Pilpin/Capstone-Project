@@ -29,6 +29,7 @@ import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassesAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.adapters.FragmentActionModeListener;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
+import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassNewDialog;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsNewDialog;
 
@@ -78,14 +79,31 @@ public class ClassesListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
-        if(cursor != null && cursor.getCount() > 0){
+        HashMap<Long, Character> headers = null;
+        if(cursor != null && cursor.moveToFirst()){
+            headers = new HashMap<>();
+            char first_letter = cursor.getString(ClassesLoader.Query.COLUMN_NAME).charAt(0);
+            headers.put(cursor.getLong(ClassesLoader.Query._ID), first_letter);
+            while(cursor.moveToNext()){
+                char new_first_letter = cursor.getString(ClassesLoader.Query.COLUMN_NAME).charAt(0);
+                if(first_letter != new_first_letter){
+                    first_letter = new_first_letter;
+                    headers.put(cursor.getLong(ClassesLoader.Query._ID), first_letter);
+                }
+            }
+
+        }
+
+        adapter = new ClassesAdapter((AppCompatActivity) getActivity(), cursor, this, headers);
+
+        if(adapter.getItemCount() > 0){
             emptyView.setVisibility(View.GONE);
         }else{
             emptyView.setVisibility(View.VISIBLE);
             emptyView.setText(R.string.empty_class_list);
         }
 
-        adapter = new ClassesAdapter((AppCompatActivity) getActivity(), cursor, this);
+
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
