@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,7 +21,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassStudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassNewDialog;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsNewDialog;
 import com.sylvainautran.nanodegree.capstoneproject.utils.PopulateDB;
 
 import butterknife.BindView;
@@ -69,24 +74,31 @@ public class ClassesListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.add_class){
-            LayoutInflater inflater = getLayoutInflater();
+            FragmentManager fm = getSupportFragmentManager();
+            ClassNewDialog frag = new ClassNewDialog();
+            frag.show(fm, "dialog");
+            /*LayoutInflater inflater = getLayoutInflater();
             View view = inflater.inflate(R.layout.dialog_class_new, null);
             TextView title = ButterKnife.findById(view, R.id.title);
             title.setText(R.string.add_class);
-            final TextInputEditText editText = ButterKnife.findById(view, R.id.name);
+            final TextInputEditText name = ButterKnife.findById(view, R.id.name);
+            final TextInputLayout name_container = ButterKnife.findById(view, R.id.name_container);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog);
             builder.setView(view);
             builder.setPositiveButton(R.string.add_class, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    if(name.getText().length() < 1){
+
+                    }
                     ContentValues cv = new ContentValues();
-                    cv.put(AppelContract.ClassEntry.COLUMN_NAME, editText.getText().toString());
+                    cv.put(AppelContract.ClassEntry.COLUMN_NAME, name.getText().toString());
                     getApplicationContext().getContentResolver().insert(AppelContract.ClassEntry.CONTENT_URI, cv);
                 }
             });
             builder.setNegativeButton(android.R.string.cancel, null);
-            builder.show();
+            builder.show();*/
         }else if(item.getItemId() == R.id.add_dummy_values){
             PopulateDB pop = new PopulateDB(this);
             pop.execute();

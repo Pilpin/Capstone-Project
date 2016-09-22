@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.R;
@@ -64,10 +66,13 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.options) public ImageView options;
         @BindView(R.id.name) public TextView name;
         @BindView(R.id.age_grade) public TextView age_grade;
+        @BindView(R.id.call_buttons) public LinearLayout button_container;
         @BindView(R.id.absent) public Button absent;
         @BindView(R.id.present) public Button present;
+        @BindView(R.id.leaving_time) public Button leaving;
 
         public ViewHolder(View view) {
             super(view);

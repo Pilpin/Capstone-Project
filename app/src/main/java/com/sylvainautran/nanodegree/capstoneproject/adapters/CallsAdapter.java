@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -87,10 +88,10 @@ public class CallsAdapter extends RecyclerView.Adapter<CallsAdapter.ViewHolder> 
         mCursor.moveToPosition(position);
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(mCursor.getLong(CallsLoader.Query.COLUMN_DATETIME));
-        DateFormat df = DateFormat.getInstance();
-        String time = df.format(cal.getTime());
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
+        String dateTime = df.format(cal.getTime());
         holder.class_name.setText(mCursor.getString(CallsLoader.Query.COLUMN_CLASS_NAME));
-        holder.call_date.setText(time);
+        holder.call_date.setText(dateTime);
     }
 
     @Override

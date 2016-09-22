@@ -13,6 +13,7 @@
     <string name="empty_class_list">No class has been created yet\nAdd one by clicking on the plus sign up there !</string>
 
     <string name="class_name">Class name</string>
+    <string name="class_name_missing">Class name missing</string>
 
     // STUDENTS
     <string name="add_student">New student</string>
@@ -24,8 +25,9 @@
 
     <string name="student_first_name">First Name</string>
     <string name="student_last_name">Last Name</string>
-    <string name="student_birth_date">Birth date</string>
-    <string name="add_student_failed">First name and/or last name were missing, no student added.</string>
+    <string name="student_birth_date">Born on <xliff:g id="birthdate">%s</xliff:g></string>
+    <string name="first_name_missing">First name missing</string>
+    <string name="last_name_missing">Last name missing</string>
 
     // CALLS
     <string name="start_call">Start call</string>
@@ -46,9 +48,15 @@
     <string name="student_grade">Student\'s grade</string>
     <string name="empty_class_student_list">No student has been added to the class yet</string>
     <string name="all_students_are_here">All students are already in this class</string>
+    <string name="student_missing">You need to select students to add to the class</string>
+    <string name="grade_missing">Grade missing</string>
 
     // CALLS DETAILS
     <string name="empty_call_student_list">No student has been added to the class yet</string>
+    <string name="absent">Absent</string>
+    <string name="present">Present</string>
+    <string name="left">Student left</string>
+    <string name="leaving_time">Left at <xliff:g id="time">%s</xliff:g></string>
 
     // SYSTEM
     <string name="app_name" translatable="false">Capstone Project</string>

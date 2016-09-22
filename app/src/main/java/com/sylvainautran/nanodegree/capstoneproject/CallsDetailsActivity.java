@@ -71,8 +71,9 @@ public class CallsDetailsActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(callDate);
-            DateFormat df = DateFormat.getDateInstance();
-            actionBar.setTitle(className + " - " + df.format(cal.getTime()));
+            DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
+            actionBar.setTitle(className);
+            actionBar.setSubtitle(df.format(cal.getTime()));
         }
     }
 

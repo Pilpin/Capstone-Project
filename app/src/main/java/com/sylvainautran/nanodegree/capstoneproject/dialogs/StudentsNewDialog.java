@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,6 +42,10 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
     TextInputEditText first_name;
     @BindView(R.id.last_name)
     TextInputEditText last_name;
+    @BindView(R.id.first_name_container)
+    TextInputLayout first_name_container;
+    @BindView(R.id.last_name_container)
+    TextInputLayout last_name_container;
     @BindView(R.id.birth_date)
     Button birthdate;
     @BindView(R.id.title)
@@ -53,7 +59,7 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
     private DateFormat df;
 
     public StudentsNewDialog(){
-        df = DateFormat.getDateInstance();
+        df = DateFormat.getDateInstance(DateFormat.MEDIUM);
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -101,7 +107,7 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
             last_name.setText(getArguments().getString(LAST_NAME, ""));
             cal.setTimeInMillis(getArguments().getLong(BIRTH_DATE, cal.getTimeInMillis()));
         }
-        birthdate.setText(df.format(cal.getTime()));
+        birthdate.setText(getString(R.string.student_birth_date, df.format(cal.getTime())));
 
         return view;
     }
@@ -109,7 +115,7 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int date) {
         cal.set(year, month, date);
-        birthdate.setText(df.format(cal.getTime()));
+        birthdate.setText(getString(R.string.student_birth_date, df.format(cal.getTime())));
     }
 
     @OnClick({R.id.close, R.id.save, R.id.birth_date})
@@ -131,10 +137,16 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
                     } else {
                         getActivity().getContentResolver().insert(AppelContract.StudentEntry.CONTENT_URI, cv);
                     }
+                    dismiss();
                 }else{
-                    Toast.makeText(getActivity(), getText(R.string.add_student_failed), Toast.LENGTH_LONG).show();
+                    if(first_name.getText().length() < 1){
+                        first_name_container.setError(getString(R.string.first_name_missing));
+                    }
+                    if(last_name.getText().length() < 1){
+                        last_name_container.setError(getString(R.string.last_name_missing));
+                    }
                 }
-                dismiss();
+
                 break;
             case R.id.birth_date:
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), StudentsNewDialog.this, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));

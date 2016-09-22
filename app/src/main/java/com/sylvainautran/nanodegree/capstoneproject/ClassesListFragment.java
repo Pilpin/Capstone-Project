@@ -9,6 +9,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -23,10 +24,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.adapters.AdapterActionModeListener;
+import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassStudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassesAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.adapters.FragmentActionModeListener;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassNewDialog;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsNewDialog;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -117,27 +121,13 @@ public class ClassesListFragment extends Fragment implements LoaderManager.Loade
                 case R.id.edit_class:
                     Iterator it1 = selectedClasses.keySet().iterator();
                     int position = (Integer) it1.next();
-                    final long id = selectedClasses.get(position);
+                    long id = selectedClasses.get(position);
+                    HashMap<String, String> values = ((AdapterActionModeListener) adapter).getValues(position);
+                    String class_name = values.get(ClassesAdapter.CLASS_NAME);
 
-                    LayoutInflater inflater = getActivity().getLayoutInflater();
-                    View dialog = inflater.inflate(R.layout.dialog_class_new, null);
-                    TextView title = ButterKnife.findById(dialog, R.id.title);
-                    title.setText(R.string.add_class);
-                    final TextInputEditText editText = ButterKnife.findById(dialog, R.id.name);
-                    editText.setText((String) ((AdapterActionModeListener) adapter).getValues(position).get(ClassesAdapter.CLASS_NAME));
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog);
-                    builder.setView(dialog);
-                    builder.setPositiveButton(R.string.add_class, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ContentValues cv = new ContentValues();
-                            cv.put(AppelContract.ClassEntry.COLUMN_NAME, editText.getText().toString());
-                            getActivity().getApplicationContext().getContentResolver().update(AppelContract.ClassEntry.CONTENT_URI, cv, AppelContract.ClassEntry._ID + " = ?", new String[] { Long.toString(id) });
-                        }
-                    });
-                    builder.setNegativeButton(android.R.string.cancel, null);
-                    builder.show();
+                    FragmentManager fm = ((AppCompatActivity) getActivity()).getSupportFragmentManager();
+                    ClassNewDialog frag = ClassNewDialog.newInstance(id, class_name);
+                    frag.show(fm, "dialog");
                     break;
                 case R.id.delete_class:
                     Iterator it2 = selectedClasses.values().iterator();

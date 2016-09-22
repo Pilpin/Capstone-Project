@@ -22,15 +22,5 @@
         android:textSize="@dimen/item_big_text_size"
         android:fontFamily="sans-serif"
         tools:text="Garderie 2016-17"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/subscribers"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/name"
-        android:textSize="@dimen/item_small_text_size"
-        android:fontFamily="sans-serif-light"
-        tools:text="12 élèves"/>
+
 </RelativeLayout>

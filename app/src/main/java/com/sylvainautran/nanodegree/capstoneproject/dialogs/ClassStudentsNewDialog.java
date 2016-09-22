@@ -10,7 +10,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,6 +53,8 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
 
     @BindView(R.id.grade)
     TextInputEditText grade;
+    @BindView(R.id.grade_container)
+    TextInputLayout grade_container;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.list_container)
@@ -106,9 +111,7 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
             builder.setView(view)
                     .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            save();
-                        }
+                        public void onClick(DialogInterface dialog, int id) {}
                     })
                     .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -117,7 +120,6 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
                     });
             dialog = builder.create();
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-            return dialog;
         }else{
             dialog = super.onCreateDialog(savedInstanceState);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -125,10 +127,28 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
         return dialog;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(getArguments() != null && getArguments().containsKey(CLASS_STUDENT_ID)) {
+            final AlertDialog dialog = (AlertDialog) getDialog();
+
+            if (dialog != null) {
+                Button positiveButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
+                positiveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        save();
+                    }
+                });
+            }
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = view = inflater.inflate(R.layout.dialog_class_student_new, container, false);
+        View view = inflater.inflate(R.layout.dialog_class_student_new, container, false);
 
         if(getArguments() != null){
             if(getArguments().containsKey(CLASS_STUDENT_ID)){
@@ -184,17 +204,21 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     public void save(){
         if(getArguments() != null) {
             if (getArguments().containsKey(CLASS_STUDENT_ID)) {
-                ContentValues cv = new ContentValues();
-                cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, grade.getText().toString());
-                getActivity().getContentResolver().update(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv, AppelContract.ClassStudentLinkEntry._ID + " = ?",
-                        new String[]{Long.toString(getArguments().getLong(CLASS_STUDENT_ID))});
-                dismiss();
+                if(grade.getText().length() < 1){
+                    grade_container.setError(getString(R.string.grade_missing));
+                }else {
+                    ContentValues cv = new ContentValues();
+                    cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, grade.getText().toString());
+                    getActivity().getContentResolver().update(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv, AppelContract.ClassStudentLinkEntry._ID + " = ?",
+                            new String[]{Long.toString(getArguments().getLong(CLASS_STUDENT_ID))});
+                    dismiss();
+                }
             } else if (getArguments().containsKey(CLASS_ID)) {
                 AdapterActionModeListener adapter = (AdapterActionModeListener) mRecyclerView.getAdapter();
                 if (adapter != null) {
                     Collection values = adapter.getValues(0).values();
                     Log.d(LOG_TAG, "Getting there " + values.size());
-                    if(values.size() > 0) {
+                    if(values.size() > 0 && grade.getText().length() > 0) {
                         Iterator it = values.iterator();
                         ContentValues[] cvs = new ContentValues[values.size()];
                         int i = 0;
@@ -207,8 +231,12 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
                         }
                         getActivity().getContentResolver().bulkInsert(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cvs);
                         dismiss();
-                    }else{
-                        Toast.makeText(getActivity(), "You need to select students to add to the class", Toast.LENGTH_SHORT).show();
+                    }
+                    if(values.size() < 1){
+                        Toast.makeText(getActivity(), getString(R.string.student_missing), Toast.LENGTH_SHORT).show();
+                    }
+                    if(grade.getText().length() < 1){
+                        grade_container.setError(getString(R.string.grade_missing));
                     }
                 }
             }
