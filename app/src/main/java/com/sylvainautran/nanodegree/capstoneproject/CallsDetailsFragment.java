@@ -28,6 +28,8 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
     @BindView(R.id.empty_view)
     TextView emptyView;
 
+    private RecyclerView.Adapter adapter;
+
     public CallsDetailsFragment() {
     }
 
@@ -63,15 +65,17 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
-        if(cursor != null && cursor.getCount() > 0){
+        adapter = new CallStudentsAdapter(getActivity(), cursor);
+
+        if(adapter.getItemCount() > 0){
             emptyView.setVisibility(View.GONE);
         }else{
             emptyView.setVisibility(View.VISIBLE);
             emptyView.setText(R.string.empty_call_student_list);
         }
-        RecyclerView.Adapter adapter = new CallStudentsAdapter(getActivity(), cursor);
+
         adapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.swapAdapter(adapter, false);
     }
 
     @Override

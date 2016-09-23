@@ -7,11 +7,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -33,8 +35,8 @@ public class StudentsListActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
-    ActionBarDrawerToggle mDrawerToggle;
 
+    private ActionBarDrawerToggle mDrawerToggle;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +44,9 @@ public class StudentsListActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if(savedInstanceState == null) {
-            StudentsListFragment fragment = StudentsListFragment.newInstance();
+            StudentsListFragment studentsListFragment = StudentsListFragment.newInstance();
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, fragment, STUDENTS_LIST)
+                    .add(R.id.fragment_container, studentsListFragment, STUDENTS_LIST)
                     .commit();
         }
 

@@ -9,6 +9,8 @@ import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract.ClassStud
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import static com.sylvainautran.nanodegree.capstoneproject.data.AppelContract.PUBLIC;
+
 public class AppelDbHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
@@ -26,19 +28,19 @@ public class AppelDbHelper extends SQLiteOpenHelper {
                 StudentEntry.COLUMN_FIRSTNAME + " TEXT NOT NULL, " +
                 StudentEntry.COLUMN_LASTNAME + " TEXT NOT NULL, " +
                 StudentEntry.COLUMN_BIRTHDATE + " INTEGER NOT NULL, " +
-                StudentEntry.COLUMN_DELETED + " INTEGER DEFAULT 0);";
+                StudentEntry.COLUMN_DELETED + " INTEGER DEFAULT " + PUBLIC + ");";
 
         final String SQL_CREATE_CLASS_TABLE = "CREATE TABLE " + ClassEntry.TABLE_NAME + " (" +
                 ClassEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ClassEntry.COLUMN_NAME + " TEXT NOT NULL," +
-                ClassEntry.COLUMN_DELETED + " INTEGER DEFAULT 0);";
+                ClassEntry.COLUMN_DELETED + " INTEGER DEFAULT " + PUBLIC + ");";
 
         final String SQL_CREATE_CALL_TABLE = "CREATE TABLE " + CallEntry.TABLE_NAME + " (" +
                 CallEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 CallEntry.COLUMN_CLASS_ID + " INTEGER NOT NULL, " +
                 CallEntry.COLUMN_DATETIME + " INTEGER NOT NULL, " +
                 CallEntry.COLUMN_LEAVING_TIME_OPTION + " INTEGER DEFAULT 0, " +
-                CallEntry.COLUMN_DELETED + " INTEGER DEFAULT 0, " +
+                CallEntry.COLUMN_DELETED + " INTEGER DEFAULT " + PUBLIC + ", " +
 
                 "FOREIGN KEY (" + CallEntry.COLUMN_CLASS_ID + ") REFERENCES " + ClassEntry.TABLE_NAME + "(" + ClassEntry._ID  + "));";
 
@@ -47,7 +49,7 @@ public class AppelDbHelper extends SQLiteOpenHelper {
                 ClassStudentLinkEntry.COLUMN_CLASS_ID + " INTEGER NOT NULL, " +
                 ClassStudentLinkEntry.COLUMN_STUDENT_ID + " INTEGER NOT NULL, " +
                 ClassStudentLinkEntry.COLUMN_GRADE + " TEXT, " +
-                ClassStudentLinkEntry.COLUMN_DELETED + " INTEGER DEFAULT 0, " +
+                ClassStudentLinkEntry.COLUMN_DELETED + " INTEGER DEFAULT " + PUBLIC + ", " +
 
                 " FOREIGN KEY (" + ClassStudentLinkEntry.COLUMN_CLASS_ID + ") REFERENCES " + ClassEntry.TABLE_NAME + "(" + ClassEntry._ID + "), " +
                 " FOREIGN KEY (" + ClassStudentLinkEntry.COLUMN_STUDENT_ID + ") REFERENCES " + StudentEntry.TABLE_NAME + "(" + StudentEntry._ID + "));";

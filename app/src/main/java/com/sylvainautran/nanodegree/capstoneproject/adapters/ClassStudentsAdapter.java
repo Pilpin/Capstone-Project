@@ -13,7 +13,9 @@ import android.widget.TextView;
 import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,15 +30,21 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
     private AppCompatActivity mActivity;
     private ActionMode mActionMode;
     private FragmentActionModeListener mActionModeListener;
-    private HashMap<Integer, Long> mSelectedStudents;
+    private HashMap<Integer, String[]> mSelectedStudents;
     private HashMap<Long, Character> mHeaders;
 
-    public ClassStudentsAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener, HashMap headers) {
+    public ClassStudentsAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener, boolean isActionMode, HashMap<Integer, String[]> selectedStudents, HashMap
+            headers) {
         mCursor = cursor;
         mActivity = activity;
         mActionModeListener = actionModeListener;
-        mSelectedStudents = new HashMap<>();
+        mSelectedStudents = selectedStudents;
         mHeaders = headers;
+
+        if(isActionMode){
+            mActionMode = mActivity.startSupportActionMode(mActionModeListener);
+            mActionMode.setTitle(Integer.toString(mSelectedStudents.size()));
+        }
     }
 
     @Override
@@ -49,12 +57,16 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mActivity).inflate(R.layout.list_item_student, parent, false);
         final ViewHolder vh = new ViewHolder(view);
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mActionMode != null){
-                    if(!removeSelectedItem(vh.getAdapterPosition(), getItemId(vh.getAdapterPosition()))){
-                        addSelectedItem(vh.getAdapterPosition(), getItemId(vh.getAdapterPosition()));
+                    final String[] values = new String[13];
+                    values[AdapterKeys.key_class_student_id] = (String) vh.name.getTag(R.id.key_class_student_id);
+                    values[AdapterKeys.key_grade] = (String) vh.name.getTag(R.id.key_grade);
+                    if(!removeSelectedItem(vh.getAdapterPosition())){
+                        addSelectedItem(vh.getAdapterPosition(), values);
                     }
                 }
             }
@@ -63,9 +75,11 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
             @Override
             public boolean onLongClick(View view) {
                 if(mActionMode == null) {
-                    Log.d("TEST", "SIZE : " + mSelectedStudents.size());
+                    final String[] values = new String[13];
+                    values[AdapterKeys.key_class_student_id] = (String) vh.name.getTag(R.id.key_class_student_id);
+                    values[AdapterKeys.key_grade] = (String) vh.name.getTag(R.id.key_grade);
                     mActionMode = mActivity.startSupportActionMode(mActionModeListener);
-                    addSelectedItem(vh.getAdapterPosition(), getItemId(vh.getAdapterPosition()));
+                    addSelectedItem(vh.getAdapterPosition(), values);
                 }
                 return true;
             }
@@ -75,7 +89,7 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.itemView.setActivated(mSelectedStudents.keySet().contains(position));
+        holder.itemView.setActivated(mActionMode != null && mSelectedStudents.keySet().contains(position));
         mCursor.moveToPosition(position);
 
         if(mHeaders != null && mHeaders.containsKey(mCursor.getLong(StudentsLoader.Query._ID))){
@@ -97,6 +111,8 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
         }
         holder.name.setText(name);
         holder.age_grade.setText(age_grade);
+
+        tagView(holder.name, mCursor.getString(StudentsLoader.Query._ID), mCursor.getString(StudentsLoader.Query.COLUMN_GRADE));
     }
 
     @Override
@@ -115,16 +131,13 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
     }
 
     @Override
-    public HashMap getValues(int position){
-        mCursor.moveToPosition(position);
-        HashMap<String, String> values = new HashMap<>();
-        values.put(GRADE, mCursor.getString(StudentsLoader.Query.COLUMN_GRADE));
-        return values;
+    public void setActionMode(ActionMode actionMode){
+        mActionMode = actionMode;
     }
 
-    public void addSelectedItem(int position, long id){
-        mActionModeListener.addSelectedItem(position, id);
-        mSelectedStudents.put(position, id);
+    public void addSelectedItem(int position, String[] values){
+        mActionModeListener.addSelectedItem(position, values);
+        mSelectedStudents.put(position, values);
         notifyItemChanged(position);
         mActionMode.setTitle(Integer.toString(mSelectedStudents.size()));
         if(mSelectedStudents.size() == 2){
@@ -132,9 +145,9 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
         }
     }
 
-    public boolean removeSelectedItem(int position, long id){
-        mActionModeListener.removeSelectedItem(position, id);
+    public boolean removeSelectedItem(int position){
         if(mSelectedStudents.remove(position) != null){
+            mActionModeListener.removeSelectedItem(position);
             mActionMode.setTitle(Integer.toString(mSelectedStudents.size()));
             if(mSelectedStudents.size() == 1){
                 mActionMode.invalidate();
@@ -154,5 +167,10 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
             super(view);
             ButterKnife.bind(this, view);
         }
+    }
+
+    private void tagView(View v, String classStudentId, String grade){
+        v.setTag(R.id.key_class_student_id, classStudentId);
+        v.setTag(R.id.key_grade, grade);
     }
 }

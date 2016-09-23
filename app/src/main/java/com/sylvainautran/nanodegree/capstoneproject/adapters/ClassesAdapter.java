@@ -1,5 +1,6 @@
 package com.sylvainautran.nanodegree.capstoneproject.adapters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
@@ -14,72 +15,35 @@ import com.sylvainautran.nanodegree.capstoneproject.ClassStudentsListActivity;
 import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
-import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHolder> implements AdapterActionModeListener {
-    public static final String CLASS_NAME = "class_name";
-
-    private Cursor mCursor;
-    private AppCompatActivity mActivity;
-    private ActionMode mActionMode;
-    private FragmentActionModeListener mActionModeListener;
-    private HashMap<Integer, Long> mSelectedClasses;
+public class ClassesAdapter extends BaseAdapter<ClassesAdapter.ViewHolder> {
     private HashMap<Long, Character> mHeaders;
 
-    public ClassesAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener, HashMap headers) {
-        mCursor = cursor;
-        mActivity = activity;
-        mActionModeListener = actionModeListener;
-        mSelectedClasses = new HashMap<>();
+    public ClassesAdapter(Context context, Cursor cursor, Set<Integer> selectedItems, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener, HashMap<Long, Character> headers) {
+        super(context, cursor, selectedItems, onClickListener, onLongClickListener);
         mHeaders = headers;
     }
 
     @Override
-    public long getItemId(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getLong(ClassesLoader.Query._ID);
-    }
-
-    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mActivity).inflate(R.layout.list_item_class, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_class, parent, false);
         final ViewHolder vh = new ViewHolder(view);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mActionMode != null){
-                    if(!removeSelectedItem(vh.getAdapterPosition(), getItemId(vh.getAdapterPosition()))){
-                        addSelectedItem(vh.getAdapterPosition(), getItemId(vh.getAdapterPosition()));
-                    }
-                }else {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, AppelContract.ClassStudentLinkEntry.buildClassStudentLinkFromClassUri(getItemId(vh.getAdapterPosition())));
-                    intent.putExtra(ClassStudentsListActivity.CLASS_NAME, vh.name.getText());
-                    mActivity.startActivity(intent);
-                }
-            }
-        });
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if(mActionMode == null) {
-                    mActionMode = mActivity.startSupportActionMode(mActionModeListener);
-                    addSelectedItem(vh.getAdapterPosition(), getItemId(vh.getAdapterPosition()));
-                }
-                return true;
-            }
-        });
+        vh.itemView.setOnLongClickListener(mOnLongClickListener);
+        vh.itemView.setOnClickListener(mOnClickListener);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.itemView.setActivated(mSelectedClasses.keySet().contains(position));
         mCursor.moveToPosition(position);
 
         if(mHeaders != null && mHeaders.containsKey(mCursor.getLong(ClassesLoader.Query._ID))){
@@ -89,52 +53,9 @@ public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHold
         }
 
         holder.name.setText(mCursor.getString(ClassesLoader.Query.COLUMN_NAME));
-    }
+        holder.itemView.setActivated(mSelectedItems.contains(position));
 
-    @Override
-    public int getItemCount() {
-        return mCursor.getCount();
-    }
-
-    @Override
-    public void clearSelectedItems() {
-        Iterator it = mSelectedClasses.keySet().iterator();
-        while(it.hasNext()){
-            notifyItemChanged((Integer) it.next());
-        }
-        mSelectedClasses.clear();
-        mActionMode = null;
-    }
-
-    @Override
-    public HashMap getValues(int position) {
-        mCursor.moveToPosition(position);
-        HashMap<String, String> values = new HashMap<>();
-        values.put(CLASS_NAME, mCursor.getString(ClassesLoader.Query.COLUMN_NAME));
-        return values;
-    }
-
-    public void addSelectedItem(int position, long id){
-        mActionModeListener.addSelectedItem(position, id);
-        mSelectedClasses.put(position, id);
-        notifyItemChanged(position);
-        mActionMode.setTitle(Integer.toString(mSelectedClasses.size()));
-        if(mSelectedClasses.size() == 2){
-            mActionMode.invalidate();
-        }
-    }
-
-    public boolean removeSelectedItem(int position, long id){
-        mActionModeListener.removeSelectedItem(position, id);
-        if(mSelectedClasses.remove(position) != null){
-            mActionMode.setTitle(Integer.toString(mSelectedClasses.size()));
-            if(mSelectedClasses.size() == 1){
-                mActionMode.invalidate();
-            }
-            notifyItemChanged(position);
-            return true;
-        }
-        return false;
+        tagView(holder.itemView, Integer.toString(position), mCursor.getString(ClassesLoader.Query._ID), mCursor.getString(ClassesLoader.Query.COLUMN_NAME));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -145,5 +66,11 @@ public class ClassesAdapter extends RecyclerView.Adapter<ClassesAdapter.ViewHold
             super(view);
             ButterKnife.bind(this, view);
         }
+    }
+
+    private void tagView(View v, String position, String classId, String className){
+        v.setTag(R.id.key_position, position);
+        v.setTag(R.id.key_class_id, classId);
+        v.setTag(R.id.key_class_name, className);
     }
 }

@@ -56,6 +56,9 @@
     <string name="absent">Absent</string>
     <string name="present">Present</string>
     <string name="leaving">Leaving</string>
+    <string name="menu_absent">Set absent</string>
+    <string name="menu_present">Set present</string>
+    <string name="menu_leaving">Set leaving time</string>
     <string name="leaving_time">Left at <xliff:g id="time">%s</xliff:g></string>
 
     // SYSTEM

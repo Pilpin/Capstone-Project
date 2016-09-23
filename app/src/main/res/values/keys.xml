@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="key_position" />
+    <item type="id" name="key_call_id" />
+    <item type="id" name="key_class_id" />
+    <item type="id" name="key_student_id" />
+    <item type="id" name="key_class_student_id" />
+    <item type="id" name="key_call_student_id" />
+
+    <item type="id" name="key_leaving_time" />
+
+    <item type="id" name="key_call_option" />
+    <item type="id" name="key_call_datetime" />
+
+    <item type="id" name="key_class_name" />
+
+    <item type="id" name="key_first_name" />
+    <item type="id" name="key_last_name" />
+    <item type="id" name="key_birth_date" />
+
+    <item type="id" name="key_grade" />
+</resources>

@@ -205,7 +205,7 @@ public class ClassStudentsEditDialog extends DialogFragment implements LoaderMan
 
         }
 
-        adapter = new StudentsPickerAdapter(getActivity(), cursor, headers);
+        //adapter = new StudentsPickerAdapter(getActivity(), cursor, headers);
 
         if(adapter.getItemCount() > 0){
             emptyView.setVisibility(View.GONE);
@@ -236,9 +236,9 @@ public class ClassStudentsEditDialog extends DialogFragment implements LoaderMan
                     dismiss();
                 }
             } else if (getArguments().containsKey(CLASS_ID)) {
-                AdapterActionModeListener adapter = (AdapterActionModeListener) mRecyclerView.getAdapter();
+                /*AdapterActionModeListener adapter = (AdapterActionModeListener) mRecyclerView.getAdapter();
                 if (adapter != null) {
-                    Collection values = adapter.getValues(0).values();
+                    /Collection values = adapter.getValues(0).values();
                     if(values.size() > 0 && grade.getText().length() > 0) {
                         Iterator it = values.iterator();
                         ContentValues[] cvs = new ContentValues[values.size()];
@@ -268,7 +268,7 @@ public class ClassStudentsEditDialog extends DialogFragment implements LoaderMan
                     if(grade.getText().length() < 1){
                         grade_container.setError(getString(R.string.grade_missing));
                     }
-                }
+                }*/
             }
         }
     }

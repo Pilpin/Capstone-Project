@@ -104,7 +104,6 @@ public class ClassStudentsListActivity extends AppCompatActivity {
                 .setItems(R.array.call_select_option, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         startCall(which);
-
                     }
                 });
         builder.create().show();

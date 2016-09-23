@@ -66,6 +66,9 @@ public class AppelContract {
 
     public static final class CallEntry implements BaseColumns {
 
+        public static final int RECORD_LEAVING_TIME = 1;
+        public static final int DO_NOT_RECORD_LEAVING_TIME = 0;
+
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_CALL).build();
 
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_CALL;
@@ -121,6 +124,9 @@ public class AppelContract {
     }
 
     public static final class CallStudentLinkEntry implements BaseColumns {
+
+        public static final int ABSENT = 0;
+        public static final int PRESENT = 1;
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_STUDENT_CALL).build();
 

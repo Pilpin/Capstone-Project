@@ -44,14 +44,18 @@ public class CallsLoader extends CursorLoader {
         };
 
         String[] PROJECTION_DETAILS = {
-                AppelContract.CallStudentLinkEntry.TABLE_NAME + "." + AppelContract.CallStudentLinkEntry._ID,
+                AppelContract.StudentEntry.TABLE_NAME + "." + AppelContract.StudentEntry._ID,
                 AppelContract.CallEntry.COLUMN_LEAVING_TIME_OPTION,
                 AppelContract.StudentEntry.COLUMN_FIRSTNAME,
                 AppelContract.StudentEntry.COLUMN_LASTNAME,
                 AppelContract.StudentEntry.COLUMN_BIRTHDATE,
                 AppelContract.CallStudentLinkEntry.COLUMN_IS_PRESENT,
                 AppelContract.CallStudentLinkEntry.COLUMN_LEAVING_TIME,
-                AppelContract.ClassStudentLinkEntry.COLUMN_GRADE
+                AppelContract.ClassStudentLinkEntry.COLUMN_GRADE,
+                AppelContract.CallStudentLinkEntry.TABLE_NAME + "." + AppelContract.CallStudentLinkEntry._ID,
+                AppelContract.StudentEntry.TABLE_NAME + "." + AppelContract.StudentEntry._ID,
+                AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID,
+                AppelContract.CallEntry.COLUMN_DATETIME
         };
 
         int _ID = 0;
@@ -65,5 +69,9 @@ public class CallsLoader extends CursorLoader {
         int COLUMN_IS_PRESENT = 5;
         int COLUMN_LEAVING_TIME = 6;
         int COLUMN_GRADE = 7;
+        int CALL_STUDENT_ID = 8;
+        int STUDENT_ID = 9;
+        int CALL_ID = 10;
+        int CALL_DATE = 11;
     }
 }

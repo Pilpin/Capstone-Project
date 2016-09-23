@@ -1,46 +1,26 @@
 package com.sylvainautran.nanodegree.capstoneproject.dialogs;
 
 import android.app.Dialog;
-import android.app.LoaderManager;
 import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.sylvainautran.nanodegree.capstoneproject.DividerItemDecoration;
 import com.sylvainautran.nanodegree.capstoneproject.R;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.AdapterActionModeListener;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.StudentsPickerAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
-import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class ClassNewDialog extends DialogFragment {
     private final String LOG_TAG = this.getClass().getSimpleName();
@@ -63,12 +43,14 @@ public class ClassNewDialog extends DialogFragment {
         bundle.putString(CLASS_ID, Long.toString(class_id));
         bundle.putString(CLASS_NAME, class_name);
         fragment.setArguments(bundle);
+        Log.d("FRAG", "In Fragment");
         return fragment;
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onCreateDialog");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_class_new, null);
@@ -127,6 +109,6 @@ public class ClassNewDialog extends DialogFragment {
                 getActivity().getApplicationContext().getContentResolver().insert(AppelContract.ClassEntry.CONTENT_URI, cv);
             }
         }
-
+        dismiss();
     }
 }

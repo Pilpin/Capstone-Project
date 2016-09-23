@@ -1,7 +1,9 @@
 package com.sylvainautran.nanodegree.capstoneproject.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,23 +13,21 @@ import android.widget.TextView;
 import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StudentsPickerAdapter extends RecyclerView.Adapter<StudentsPickerAdapter.ViewHolder> implements AdapterActionModeListener {
-        private Cursor mCursor;
-    private Context mContext;
-    private HashMap<Integer, Long> mSelectedStudents;
+public class StudentsPickerAdapter extends BaseAdapter<StudentsPickerAdapter.ViewHolder> {
     private HashMap<Long, Character> mHeaders;
 
-    public StudentsPickerAdapter(Context context, Cursor cursor, HashMap headers) {
-        mCursor = cursor;
-        mContext = context;
-        mSelectedStudents = new HashMap<>();
+    public StudentsPickerAdapter(Context context, Cursor cursor, Set<Integer> selectedItems, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener, HashMap headers) {
+        super(context, cursor, selectedItems, onClickListener, onLongClickListener);
         mHeaders = headers;
     }
 
@@ -41,20 +41,12 @@ public class StudentsPickerAdapter extends RecyclerView.Adapter<StudentsPickerAd
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_student, parent, false);
         final ViewHolder vh = new ViewHolder(view);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!removeSelectedItem(vh.getAdapterPosition(), getItemId(vh.getAdapterPosition()))){
-                    addSelectedItem(vh.getAdapterPosition(), getItemId(vh.getAdapterPosition()));
-                }
-            }
-        });
+        vh.itemView.setOnClickListener(mOnClickListener);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.itemView.setActivated(mSelectedStudents.keySet().contains(position));
         mCursor.moveToPosition(position);
 
         if(mHeaders != null && mHeaders.containsKey(mCursor.getLong(StudentsLoader.Query._ID))){
@@ -74,30 +66,10 @@ public class StudentsPickerAdapter extends RecyclerView.Adapter<StudentsPickerAd
         }
         holder.name.setText(name);
         holder.age_grade.setText(age_grade);
-    }
 
-    @Override
-    public int getItemCount() {
-        return mCursor.getCount();
-    }
+        holder.itemView.setActivated(mSelectedItems.contains(position));
 
-    @Override
-    public void clearSelectedItems() { }
-
-    @Override
-    public HashMap getValues(int position){
-        return mSelectedStudents;
-    }
-
-    public void addSelectedItem(int position, long id){
-        mSelectedStudents.put(position, id);
-        notifyItemChanged(position);
-    }
-
-    public boolean removeSelectedItem(int position, long id){
-        mSelectedStudents.remove(position);
-        notifyItemChanged(position);
-        return false;
+        tagView(holder.name, Integer.toString(position), mCursor.getString(StudentsLoader.Query._ID));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -109,5 +81,10 @@ public class StudentsPickerAdapter extends RecyclerView.Adapter<StudentsPickerAd
             super(view);
             ButterKnife.bind(this, view);
         }
+    }
+
+    private void tagView(View v, String position, String studentId){
+        v.setTag(R.id.key_position, position);
+        v.setTag(R.id.key_student_id, studentId);
     }
 }
