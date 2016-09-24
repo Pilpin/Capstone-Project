@@ -3,6 +3,7 @@ package com.sylvainautran.nanodegree.capstoneproject.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +29,9 @@ import butterknife.ButterKnife;
 public class ClassesAdapter extends BaseAdapter<ClassesAdapter.ViewHolder> {
     private HashMap<Long, Character> mHeaders;
 
-    public ClassesAdapter(Context context, Cursor cursor, Set<Integer> selectedItems, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener, HashMap<Long, Character> headers) {
+    public ClassesAdapter(Context context, Cursor cursor, @Nullable Set<Integer> selectedItems, View.OnClickListener onClickListener, @Nullable View.OnLongClickListener onLongClickListener, HashMap<Long,
+            Character>
+            headers) {
         super(context, cursor, selectedItems, onClickListener, onLongClickListener);
         mHeaders = headers;
     }

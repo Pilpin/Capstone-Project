@@ -2,6 +2,7 @@ package com.sylvainautran.nanodegree.capstoneproject.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View.OnLongClickListener;
@@ -22,16 +23,18 @@ public class BaseAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerVie
     OnClickListener mOnClickListener;
     OnLongClickListener mOnLongClickListener;
 
-    public BaseAdapter(Context context, Cursor cursor, Set<Integer> set, OnClickListener onClickListener, OnLongClickListener onLongClickListener){
+    public BaseAdapter(Context context, Cursor cursor, @Nullable Set<Integer> set, @Nullable OnClickListener onClickListener, @Nullable OnLongClickListener onLongClickListener){
         mContext = context;
         mCursor = cursor;
         mOnClickListener = onClickListener;
         mOnLongClickListener = onLongClickListener;
         mSelectedItems = new ArrayList<>();
-        Iterator<Integer> it = set.iterator();
-        while(it.hasNext()){
-            int i = it.next();
-            mSelectedItems.add(i);
+        if(set != null) {
+            Iterator<Integer> it = set.iterator();
+            while (it.hasNext()) {
+                int i = it.next();
+                mSelectedItems.add(i);
+            }
         }
     }
 

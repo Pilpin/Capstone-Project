@@ -1,5 +1,6 @@
 package com.sylvainautran.nanodegree.capstoneproject.adapters;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -19,77 +20,31 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdapter.ViewHolder> implements AdapterActionModeListener {
-    public static final String GRADE = "grade";
-
-    private Cursor mCursor;
-    private AppCompatActivity mActivity;
-    private ActionMode mActionMode;
-    private FragmentActionModeListener mActionModeListener;
-    private HashMap<Integer, String[]> mSelectedStudents;
+public class ClassStudentsAdapter extends BaseAdapter<ClassStudentsAdapter.ViewHolder> {
     private HashMap<Long, Character> mHeaders;
 
-    public ClassStudentsAdapter(AppCompatActivity activity, Cursor cursor, FragmentActionModeListener actionModeListener, boolean isActionMode, HashMap<Integer, String[]> selectedStudents, HashMap
+    public ClassStudentsAdapter(Context context, Cursor cursor, Set<Integer> selectedItems, View.OnClickListener onClickListener, View.OnLongClickListener onLongClickListener, HashMap<Long, Character>
             headers) {
-        mCursor = cursor;
-        mActivity = activity;
-        mActionModeListener = actionModeListener;
-        mSelectedStudents = selectedStudents;
+        super(context, cursor, selectedItems, onClickListener, onLongClickListener);
         mHeaders = headers;
-
-        if(isActionMode){
-            mActionMode = mActivity.startSupportActionMode(mActionModeListener);
-            mActionMode.setTitle(Integer.toString(mSelectedStudents.size()));
-        }
-    }
-
-    @Override
-    public long getItemId(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getLong(ClassesLoader.Query._ID);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mActivity).inflate(R.layout.list_item_student, parent, false);
-        final ViewHolder vh = new ViewHolder(view);
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mActionMode != null){
-                    final String[] values = new String[13];
-                    values[AdapterKeys.key_class_student_id] = (String) vh.name.getTag(R.id.key_class_student_id);
-                    values[AdapterKeys.key_grade] = (String) vh.name.getTag(R.id.key_grade);
-                    if(!removeSelectedItem(vh.getAdapterPosition())){
-                        addSelectedItem(vh.getAdapterPosition(), values);
-                    }
-                }
-            }
-        });
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if(mActionMode == null) {
-                    final String[] values = new String[13];
-                    values[AdapterKeys.key_class_student_id] = (String) vh.name.getTag(R.id.key_class_student_id);
-                    values[AdapterKeys.key_grade] = (String) vh.name.getTag(R.id.key_grade);
-                    mActionMode = mActivity.startSupportActionMode(mActionModeListener);
-                    addSelectedItem(vh.getAdapterPosition(), values);
-                }
-                return true;
-            }
-        });
+        View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_student, parent, false);
+        ViewHolder vh = new ViewHolder(view);
+        vh.itemView.setOnLongClickListener(mOnLongClickListener);
+        vh.itemView.setOnClickListener(mOnClickListener);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.itemView.setActivated(mActionMode != null && mSelectedStudents.keySet().contains(position));
         mCursor.moveToPosition(position);
 
         if(mHeaders != null && mHeaders.containsKey(mCursor.getLong(StudentsLoader.Query._ID))){
@@ -105,57 +60,15 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
         int age = today.get(Calendar.YEAR) - cal.get(Calendar.YEAR);
         String grade = mCursor.getString(StudentsLoader.Query.COLUMN_GRADE);
         grade = grade.isEmpty() ? grade : "- " + grade;
-        String age_grade = mActivity.getResources().getString(R.string.age_to_string, age, grade);
+        String age_grade = mContext.getResources().getString(R.string.age_to_string, age, grade);
         if(age < 2){
-            age_grade = mActivity.getResources().getString(R.string.age_to_string_singular, age, grade);
+            age_grade = mContext.getResources().getString(R.string.age_to_string_singular, age, grade);
         }
         holder.name.setText(name);
         holder.age_grade.setText(age_grade);
+        holder.itemView.setActivated(mSelectedItems.contains(position));
 
-        tagView(holder.name, mCursor.getString(StudentsLoader.Query._ID), mCursor.getString(StudentsLoader.Query.COLUMN_GRADE));
-    }
-
-    @Override
-    public int getItemCount() {
-        return mCursor.getCount();
-    }
-
-    @Override
-    public void clearSelectedItems() {
-        Iterator it = mSelectedStudents.keySet().iterator();
-        while(it.hasNext()){
-            notifyItemChanged((Integer) it.next());
-        }
-        mSelectedStudents.clear();
-        mActionMode = null;
-    }
-
-    @Override
-    public void setActionMode(ActionMode actionMode){
-        mActionMode = actionMode;
-    }
-
-    public void addSelectedItem(int position, String[] values){
-        mActionModeListener.addSelectedItem(position, values);
-        mSelectedStudents.put(position, values);
-        notifyItemChanged(position);
-        mActionMode.setTitle(Integer.toString(mSelectedStudents.size()));
-        if(mSelectedStudents.size() == 2){
-            mActionMode.invalidate();
-        }
-    }
-
-    public boolean removeSelectedItem(int position){
-        if(mSelectedStudents.remove(position) != null){
-            mActionModeListener.removeSelectedItem(position);
-            mActionMode.setTitle(Integer.toString(mSelectedStudents.size()));
-            if(mSelectedStudents.size() == 1){
-                mActionMode.invalidate();
-            }
-            notifyItemChanged(position);
-            return true;
-        }
-        return false;
+        tagView(holder.itemView, Integer.toString(position), mCursor.getString(StudentsLoader.Query._ID), mCursor.getString(StudentsLoader.Query.COLUMN_GRADE));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -169,7 +82,8 @@ public class ClassStudentsAdapter extends RecyclerView.Adapter<ClassStudentsAdap
         }
     }
 
-    private void tagView(View v, String classStudentId, String grade){
+    private void tagView(View v, String position, String classStudentId, String grade){
+        v.setTag(R.id.key_position, position);
         v.setTag(R.id.key_class_student_id, classStudentId);
         v.setTag(R.id.key_grade, grade);
     }

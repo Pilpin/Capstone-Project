@@ -77,8 +77,8 @@ public class StudentsAdapter extends BaseAdapter<StudentsAdapter.ViewHolder> {
     }
 
     private void tagView(View v, String position, String studentId, String firstName, String lastName, String birthDate){
-        v.setTag(R.id.key_student_id, studentId);
         v.setTag(R.id.key_position, position);
+        v.setTag(R.id.key_student_id, studentId);
         v.setTag(R.id.key_first_name, firstName);
         v.setTag(R.id.key_last_name, lastName);
         v.setTag(R.id.key_birth_date, birthDate);

@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.sylvainautran.nanodegree.capstoneproject.adapters.BaseAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassStudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.adapters.StudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
@@ -54,7 +56,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
     private boolean isActionMode;
     private ActionMode mActionMode;
-    private StudentsAdapter adapter;
+    private BaseAdapter adapter;
     private HashMap<Integer, String[]> selectedStudents;
     private Snackbar snackbar;
 
@@ -140,16 +142,17 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
         }
 
+        Set<Integer> selectedPositions = new HashSet<>();
+        if(isActionMode){
+            selectedPositions = selectedStudents.keySet();
+        }
+
         switch (loader.getId()){
             case STUDENTS_FROM_CLASS:
-                //adapter = new ClassStudentsAdapter(getActivity(), cursor, this, isActionMode, selectedStudents, headers);
+                adapter = new ClassStudentsAdapter(getActivity(), cursor, selectedPositions, this, this, headers);
                 emptyText = R.string.empty_class_student_list;
                 break;
             default:
-                Set<Integer> selectedPositions = new HashSet<>();
-                if(isActionMode){
-                    selectedPositions = selectedStudents.keySet();
-                }
                 adapter = new StudentsAdapter(getActivity(), cursor, selectedPositions, this, this, headers);
         }
 
@@ -273,9 +276,11 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
     public void addSelectedItem(int position, View view){
         final String[] values = new String[13];
         values[AdapterKeys.key_student_id] = (String) view.getTag(R.id.key_student_id);
+        values[AdapterKeys.key_class_student_id] = (String) view.getTag(R.id.key_class_student_id);
         values[AdapterKeys.key_first_name] = (String) view.getTag(R.id.key_first_name);
         values[AdapterKeys.key_last_name] = (String) view.getTag(R.id.key_last_name);
         values[AdapterKeys.key_birth_date] = (String) view.getTag(R.id.key_birth_date);
+        values[AdapterKeys.key_grade] = (String) view.getTag(R.id.key_grade);
         selectedStudents.put(position, values);
         adapter.addItem(position);
         if(selectedStudents.size() == 0 || selectedStudents.size() == 1 || selectedStudents.size() == 2){
@@ -364,7 +369,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
                         ContentValues cv = new ContentValues();
                         for(Iterator<Integer> iterator = selectedStudents.keySet().iterator(); iterator.hasNext(); ){
                             String[] values = selectedStudents.get(iterator.next());
-                            cv.put(AppelContract.StudentEntry.COLUMN_DELETED, AppelContract.PUBLIC);
+                            cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_DELETED, AppelContract.PUBLIC);
                             getActivity().getContentResolver().update(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv, AppelContract.ClassStudentLinkEntry._ID + " = " + values[AdapterKeys.key_class_student_id], null);
                             cv.clear();
                         }

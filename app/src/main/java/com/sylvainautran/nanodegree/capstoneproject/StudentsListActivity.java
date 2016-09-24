@@ -77,7 +77,7 @@ public class StudentsListActivity extends AppCompatActivity {
             StudentsNewDialog newFragment = StudentsNewDialog.newInstance(R.string.add_student);
 
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             transaction.add(R.id.drawer_layout, newFragment, "dialog").addToBackStack(null).commit();
         }
         return super.onOptionsItemSelected(item);

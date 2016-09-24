@@ -5,14 +5,18 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassPickerDialog;
 
 import java.util.Calendar;
 
@@ -56,6 +60,22 @@ public class CallsListActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(mDrawerToggle);
         navigationView.setNavigationItemSelectedListener(new DrawerNavigationItemListener(this));
         navigationView.setCheckedItem(R.id.navigation_calls);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.calls_list, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.publish_call){
+            FragmentManager fragmentManager = getFragmentManager();
+            ClassPickerDialog classPickerDialog = new ClassPickerDialog();
+            classPickerDialog.show(fragmentManager, "dialog");
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

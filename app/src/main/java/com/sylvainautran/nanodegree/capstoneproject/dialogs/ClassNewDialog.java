@@ -99,6 +99,7 @@ public class ClassNewDialog extends DialogFragment {
                 ContentValues cv = new ContentValues();
                 cv.put(AppelContract.ClassEntry.COLUMN_NAME, name.getText().toString());
                 getActivity().getApplicationContext().getContentResolver().update(AppelContract.ClassEntry.CONTENT_URI, cv, AppelContract.ClassEntry._ID + " = ?", new String[] { getArguments().getString(CLASS_ID) });
+                dismiss();
             }
         }else{
             if(name.getText().length() < 1){
@@ -107,8 +108,8 @@ public class ClassNewDialog extends DialogFragment {
                 ContentValues cv = new ContentValues();
                 cv.put(AppelContract.ClassEntry.COLUMN_NAME, name.getText().toString());
                 getActivity().getApplicationContext().getContentResolver().insert(AppelContract.ClassEntry.CONTENT_URI, cv);
+                dismiss();
             }
         }
-        dismiss();
     }
 }
