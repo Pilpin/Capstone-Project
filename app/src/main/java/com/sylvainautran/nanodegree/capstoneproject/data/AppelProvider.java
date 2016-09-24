@@ -133,9 +133,7 @@ public class AppelProvider extends ContentProvider {
 
                 String nestedQuery = nestedBuilder.buildQuery(nestedProjection, null, null, null, null, null);
 
-                builder.setTables(AppelContract.StudentEntry.TABLE_NAME +
-                        " LEFT JOIN " + AppelContract.ClassStudentLinkEntry.TABLE_NAME + " ON " + AppelContract.StudentEntry.TABLE_NAME + "." + AppelContract.StudentEntry._ID + " = " +
-                        AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID);
+                builder.setTables(AppelContract.StudentEntry.TABLE_NAME);
                 builder.appendWhere(AppelContract.StudentEntry.COLUMN_DELETED + " = " + AppelContract.PUBLIC);
                 builder.appendWhere(" AND " + AppelContract.StudentEntry.TABLE_NAME + "." + AppelContract.StudentEntry._ID + " NOT IN (" + nestedQuery + ")");
                 break;
