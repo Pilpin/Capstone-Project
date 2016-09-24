@@ -3,17 +3,13 @@ package com.sylvainautran.nanodegree.capstoneproject;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -84,7 +80,7 @@ public class ClassStudentsListActivity extends AppCompatActivity {
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.add_student:
-                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentManager fragmentManager = getFragmentManager();
                 ClassStudentsNewDialog newFragment = ClassStudentsNewDialog.newInstance(R.string.add_student_to_class, classId);
 
                 FragmentTransaction transaction = fragmentManager.beginTransaction();

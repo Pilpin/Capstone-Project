@@ -40,6 +40,9 @@
         <item name="record_leaving_time">I need to take note of students\' leaving time</item>
     </string-array>
 
+    <string name="publish_call">Export to Google Drive</string>
+    <string name="select_class">Select a class</string>
+
     // STUDENT-CLASS SUBSCRIPTION
     <string name="add_student_to_class">Add student to class</string>
     <string name="remove_student_from_class">Remove student from class</string>

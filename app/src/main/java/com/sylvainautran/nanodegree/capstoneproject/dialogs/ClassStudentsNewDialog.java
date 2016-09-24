@@ -3,6 +3,7 @@ package com.sylvainautran.nanodegree.capstoneproject.dialogs;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -12,55 +13,46 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.sylvainautran.nanodegree.capstoneproject.DividerItemDecoration;
 import com.sylvainautran.nanodegree.capstoneproject.R;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.AdapterActionModeListener;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.FragmentActionModeListener;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.StudentsPickerAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.adapters.BaseAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.adapters.StudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
 import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
 
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ClassStudentsNewDialog extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentActionModeListener {
+public class ClassStudentsNewDialog extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private final String LOG_TAG = this.getClass().getSimpleName();
+    private final String SAVE_SELECTED_ITEMS = "selected_items";
     public static final String TITLE_RES_ID = "title_res_id";
     public static final String CLASS_ID = "class_id";
+    public static final String CLASS_STUDENT_ID = "class_student_id";
+    public static final String GRADE = "grade";
+
 
     @BindView(R.id.grade)
     TextInputEditText grade;
@@ -83,7 +75,7 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     @BindView(R.id.save)
     TextView save;
 
-    private RecyclerView.Adapter adapter;
+    private BaseAdapter adapter;
     private HashMap<Integer, String[]> selectedStudents;
 
     public ClassStudentsNewDialog(){
@@ -98,51 +90,96 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
         return fragment;
     }
 
+
+    public static ClassStudentsNewDialog newInstance(int titleResId, long class_student_id, String grade) {
+        ClassStudentsNewDialog fragment = new ClassStudentsNewDialog();
+        Bundle bundle = new Bundle();
+        bundle.putInt(TITLE_RES_ID, titleResId);
+        bundle.putLong(CLASS_STUDENT_ID, class_student_id);
+        bundle.putString(GRADE, grade);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(SAVE_SELECTED_ITEMS, selectedStudents);
+        super.onSaveInstanceState(outState);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog;
-        dialog = super.onCreateDialog(savedInstanceState);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        if(getArguments() != null && getArguments().containsKey(CLASS_STUDENT_ID)){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View view = inflater.inflate(R.layout.dialog_class_student_new, null, false);
+            ButterKnife.bind(this, view);
+            save.setVisibility(View.GONE);
+            close.setVisibility(View.GONE);
+            list_container.setVisibility(View.GONE);
+            title.setText(getArguments().getInt(TITLE_RES_ID));
+            grade.append(getArguments().getString(GRADE));
+
+            builder.setView(view)
+                    .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {}
+                    })
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            ClassStudentsNewDialog.this.dismiss();
+                        }
+                    });
+            dialog = builder.create();
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        }else{
+            dialog = super.onCreateDialog(savedInstanceState);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        }
         return dialog;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(getArguments() != null){
+            if(getArguments().containsKey(CLASS_STUDENT_ID)){
+                final AlertDialog dialog = (AlertDialog) getDialog();
+
+                if (dialog != null) {
+                    Button positiveButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
+                    positiveButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            save();
+                        }
+                    });
+                }
+            }
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_class_student_new, container, false);
+        View view = null;
 
-        if(getArguments() != null){
+        if(getArguments() != null && !getArguments().containsKey(CLASS_STUDENT_ID)){
+            view = inflater.inflate(R.layout.dialog_class_student_new, container, false);
+            selectedStudents = new HashMap<>();
+            if(savedInstanceState != null){
+                selectedStudents = (HashMap<Integer, String[]>) savedInstanceState.getSerializable(SAVE_SELECTED_ITEMS);
+            }
+
             ButterKnife.bind(this, view);
-            title.setText(getString(R.string.add_student_to_class));
-            getActivity().getLoaderManager().restartLoader(0, null, this);
+            title.setText(getArguments().getInt(TITLE_RES_ID, R.string.add_student_to_class));
+            list_container.setVisibility(View.VISIBLE);
+            getLoaderManager().restartLoader(0, null, this);
         }
 
         return view;
-    }
-
-    @OnClick({R.id.close, R.id.save})
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.close:
-                dismiss();
-                break;
-            case R.id.save:
-                save();
-                break;
-        }
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        Log.d(LOG_TAG, "dismiss");
-        super.onDismiss(dialog);
-    }
-
-    @Override
-    public void onDestroyView() {
-        Log.d(LOG_TAG, "destroy");
-        super.onDestroyView();
     }
 
     @Override
@@ -155,8 +192,9 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.d(LOG_TAG, "finished");
         HashMap<Long, Character> headers = null;
-        if(cursor != null && cursor.moveToFirst()){
+        if(cursor != null){
             headers = new HashMap<>();
+            cursor.moveToFirst();
             char first_letter = cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0);
             headers.put(cursor.getLong(StudentsLoader.Query._ID), first_letter);
             while(cursor.moveToNext()){
@@ -169,7 +207,11 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
 
         }
 
-        adapter = new StudentsPickerAdapter(getActivity(), cursor, this, selectedStudents, headers);
+        Set<Integer> selectedPositions = new HashSet<>();
+        if(!selectedStudents.isEmpty()){
+            selectedPositions = selectedStudents.keySet();
+        }
+        adapter = new StudentsAdapter(getActivity(), cursor, selectedPositions, this, null, headers);
 
         if(adapter.getItemCount() > 0){
             emptyView.setVisibility(View.GONE);
@@ -178,7 +220,7 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
         }
 
         adapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.swapAdapter(adapter, false);
     }
 
     @Override
@@ -187,20 +229,62 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
         mRecyclerView.setAdapter(null);
     }
 
+    @Override
+    @OnClick({R.id.close, R.id.save})
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.close:
+                dismiss();
+                break;
+            case R.id.save:
+                save();
+                break;
+            default:
+                int position = Integer.parseInt((String) view.getTag(R.id.key_position));
+                if(!removeSelectedItem(position)){
+                    addSelectedItem(position, view);
+                }
+        }
+    }
+
+    public void addSelectedItem(int position, View view){
+        final String[] values = new String[13];
+        values[AdapterKeys.key_student_id] = (String) view.getTag(R.id.key_student_id);
+        selectedStudents.put(position, values);
+        adapter.addItem(position);
+    }
+
+    public boolean removeSelectedItem(int position){
+        if(selectedStudents.remove(position) != null){
+            adapter.removeItem(position);
+            return true;
+        }
+        return false;
+    }
+
     public void save(){
         if(getArguments() != null) {
-            AdapterActionModeListener adapter = (AdapterActionModeListener) mRecyclerView.getAdapter();
-            if (adapter != null) {
+            if (getArguments().containsKey(CLASS_STUDENT_ID)) {
+                if(grade.getText().length() < 1){
+                    grade_container.setError(getString(R.string.grade_missing));
+                }else {
+                    ContentValues cv = new ContentValues();
+                    cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, grade.getText().toString());
+                    getActivity().getContentResolver().update(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv, AppelContract.ClassStudentLinkEntry._ID + " = ?",
+                            new String[]{Long.toString(getArguments().getLong(CLASS_STUDENT_ID))});
+                    dismiss();
+                }
+            } else if (getArguments().containsKey(CLASS_ID)) {
                 if(selectedStudents.size() > 0 && grade.getText().length() > 0) {
-                    Iterator it = selectedStudents.keySet().iterator();
                     ContentValues[] cvs = new ContentValues[selectedStudents.size()];
-                    int i = 0;
-                    while (it.hasNext()) {
+                    Iterator<Integer> iterator = selectedStudents.keySet().iterator();
+                    for(int i = 0; iterator.hasNext(); i++){
+                        String[] values = selectedStudents.get(iterator.next());
                         ContentValues cv = new ContentValues();
                         cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID, getArguments().getLong(CLASS_ID));
-                        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, Long.parseLong( selectedStudents.get(it.next())[AdapterKeys.key_student_id] ));
+                        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, values[AdapterKeys.key_student_id]);
                         cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, grade.getText().toString());
-                        cvs[i++] = cv;
+                        cvs[i] = cv;
                     }
                     getActivity().getContentResolver().bulkInsert(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cvs);
                     dismiss();
@@ -222,35 +306,5 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
                 }
             }
         }
-    }
-
-    @Override
-    public void addSelectedItem(int position, String[] values) {
-        selectedStudents.put(position, values);
-    }
-
-    @Override
-    public void removeSelectedItem(int position) {
-        selectedStudents.remove(position);
-    }
-
-    @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        return false;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        return false;
-    }
-
-    @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        return false;
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode mode) {
-
     }
 }

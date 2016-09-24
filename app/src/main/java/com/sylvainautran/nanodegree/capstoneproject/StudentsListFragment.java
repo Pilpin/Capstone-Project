@@ -8,12 +8,11 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +26,7 @@ import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassStudentsAdapte
 import com.sylvainautran.nanodegree.capstoneproject.adapters.StudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
-import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsEditDialog;
+import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsNewDialog;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.StudentsNewDialog;
 import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
 
@@ -303,7 +302,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
         int position = selectedStudents.keySet().iterator().next();
         String[] values = selectedStudents.get(position);
         long id = Long.parseLong(values[AdapterKeys.key_student_id]);
-        FragmentManager fragmentManager = ((AppCompatActivity) getActivity()).getSupportFragmentManager();
+        FragmentManager fragmentManager = getActivity().getFragmentManager();
         StudentsNewDialog newFragment = StudentsNewDialog.newInstance(
                 R.string.edit_student,
                 id,
@@ -351,9 +350,9 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
         int position = selectedStudents.keySet().iterator().next();
         String[] values = selectedStudents.get(position);
         long id = Long.parseLong(values[AdapterKeys.key_class_student_id]);
-        FragmentManager fm = ((AppCompatActivity) getActivity()).getSupportFragmentManager();
-        ClassStudentsEditDialog classStudentsEditDialog = ClassStudentsEditDialog.newInstance(R.string.edit_grade, id, values[AdapterKeys.key_grade]);
-        classStudentsEditDialog.show(fm, "dialog");
+        FragmentManager fm = getActivity().getFragmentManager();
+        ClassStudentsNewDialog classStudentsNewDialog = ClassStudentsNewDialog.newInstance(R.string.edit_grade, id, values[AdapterKeys.key_grade]);
+        classStudentsNewDialog.show(fm, "dialog");
     }
 
     public void deleteStudentFromClass(){
