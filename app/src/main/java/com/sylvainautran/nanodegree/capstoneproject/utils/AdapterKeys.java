@@ -2,6 +2,8 @@ package com.sylvainautran.nanodegree.capstoneproject.utils;
 
 
 public class AdapterKeys {
+    public static final int KEYS_COUNT = 15;
+
     public static final int key_call_id = 0;
     public static final int key_class_id = 1;
     public static final int key_student_id = 2;
@@ -20,4 +22,7 @@ public class AdapterKeys {
     public static final int key_birth_date = 11;
 
     public static final int key_grade = 12;
+
+    public static final int key_call_date_start = 13;
+    public static final int key_call_date_end = 14;
 }

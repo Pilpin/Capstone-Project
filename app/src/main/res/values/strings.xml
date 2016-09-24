@@ -11,6 +11,7 @@
     <string name="delete_class">Delete class</string>
     <string name="edit_class">Edit class</string>
     <string name="empty_class_list">No class has been created yet\nAdd one by clicking on the plus sign up there !</string>
+    <string name="empty_class_picker_list">No class has been created yet</string>
 
     <string name="class_name">Class name</string>
     <string name="class_name_missing">Class name missing</string>
@@ -34,6 +35,7 @@
     <string name="delete_call">Delete call</string>
     <string name="edit_call">Edit call</string>
     <string name="empty_call_list">No call has been done yet</string>
+    <string name="empty_call_month_picker_list">No call has been done for this class yet</string>
 
     <string-array name="call_select_option">
         <item name="no_leaving_time">I only need to take the register</item>
@@ -42,6 +44,7 @@
 
     <string name="publish_call">Export to Google Drive</string>
     <string name="select_class">Select a class</string>
+    <string name="select_month">Select a month to export</string>
 
     // STUDENT-CLASS SUBSCRIPTION
     <string name="add_student_to_class">Add student to class</string>

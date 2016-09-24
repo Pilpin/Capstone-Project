@@ -15,12 +15,12 @@ public class CallsLoader extends CursorLoader {
         return new CallsLoader(context, AppelContract.CallEntry.buildCallUri(id), Query.PROJECTION, AppelContract.CallEntry.DEFAULT_SORT);
     }
 
-    public static CallsLoader getAllCallsFromClass(Context context, Uri uri){
-        return new CallsLoader(context, uri, Query.PROJECTION_DETAILS, AppelContract.StudentEntry.DEFAULT_SORT);
+    public static CallsLoader getAllCallDetails(Context context, long callId, long classId){
+        return new CallsLoader(context, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(classId, callId), Query.PROJECTION_DETAILS, AppelContract.StudentEntry.DEFAULT_SORT);
     }
 
-    public static CallsLoader getAllCallsFromClass(Context context, long callId, long classId){
-        return new CallsLoader(context, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(classId, callId), Query.PROJECTION_DETAILS, AppelContract.StudentEntry.DEFAULT_SORT);
+    public static CallsLoader getAllCallMonthsFromClass(Context context, long classId){
+        return new CallsLoader(context, AppelContract.CallEntry.buildExportMonths(classId), Query.PROJECTION_EXPORT_MONTHS, AppelContract.CallEntry.DEFAULT_SORT);
     }
 
     private CallsLoader(Context context, Uri uri, String[] projection, String sort) {
@@ -58,9 +58,15 @@ public class CallsLoader extends CursorLoader {
                 AppelContract.CallEntry.COLUMN_DATETIME
         };
 
+        String[] PROJECTION_EXPORT_MONTHS = {
+                AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID,
+                "strftime('%m', " + AppelContract.CallEntry.COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') - 1 AS " + AppelContract.CallEntry.AS_COLUMN_MONTH,
+                "strftime('%Y', " + AppelContract.CallEntry.COLUMN_DATETIME + "/1000, 'unixepoch', 'localtime') AS " + AppelContract.CallEntry.AS_COLUMN_YEAR
+        };
+
         int _ID = 0;
-        int COLUMN_LEAVING_TIME_OPTION = 1;
-        int COLUMN_CLASS_ID = 2;
+        int COLUMN_LEAVING_TIME_OPTION = 1, MONTH = 1;
+        int COLUMN_CLASS_ID = 2, YEAR = 2;
         int COLUMN_FIRSTNAME = 2;
         int COLUMN_DATETIME = 3;
         int COLUMN_LASTNAME = 3;

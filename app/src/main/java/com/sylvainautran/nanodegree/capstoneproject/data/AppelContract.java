@@ -7,9 +7,9 @@ import android.provider.BaseColumns;
 
 public class AppelContract {
 
-    public static final String CONTENT_AUTHORITY = "com.sylvainautran.nanodegree.capstoneproject";
+    static final String CONTENT_AUTHORITY = "com.sylvainautran.nanodegree.capstoneproject";
 
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static final String PATH_STUDENT = "student";
     public static final String PATH_CLASS = "class";
@@ -17,8 +17,17 @@ public class AppelContract {
     public static final String PATH_CALL = "call";
     public static final String PATH_STUDENT_CALL = "student_call";
     public static final String PATH_STUDENT_CLASS = "student_class";
+    public static final String PATH_EXPORT = "export";
+    public static final String PATH_MONTHS = "month";
+
     public static final String PATH_STUDENT_CLASS_FROM_CLASS = PATH_STUDENT_CLASS + "/" + PATH_CLASS;
     public static final String PATH_STUDENT_CLASS_NOT_FROM_CLASS = PATH_STUDENT_CLASS + "/" + PATH_NOT_CLASS;
+
+    public static final String PATH_EXPORT_MONTHS = PATH_EXPORT + "/" + PATH_MONTHS;
+    public static final String PATH_EXPORT_CALLS = PATH_EXPORT + "/" + PATH_CALL;
+    public static final String PATH_EXPORT_STUDENTS = PATH_EXPORT + "/" + PATH_STUDENT;
+    public static final String PATH_EXPORT_CALLS_STUDENTS = PATH_EXPORT + "/" + PATH_STUDENT_CALL;
+
 
     public static final int DELETED = 1;
     public static final int PUBLIC = 0;
@@ -81,11 +90,42 @@ public class AppelContract {
         public static final String COLUMN_LEAVING_TIME_OPTION = "leaving_time_option";
         public static final String COLUMN_DELETED = "call_deleted";
 
+        public static final String AS_COLUMN_YEAR = "call_year";
+        public static final String AS_COLUMN_MONTH = "call_month";
+
         public static final String DEFAULT_SORT = COLUMN_DATETIME + " DESC";
         public static final String MULTIPLE_SORT = COLUMN_DATETIME + " DESC, " + ClassEntry.COLUMN_NAME + " ASC";
 
         public static Uri buildCallUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildExportMonths(long classId) {
+            Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
+            builder.appendPath(PATH_EXPORT);
+            builder.appendPath(PATH_MONTHS);
+            return ContentUris.withAppendedId(builder.build(), classId);
+        }
+
+        public static Uri buildExportCalls() {
+            Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
+            builder.appendPath(PATH_EXPORT);
+            builder.appendPath(PATH_CALL);
+            return builder.build();
+        }
+
+        public static Uri buildExportStudents() {
+            Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
+            builder.appendPath(PATH_EXPORT);
+            builder.appendPath(PATH_STUDENT);
+            return builder.build();
+        }
+
+        public static Uri buildExportCallsStudents() {
+            Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
+            builder.appendPath(PATH_EXPORT);
+            builder.appendPath(PATH_STUDENT_CALL);
+            return builder.build();
         }
     }
 

@@ -21,7 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassesAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.data.adapters.ClassesAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassNewDialog;
@@ -125,7 +125,7 @@ public class ClassesListFragment extends Fragment implements LoaderManager.Loade
         }
 
         adapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.swapAdapter(adapter, false);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class ClassesListFragment extends Fragment implements LoaderManager.Loade
 
 
     public void addSelectedItem(int position, View view){
-        final String[] values = new String[13];
+        String[] values = new String[AdapterKeys.KEYS_COUNT];
         values[AdapterKeys.key_class_id] = (String) view.getTag(R.id.key_class_id);
         values[AdapterKeys.key_class_name] = (String) view.getTag(R.id.key_class_name);
         selectedClasses.put(position, values);

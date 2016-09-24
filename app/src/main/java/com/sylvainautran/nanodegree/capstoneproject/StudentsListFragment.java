@@ -21,9 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sylvainautran.nanodegree.capstoneproject.adapters.BaseAdapter;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.ClassStudentsAdapter;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.StudentsAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.data.adapters.BaseAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.data.adapters.ClassStudentsAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.data.adapters.StudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsNewDialog;
@@ -273,7 +273,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
 
     public void addSelectedItem(int position, View view){
-        final String[] values = new String[13];
+        String[] values = new String[AdapterKeys.KEYS_COUNT];
         values[AdapterKeys.key_student_id] = (String) view.getTag(R.id.key_student_id);
         values[AdapterKeys.key_class_student_id] = (String) view.getTag(R.id.key_class_student_id);
         values[AdapterKeys.key_first_name] = (String) view.getTag(R.id.key_first_name);

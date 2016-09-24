@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sylvainautran.nanodegree.capstoneproject.adapters.CallStudentsAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.data.adapters.CallStudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.CallsLoader;
 
 import butterknife.BindView;
@@ -60,7 +60,7 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public CursorLoader onCreateLoader(int id, Bundle args) {
-        return CallsLoader.getAllCallsFromClass(getActivity(), getArguments().getLong(CALL_ID), getArguments().getLong(CLASS_ID));
+        return CallsLoader.getAllCallDetails(getActivity(), getArguments().getLong(CALL_ID), getArguments().getLong(CLASS_ID));
     }
 
     @Override

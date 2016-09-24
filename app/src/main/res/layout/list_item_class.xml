@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item_height"
-    android:background="@drawable/students_picker_selector">
+    android:background="@drawable/selectable_item_background">
 
     <TextView
         android:layout_width="wrap_content"

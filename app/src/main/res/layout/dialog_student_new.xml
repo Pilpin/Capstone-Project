@@ -20,7 +20,7 @@
                 android:id="@+id/close"
                 android:layout_width="@dimen/icon_size_toolbar_left_width"
                 android:layout_height="@dimen/icon_size"
-                android:src="@drawable/ic_clear_white"
+                android:src="@drawable/ic_clear"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"

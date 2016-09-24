@@ -30,8 +30,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sylvainautran.nanodegree.capstoneproject.R;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.BaseAdapter;
-import com.sylvainautran.nanodegree.capstoneproject.adapters.StudentsAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.data.adapters.BaseAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.data.adapters.StudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
 import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
@@ -248,7 +248,7 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     }
 
     public void addSelectedItem(int position, View view){
-        final String[] values = new String[13];
+        String[] values = new String[AdapterKeys.KEYS_COUNT];
         values[AdapterKeys.key_student_id] = (String) view.getTag(R.id.key_student_id);
         selectedStudents.put(position, values);
         adapter.addItem(position);

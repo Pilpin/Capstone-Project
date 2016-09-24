@@ -11,7 +11,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,10 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sylvainautran.nanodegree.capstoneproject.adapters.CallsAdapter;
+import com.sylvainautran.nanodegree.capstoneproject.data.adapters.CallsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.CallsLoader;
-import com.sylvainautran.nanodegree.capstoneproject.data.loaders.ClassesLoader;
 import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
 
 import java.util.Calendar;
@@ -103,12 +101,12 @@ public class CallsListFragment extends Fragment implements LoaderManager.LoaderC
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(cursor.getLong(CallsLoader.Query.COLUMN_DATETIME));
             String month = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + "\n" + cal.get(Calendar.YEAR);
-            headers.put(cursor.getLong(ClassesLoader.Query._ID), month);
+            headers.put(cursor.getLong(CallsLoader.Query._ID), month);
             while(cursor.moveToNext()){
                 String new_month = cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + "\n" + cal.get(Calendar.YEAR);
                 if(!new_month.equals(month)){
                     month = new_month;
-                    headers.put(cursor.getLong(ClassesLoader.Query._ID), month);
+                    headers.put(cursor.getLong(CallsLoader.Query._ID), month);
                 }
             }
 
@@ -128,7 +126,7 @@ public class CallsListFragment extends Fragment implements LoaderManager.LoaderC
         }
 
         adapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.swapAdapter(adapter, false);
     }
 
     @Override
@@ -246,7 +244,7 @@ public class CallsListFragment extends Fragment implements LoaderManager.LoaderC
 
 
     public void addSelectedItem(int position, View view){
-        final String[] values = new String[13];
+        String[] values = new String[AdapterKeys.KEYS_COUNT];
         values[AdapterKeys.key_call_id] = (String) view.getTag(R.id.key_call_id);
         values[AdapterKeys.key_class_id] = (String) view.getTag(R.id.key_class_id);
         values[AdapterKeys.key_call_datetime] = (String) view.getTag(R.id.key_call_datetime);
