@@ -1,12 +1,19 @@
 <resources xmlns:xliff="http://schemas.android.com/tools">
+
+    <string name="oneclass">Class</string>
     <string name="classes">Classes</string>
+    <string name="student">Student</string>
     <string name="students">Students</string>
+    <string name="call">Call</string>
     <string name="calls">Calls</string>
     <string name="save">save</string>
     <string name="openDrawer">Open Navigation Drawer</string>
     <string name="closeDrawer">Close Navigation Drawer</string>
+    <string name="close_edit">Go back to previous screen without saving</string>
+    <string name="undo">Undo</string>
+    <string name="deleted_selection">Deleted selection.</string>
 
-    // CLASSES
+    <!-- CLASSES -->
     <string name="add_class">Add class</string>
     <string name="delete_class">Delete class</string>
     <string name="edit_class">Edit class</string>
@@ -16,37 +23,44 @@
     <string name="class_name">Class name</string>
     <string name="class_name_missing">Class name missing</string>
 
-    // STUDENTS
+    <!-- STUDENTS -->
     <string name="add_student">New student</string>
     <string name="delete_student">Delete student</string>
     <string name="edit_student">Edit student</string>
     <string name="empty_student_list">No student has been created yet\nAdd one by clicking on the plus sign up there !</string>
-    <string name="age_to_string"><xliff:g id="age">%d</xliff:g> years old <xliff:g id="grade" example="1st grade">%s</xliff:g></string>
-    <string name="age_to_string_singular"><xliff:g id="age">%d</xliff:g> year old <xliff:g id="grade" example="1st grade">%s</xliff:g></string>
+    <string name="age_to_string_grade"><xliff:g id="age">%d</xliff:g> years old - <xliff:g id="grade" example="1st grade">%s</xliff:g></string>
+    <string name="age_to_string_singular_grade"><xliff:g id="age">%d</xliff:g> year old - <xliff:g id="grade" example="1st grade">%s</xliff:g></string>
+    <string name="age_to_string"><xliff:g id="age">%d</xliff:g> years old</string>
+    <string name="age_to_string_singular"><xliff:g id="age">%d</xliff:g> year old</string>
 
+    <string name="student_names_ic">Student names</string>
+    <string name="student_birth_date_ic">Student birth date</string>
     <string name="student_first_name">First Name</string>
     <string name="student_last_name">Last Name</string>
     <string name="student_birth_date">Born on <xliff:g id="birthdate">%s</xliff:g></string>
     <string name="first_name_missing">First name missing</string>
     <string name="last_name_missing">Last name missing</string>
 
-    // CALLS
+    <!-- CALLS -->
     <string name="start_call">Start call</string>
     <string name="delete_call">Delete call</string>
-    <string name="edit_call">Edit call</string>
+    <string name="edit_call">Edit call for <xliff:g id="student_name">%s</xliff:g></string>
     <string name="empty_call_list">No call has been done yet</string>
     <string name="empty_call_month_picker_list">No call has been done for this class yet</string>
 
     <string-array name="call_select_option">
         <item name="no_leaving_time">I only need to take the register</item>
-        <item name="record_leaving_time">I need to take note of students\' leaving time</item>
+        <item name="record_leaving_time">I need to take note of students\'s leaving time</item>
     </string-array>
 
+    <string name="stats_total">TOTAL\n<xliff:g id="total">%d</xliff:g></string>
+    <string name="stats_present">PRESENT\n<xliff:g id="total">%d</xliff:g></string>
+    <string name="stats_absent">ABSENT\n<xliff:g id="total">%d</xliff:g></string>
     <string name="publish_call">Export to Google Drive</string>
     <string name="select_class">Select a class</string>
     <string name="select_month">Select a month to export</string>
 
-    // STUDENT-CLASS SUBSCRIPTION
+    <!-- STUDENT-CLASS SUBSCRIPTION -->
     <string name="add_student_to_class">Add student to class</string>
     <string name="remove_student_from_class">Remove student from class</string>
     <string name="select_students">Select students in the list below</string>
@@ -57,8 +71,9 @@
     <string name="student_missing">You need to select students to add to the class</string>
     <string name="grade_missing">Grade missing</string>
 
-    // CALLS DETAILS
+    <!-- CALLS DETAILS -->
     <string name="empty_call_student_list">No student has been added to the class yet</string>
+    <string name="unknown_class">Unknown class</string>
     <string name="absent">Absent</string>
     <string name="present">Present</string>
     <string name="leaving">Leaving</string>
@@ -67,7 +82,23 @@
     <string name="menu_leaving">Set leaving time</string>
     <string name="leaving_time">Left at <xliff:g id="time">%s</xliff:g></string>
 
-    // SYSTEM
+    <!-- EXPORT -->
+    <string name="drive_export_success">The calls have been exported.</string>
+    <string name="drive_export_fail">The calls could not be exported, try again later.</string>
+
+    <!-- LOG ERRORS -->
+    <string name="google_api_client_fail" translatable="false">GoogleApiClient connection failed: <xliff:g id="error">%s</xliff:g></string>
+    <string name="google_api_resolution_fail" translatable="false">Exception while starting resolution activity</string>
+    <string name="drive_contents_fail" translatable="false">Cannot access DriveFile contents. <xliff:g id="status_message">%s</xliff:g></string>
+    <string name="send_intent_fail" translatable="false">Unable to send intent</string>
+    <string name="io_exception" translatable="false">IOException while appending to the output stream</string>
+    <string name="unknown_uri" translatable="false">Unknown uri: <xliff:g id="uri">%s</xliff:g></string>
+
+    <!-- SYSTEM -->
     <string name="app_name" translatable="false">Capstone Project</string>
     <string name="content_authority" translatable="false">com.sylvainautran.nanodegree.capstoneproject</string>
+    <string name="intent_extra_class_name" translatable="false">com.sylvainautran.nanodegree.capstoneproject.className</string>
+    <string name="intent_extra_call_date" translatable="false">com.sylvainautran.nanodegree.capstoneproject.callDate</string>
+    <string name="intent_extra_call_id" translatable="false">com.sylvainautran.nanodegree.capstoneproject.callId</string>
+    <string name="intent_extra_class_id" translatable="false">com.sylvainautran.nanodegree.capstoneproject.classId</string>
 </resources>

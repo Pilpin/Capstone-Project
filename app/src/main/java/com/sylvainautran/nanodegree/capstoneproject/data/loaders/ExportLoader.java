@@ -46,7 +46,7 @@ public class ExportLoader extends CursorLoader {
     public interface Query {
         String[] CALL_DATES = {
                 AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID,
-                AppelContract.CallEntry.COLUMN_DATETIME
+                AppelContract.CallEntry.COLUMN_DATETIME,
         };
 
         String[] STUDENTS_INFO = {
@@ -58,12 +58,13 @@ public class ExportLoader extends CursorLoader {
 
         String[] CALLS_INFO = {
                 AppelContract.CallStudentLinkEntry.COLUMN_IS_PRESENT,
+                AppelContract.CallEntry.COLUMN_DATETIME,
                 AppelContract.CallStudentLinkEntry.COLUMN_LEAVING_TIME
         };
 
         int CALL_ID = 0, STUDENT_ID = 0, IS_PRESENT = 0;
-        int DATETIME = 1, FIRSTNAME = 1, LEAVING_TIME = 1;
-        int LASTNAME = 2;
+        int DATETIME = 1, FIRSTNAME = 1;
+        int LASTNAME = 2, LEAVING_TIME = 2;
         int GRADE = 3;
     }
 }

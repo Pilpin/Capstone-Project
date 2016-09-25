@@ -59,6 +59,22 @@
             </intent-filter>
         </activity>
 
+        <receiver android:name=".widget.AppelWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appel_widget_info"/>
+        </receiver>
+
+        <service
+            android:name=".widget.AppelWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS">
+        </service>
+
         <provider
             android:authorities="@string/content_authority"
             android:name=".data.AppelProvider"

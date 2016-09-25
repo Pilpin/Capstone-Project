@@ -28,7 +28,6 @@ import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassStudentsNewDialog;
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.StudentsNewDialog;
-import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,6 +42,13 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
     private final String SAVE_SELECTED_ITEMS = "selected_items";
     private final String SAVE_ACTION_MODE_STATE = "action_mode";
 
+    private final String STUDENT_ID = "student_id";
+    private final String CLASS_STUDENT_ID = "class_student_id";
+    private final String BIRTH_DATE = "birthdate";
+    private final String FIRST_NAME = "firstname";
+    private final String LAST_NAME = "lastname";
+    private final String GRADE = "grade";
+
     public final int ALL_STUDENTS = 15;
     public final int STUDENTS_FROM_CLASS = 30;
 
@@ -56,7 +62,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
     private boolean isActionMode;
     private ActionMode mActionMode;
     private BaseAdapter adapter;
-    private HashMap<Integer, String[]> selectedStudents;
+    private HashMap<Integer, Bundle> selectedStudents;
     private Snackbar snackbar;
 
     public StudentsListFragment() {
@@ -80,7 +86,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
         super.onCreate(savedInstanceState);
         if(savedInstanceState != null){
             isActionMode = savedInstanceState.getBoolean(SAVE_ACTION_MODE_STATE, false);
-            selectedStudents = (HashMap<Integer, String[]>) savedInstanceState.getSerializable(SAVE_SELECTED_ITEMS);
+            selectedStudents = (HashMap<Integer, Bundle>) savedInstanceState.getSerializable(SAVE_SELECTED_ITEMS);
         }
     }
 
@@ -96,6 +102,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
         View view = inflater.inflate(R.layout.fragment_generic, container, false);
         ButterKnife.bind(this, view);
 
+        mRecyclerView.setAdapter(new BaseAdapter(getActivity(), null, null, null, null));
         if(isActionMode){
             mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
         }
@@ -129,10 +136,10 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
         if(cursor != null && cursor.moveToFirst()){
             headers = new HashMap<>();
-            char first_letter = cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0);
+            char first_letter = Character.toUpperCase(cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0));
             headers.put(cursor.getLong(StudentsLoader.Query._ID), first_letter);
             while(cursor.moveToNext()){
-                char new_first_letter = cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0);
+                char new_first_letter = Character.toUpperCase(cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0));
                 if(first_letter != new_first_letter){
                     first_letter = new_first_letter;
                     headers.put(cursor.getLong(StudentsLoader.Query._ID), first_letter);
@@ -253,7 +260,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onClick(View view) {
-        int position = Integer.parseInt((String) view.getTag(R.id.key_position));
+        int position = (Integer) view.getTag(R.id.key_position);
         if (mActionMode != null) {
             if(!removeSelectedItem(position)){
                 addSelectedItem(position, view);
@@ -263,7 +270,7 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public boolean onLongClick(View view) {
-        int position = Integer.parseInt((String) view.getTag(R.id.key_position));
+        int position = (Integer) view.getTag(R.id.key_position);
         if (mActionMode == null) {
             mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(this);
             addSelectedItem(position, view);
@@ -273,26 +280,26 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
 
     public void addSelectedItem(int position, View view){
-        String[] values = new String[AdapterKeys.KEYS_COUNT];
-        values[AdapterKeys.key_student_id] = (String) view.getTag(R.id.key_student_id);
-        values[AdapterKeys.key_class_student_id] = (String) view.getTag(R.id.key_class_student_id);
-        values[AdapterKeys.key_first_name] = (String) view.getTag(R.id.key_first_name);
-        values[AdapterKeys.key_last_name] = (String) view.getTag(R.id.key_last_name);
-        values[AdapterKeys.key_birth_date] = (String) view.getTag(R.id.key_birth_date);
-        values[AdapterKeys.key_grade] = (String) view.getTag(R.id.key_grade);
+        Bundle values = new Bundle();
+        if(view.getTag(R.id.key_student_id) != null) {
+            values.putLong(STUDENT_ID, (Long) view.getTag(R.id.key_student_id));
+            values.putLong(BIRTH_DATE, (Long) view.getTag(R.id.key_birth_date));
+            values.putString(FIRST_NAME, (String) view.getTag(R.id.key_first_name));
+            values.putString(LAST_NAME, (String) view.getTag(R.id.key_last_name));
+        }
+        if(view.getTag(R.id.key_class_student_id) != null) {
+            values.putLong(CLASS_STUDENT_ID, (Long) view.getTag(R.id.key_class_student_id));
+            values.putString(GRADE, (String) view.getTag(R.id.key_grade));
+        }
         selectedStudents.put(position, values);
         adapter.addItem(position);
-        if(selectedStudents.size() == 0 || selectedStudents.size() == 1 || selectedStudents.size() == 2){
-            mActionMode.invalidate();
-        }
+        editActionModeTitle();
     }
 
     public boolean removeSelectedItem(int position){
         if(selectedStudents.remove(position) != null){
             adapter.removeItem(position);
-            if(selectedStudents.size() == 0 || selectedStudents.size() == 1 || selectedStudents.size() == 2){
-                mActionMode.invalidate();
-            }
+            editActionModeTitle();
             return true;
         }
         return false;
@@ -300,35 +307,36 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
     public void editStudent(){
         int position = selectedStudents.keySet().iterator().next();
-        String[] values = selectedStudents.get(position);
-        long id = Long.parseLong(values[AdapterKeys.key_student_id]);
+        Bundle values = selectedStudents.get(position);
         FragmentManager fragmentManager = getActivity().getFragmentManager();
         StudentsNewDialog newFragment = StudentsNewDialog.newInstance(
                 R.string.edit_student,
-                id,
-                values[AdapterKeys.key_first_name],
-                values[AdapterKeys.key_last_name],
-                Long.parseLong(values[AdapterKeys.key_birth_date]));
+                values.getLong(STUDENT_ID),
+                values.getString(FIRST_NAME),
+                values.getString(LAST_NAME),
+                values.getLong(BIRTH_DATE));
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(R.id.drawer_layout, newFragment, "dialog").addToBackStack(null).commit();
     }
 
     public void deleteStudents(){
+        Bundle values;
         for(Iterator<Integer> iterator = selectedStudents.keySet().iterator(); iterator.hasNext(); ){
-            String[] values = selectedStudents.get(iterator.next());
-            getActivity().getContentResolver().delete(AppelContract.StudentEntry.CONTENT_URI, AppelContract.StudentEntry._ID + " = " + values[AdapterKeys.key_student_id], null);
+            values = selectedStudents.get(iterator.next());
+            getActivity().getContentResolver().delete(AppelContract.StudentEntry.CONTENT_URI, AppelContract.StudentEntry._ID + " = " + values.getLong(STUDENT_ID), null);
         }
-        snackbar = Snackbar.make(mRecyclerView, "Deleted Saved Selection.", Snackbar.LENGTH_LONG).
-                setAction("Undo", new View.OnClickListener() {
+        snackbar = Snackbar.make(mRecyclerView, getString(R.string.deleted_selection), Snackbar.LENGTH_LONG).
+                setAction(getString(R.string.undo), new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
                         ContentValues cv = new ContentValues();
+                        Bundle values;
                         for(Iterator<Integer> iterator = selectedStudents.keySet().iterator(); iterator.hasNext(); ){
-                            String[] values = selectedStudents.get(iterator.next());
+                            values = selectedStudents.get(iterator.next());
                             cv.put(AppelContract.StudentEntry.COLUMN_DELETED, AppelContract.PUBLIC);
-                            getActivity().getContentResolver().update(AppelContract.StudentEntry.CONTENT_URI, cv, AppelContract.StudentEntry._ID + " = " + values[AdapterKeys.key_student_id], null);
+                            getActivity().getContentResolver().update(AppelContract.StudentEntry.CONTENT_URI, cv, AppelContract.StudentEntry._ID + " = " + values.getLong(STUDENT_ID), null);
                             cv.clear();
                         }
                         selectedStudents.clear();
@@ -348,28 +356,29 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
 
     public void editGrade(){
         int position = selectedStudents.keySet().iterator().next();
-        String[] values = selectedStudents.get(position);
-        long id = Long.parseLong(values[AdapterKeys.key_class_student_id]);
+        Bundle values = selectedStudents.get(position);
         FragmentManager fm = getActivity().getFragmentManager();
-        ClassStudentsNewDialog classStudentsNewDialog = ClassStudentsNewDialog.newInstance(R.string.edit_grade, id, values[AdapterKeys.key_grade]);
+        ClassStudentsNewDialog classStudentsNewDialog = ClassStudentsNewDialog.newInstance(R.string.edit_grade, values.getLong(CLASS_STUDENT_ID), values.getString(GRADE));
         classStudentsNewDialog.show(fm, "dialog");
     }
 
     public void deleteStudentFromClass(){
+        Bundle values;
         for(Iterator<Integer> iterator = selectedStudents.keySet().iterator(); iterator.hasNext(); ){
-            String[] values = selectedStudents.get(iterator.next());
-            getActivity().getContentResolver().delete(AppelContract.ClassStudentLinkEntry.CONTENT_URI, AppelContract.ClassStudentLinkEntry._ID + " = " + values[AdapterKeys.key_class_student_id], null);
+            values = selectedStudents.get(iterator.next());
+            getActivity().getContentResolver().delete(AppelContract.ClassStudentLinkEntry.CONTENT_URI, AppelContract.ClassStudentLinkEntry._ID + " = " + values.getLong(CLASS_STUDENT_ID), null);
         }
-        snackbar = Snackbar.make(mRecyclerView, "Deleted Saved Selection.", Snackbar.LENGTH_LONG).
-                setAction("Undo", new View.OnClickListener() {
+        snackbar = Snackbar.make(mRecyclerView, getString(R.string.deleted_selection), Snackbar.LENGTH_LONG).
+                setAction(getString(R.string.undo), new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
                         ContentValues cv = new ContentValues();
+                        Bundle values;
                         for(Iterator<Integer> iterator = selectedStudents.keySet().iterator(); iterator.hasNext(); ){
-                            String[] values = selectedStudents.get(iterator.next());
+                            values = selectedStudents.get(iterator.next());
                             cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_DELETED, AppelContract.PUBLIC);
-                            getActivity().getContentResolver().update(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv, AppelContract.ClassStudentLinkEntry._ID + " = " + values[AdapterKeys.key_class_student_id], null);
+                            getActivity().getContentResolver().update(AppelContract.ClassStudentLinkEntry.CONTENT_URI, cv, AppelContract.ClassStudentLinkEntry._ID + " = " + values.getLong(CLASS_STUDENT_ID), null);
                             cv.clear();
                         }
                         selectedStudents.clear();
@@ -385,5 +394,17 @@ public class StudentsListFragment extends Fragment implements LoaderManager.Load
             }
         });
         snackbar.show();
+    }
+
+    private void editActionModeTitle(){
+        if(selectedStudents.size() == 0 || selectedStudents.size() == 1){
+            mActionMode.setTitle(selectedStudents.size() + " " + getString(R.string.student));
+            mActionMode.invalidate();
+        }else if(selectedStudents.size() == 2){
+            mActionMode.setTitle(selectedStudents.size() + " " + getString(R.string.students));
+            mActionMode.invalidate();
+        }else{
+            mActionMode.setTitle(selectedStudents.size() + " " + getString(R.string.students));
+        }
     }
 }

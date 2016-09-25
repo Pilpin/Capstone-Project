@@ -19,6 +19,7 @@ public class AppelContract {
     public static final String PATH_STUDENT_CLASS = "student_class";
     public static final String PATH_EXPORT = "export";
     public static final String PATH_MONTHS = "month";
+    public static final String PATH_STATS = "stats";
 
     public static final String PATH_STUDENT_CLASS_FROM_CLASS = PATH_STUDENT_CLASS + "/" + PATH_CLASS;
     public static final String PATH_STUDENT_CLASS_NOT_FROM_CLASS = PATH_STUDENT_CLASS + "/" + PATH_NOT_CLASS;
@@ -47,7 +48,7 @@ public class AppelContract {
         public static final String COLUMN_BIRTHDATE = "birth_date";
         public static final String COLUMN_DELETED = "student_deleted";
 
-        public static final String DEFAULT_SORT = COLUMN_LASTNAME + " ASC, " + COLUMN_FIRSTNAME + " ASC";
+        public static final String DEFAULT_SORT = COLUMN_LASTNAME + " COLLATE NOCASE ASC, " + COLUMN_FIRSTNAME + " COLLATE NOCASE ASC";
 
         public static Uri buildStudentUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -66,7 +67,7 @@ public class AppelContract {
         public static final String COLUMN_NAME = "class_name";
         public static final String COLUMN_DELETED = "class_deleted";
 
-        public static final String DEFAULT_SORT = COLUMN_NAME + " ASC";
+        public static final String DEFAULT_SORT = COLUMN_NAME + " COLLATE NOCASE ASC";
 
         public static Uri buildClassUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -79,6 +80,7 @@ public class AppelContract {
         public static final int DO_NOT_RECORD_LEAVING_TIME = 0;
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_CALL).build();
+        public static final Uri STATS_CONTENT_URI = CONTENT_URI.buildUpon().appendPath(PATH_STATS).build();
 
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_CALL;
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_CALL;
@@ -94,10 +96,18 @@ public class AppelContract {
         public static final String AS_COLUMN_MONTH = "call_month";
 
         public static final String DEFAULT_SORT = COLUMN_DATETIME + " DESC";
-        public static final String MULTIPLE_SORT = COLUMN_DATETIME + " DESC, " + ClassEntry.COLUMN_NAME + " ASC";
+        public static final String MULTIPLE_SORT = COLUMN_DATETIME + " DESC, " + ClassEntry.COLUMN_NAME + " COLLATE NOCASE ASC";
 
         public static Uri buildCallUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildCallStatsForOneUri(long call_id){
+            return ContentUris.withAppendedId(STATS_CONTENT_URI, call_id);
+        }
+
+        public static Uri buildCallStats(long startDate, long endDate){
+            return ContentUris.withAppendedId(ContentUris.withAppendedId(STATS_CONTENT_URI, startDate),endDate);
         }
 
         public static Uri buildExportMonths(long classId) {

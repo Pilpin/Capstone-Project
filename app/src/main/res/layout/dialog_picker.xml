@@ -5,11 +5,7 @@
     android:id="@+id/list_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/screen_edge_margin"
-    android:layout_marginLeft="@dimen/screen_edge_margin"
-    android:layout_marginStart="@dimen/screen_edge_margin"
-    android:layout_marginRight="@dimen/screen_edge_margin"
-    android:layout_marginEnd="@dimen/screen_edge_margin"
+    android:padding="@dimen/screen_edge_margin"
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
@@ -23,6 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:padding="@dimen/screen_edge_margin"
         android:fontFamily="sans-serif-light"/>
 
 </LinearLayout>

@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Loader;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,7 +36,6 @@ import com.sylvainautran.nanodegree.capstoneproject.data.adapters.BaseAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.adapters.StudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
-import com.sylvainautran.nanodegree.capstoneproject.utils.AdapterKeys;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,6 +53,7 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     public static final String CLASS_ID = "class_id";
     public static final String CLASS_STUDENT_ID = "class_student_id";
     public static final String GRADE = "grade";
+    public static final String STUDENT_ID = "student_id";
 
 
     @BindView(R.id.grade)
@@ -76,7 +78,7 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     TextView save;
 
     private BaseAdapter adapter;
-    private HashMap<Integer, String[]> selectedStudents;
+    private HashMap<Integer, Bundle> selectedStudents;
 
     public ClassStudentsNewDialog(){
     }
@@ -112,14 +114,14 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog;
         if(getArguments() != null && getArguments().containsKey(CLASS_STUDENT_ID)){
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog);
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View view = inflater.inflate(R.layout.dialog_class_student_new, null, false);
             ButterKnife.bind(this, view);
             save.setVisibility(View.GONE);
             close.setVisibility(View.GONE);
             list_container.setVisibility(View.GONE);
-            title.setText(getArguments().getInt(TITLE_RES_ID));
+            toolbar.setVisibility(View.GONE);
             grade.append(getArguments().getString(GRADE));
 
             builder.setView(view)
@@ -132,6 +134,7 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
                             ClassStudentsNewDialog.this.dismiss();
                         }
                     });
+            builder.setTitle(getArguments().getInt(TITLE_RES_ID));
             dialog = builder.create();
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }else{
@@ -170,10 +173,11 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
             view = inflater.inflate(R.layout.dialog_class_student_new, container, false);
             selectedStudents = new HashMap<>();
             if(savedInstanceState != null){
-                selectedStudents = (HashMap<Integer, String[]>) savedInstanceState.getSerializable(SAVE_SELECTED_ITEMS);
+                selectedStudents = (HashMap<Integer, Bundle>) savedInstanceState.getSerializable(SAVE_SELECTED_ITEMS);
             }
 
             ButterKnife.bind(this, view);
+            mRecyclerView.setAdapter(new BaseAdapter(getActivity(), null, null, null, null));
             title.setText(getArguments().getInt(TITLE_RES_ID, R.string.add_student_to_class));
             list_container.setVisibility(View.VISIBLE);
             getLoaderManager().restartLoader(0, null, this);
@@ -184,21 +188,18 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
 
     @Override
     public CursorLoader onCreateLoader(int id, Bundle args) {
-        Log.d(LOG_TAG, "created");
         return StudentsLoader.getAllStudentsNotInClass(getActivity(), getArguments().getLong(CLASS_ID));
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Log.d(LOG_TAG, "finished");
         HashMap<Long, Character> headers = null;
-        if(cursor != null){
+        if(cursor != null && cursor.moveToFirst()){
             headers = new HashMap<>();
-            cursor.moveToFirst();
-            char first_letter = cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0);
+            char first_letter = Character.toUpperCase(cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0));
             headers.put(cursor.getLong(StudentsLoader.Query._ID), first_letter);
             while(cursor.moveToNext()){
-                char new_first_letter = cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0);
+                char new_first_letter = Character.toUpperCase(cursor.getString(StudentsLoader.Query.COLUMN_LASTNAME).charAt(0));
                 if(first_letter != new_first_letter){
                     first_letter = new_first_letter;
                     headers.put(cursor.getLong(StudentsLoader.Query._ID), first_letter);
@@ -225,7 +226,6 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d(LOG_TAG, "reset");
         mRecyclerView.setAdapter(null);
     }
 
@@ -234,13 +234,15 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.close:
+                ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), 0);
                 dismiss();
                 break;
             case R.id.save:
+                ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), 0);
                 save();
                 break;
             default:
-                int position = Integer.parseInt((String) view.getTag(R.id.key_position));
+                int position = (Integer) view.getTag(R.id.key_position);
                 if(!removeSelectedItem(position)){
                     addSelectedItem(position, view);
                 }
@@ -248,8 +250,8 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
     }
 
     public void addSelectedItem(int position, View view){
-        String[] values = new String[AdapterKeys.KEYS_COUNT];
-        values[AdapterKeys.key_student_id] = (String) view.getTag(R.id.key_student_id);
+        Bundle values = new Bundle();
+        values.putLong(STUDENT_ID, (Long) view.getTag(R.id.key_student_id));
         selectedStudents.put(position, values);
         adapter.addItem(position);
     }
@@ -278,11 +280,12 @@ public class ClassStudentsNewDialog extends DialogFragment implements LoaderMana
                 if(selectedStudents.size() > 0 && grade.getText().length() > 0) {
                     ContentValues[] cvs = new ContentValues[selectedStudents.size()];
                     Iterator<Integer> iterator = selectedStudents.keySet().iterator();
+                    Bundle values;
                     for(int i = 0; iterator.hasNext(); i++){
-                        String[] values = selectedStudents.get(iterator.next());
+                        values = selectedStudents.get(iterator.next());
                         ContentValues cv = new ContentValues();
                         cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_CLASS_ID, getArguments().getLong(CLASS_ID));
-                        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, values[AdapterKeys.key_student_id]);
+                        cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_STUDENT_ID, values.getLong(STUDENT_ID));
                         cv.put(AppelContract.ClassStudentLinkEntry.COLUMN_GRADE, grade.getText().toString());
                         cvs[i] = cv;
                     }

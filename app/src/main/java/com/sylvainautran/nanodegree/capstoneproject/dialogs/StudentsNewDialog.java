@@ -3,6 +3,8 @@ package com.sylvainautran.nanodegree.capstoneproject.dialogs;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
@@ -31,7 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class StudentsNewDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-    private final String LOG_CAT = this.getClass().getSimpleName();
+    private final String LOG_TAG = this.getClass().getSimpleName();
     public static final String TITLE_RES_ID = "title_res_id";
     public static final String STUDENT_ID = "student_id";
     public static final String FIRST_NAME = "first_name";
@@ -122,9 +125,11 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.close:
+                ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), 0);
                 dismiss();
                 break;
             case R.id.save:
+                ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), 0);
                 if(first_name.getText().length() > 0 && last_name.getText().length() > 0) {
                     ContentValues cv = new ContentValues();
                     cv.put(AppelContract.StudentEntry.COLUMN_FIRSTNAME, first_name.getText().toString());
@@ -149,7 +154,7 @@ public class StudentsNewDialog extends DialogFragment implements DatePickerDialo
 
                 break;
             case R.id.birth_date:
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), StudentsNewDialog.this, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), StudentsNewDialog.this, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
                 break;
         }

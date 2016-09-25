@@ -8,11 +8,7 @@ import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
 public class CallsLoader extends CursorLoader {
     public static CallsLoader getAllCalls(Context context) {
-        return new CallsLoader(context, AppelContract.CallEntry.CONTENT_URI, Query.MULTIPLE_PROJECTION, AppelContract.CallEntry.MULTIPLE_SORT);
-    }
-
-    public static CallsLoader getCallForId(Context context, long id) {
-        return new CallsLoader(context, AppelContract.CallEntry.buildCallUri(id), Query.PROJECTION, AppelContract.CallEntry.DEFAULT_SORT);
+        return new CallsLoader(context, AppelContract.CallEntry.CONTENT_URI, Query.PROJECTION, AppelContract.CallEntry.MULTIPLE_SORT);
     }
 
     public static CallsLoader getAllCallDetails(Context context, long callId, long classId){
@@ -29,13 +25,6 @@ public class CallsLoader extends CursorLoader {
 
     public interface Query {
         String[] PROJECTION = {
-                AppelContract.CallEntry._ID,
-                AppelContract.CallEntry.COLUMN_LEAVING_TIME_OPTION,
-                AppelContract.CallEntry.COLUMN_CLASS_ID,
-                AppelContract.CallEntry.COLUMN_DATETIME
-        };
-
-        String[] MULTIPLE_PROJECTION = {
                 AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID,
                 AppelContract.CallEntry.COLUMN_LEAVING_TIME_OPTION,
                 AppelContract.CallEntry.COLUMN_CLASS_ID,

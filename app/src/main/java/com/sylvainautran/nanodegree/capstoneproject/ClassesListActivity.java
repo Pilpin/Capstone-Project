@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.ClassNewDialog;
+import com.sylvainautran.nanodegree.capstoneproject.utils.DrawerNavigationItemListener;
 import com.sylvainautran.nanodegree.capstoneproject.utils.PopulateDB;
 
 import butterknife.BindView;
@@ -30,13 +31,13 @@ public class ClassesListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_generic_list);
+        setContentView(R.layout.activity_class_list);
         ButterKnife.bind(this);
 
         if(savedInstanceState == null) {
             ClassesListFragment fragment = ClassesListFragment.newInstance();
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, fragment, CLASSES_LIST)
+                    .add(R.id.list_container, fragment, CLASSES_LIST)
                     .commit();
         }
 
@@ -50,7 +51,7 @@ public class ClassesListActivity extends AppCompatActivity {
 
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
         drawerLayout.addDrawerListener(mDrawerToggle);
-        navigationView.setNavigationItemSelectedListener(new DrawerNavigationItemListener(this));
+        navigationView.setNavigationItemSelectedListener(new DrawerNavigationItemListener(this, drawerLayout));
         navigationView.setCheckedItem(R.id.navigation_classes);
     }
 
@@ -83,5 +84,11 @@ public class ClassesListActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

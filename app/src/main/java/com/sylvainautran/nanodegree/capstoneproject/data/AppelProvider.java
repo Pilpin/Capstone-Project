@@ -5,7 +5,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -16,6 +15,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract.ClassEntry;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract.StudentEntry;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract.CallEntry;
@@ -42,10 +42,13 @@ public class AppelProvider extends ContentProvider {
     static final int CALL_STUDENTS = 13;
     static final int CALL_STUDENT_WITH_CLASS = 14;
 
-    static final int EXPORT_MONTH = 15;
-    static final int EXPORT_CALLS = 16;
-    static final int EXPORT_STUDENTS = 17;
-    static final int EXPORT_CALLS_STUDENTS = 18;
+    static final int STATS = 15;
+    static final int STATS_FOR_ONE = 16;
+
+    static final int EXPORT_MONTH = 17;
+    static final int EXPORT_CALLS = 18;
+    static final int EXPORT_STUDENTS = 19;
+    static final int EXPORT_CALLS_STUDENTS = 20;
 
     public static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -65,6 +68,9 @@ public class AppelProvider extends ContentProvider {
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL, CALL_STUDENTS);
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL + "/#", CALL_STUDENT);
         matcher.addURI(authority, AppelContract.PATH_STUDENT_CALL + "/#/#", CALL_STUDENT_WITH_CLASS);
+
+        matcher.addURI(authority, AppelContract.PATH_CALL + "/" + AppelContract.PATH_STATS + "/#", STATS_FOR_ONE);
+        matcher.addURI(authority, AppelContract.PATH_CALL + "/" + AppelContract.PATH_STATS + "/#/#", STATS);
 
         matcher.addURI(authority, AppelContract.PATH_EXPORT_MONTHS + "/#", EXPORT_MONTH);
         matcher.addURI(authority, AppelContract.PATH_EXPORT_CALLS, EXPORT_CALLS);
@@ -163,35 +169,46 @@ public class AppelProvider extends ContentProvider {
                 groupBy = CallEntry.COLUMN_DATETIME;
                 sortOrder = CallEntry.COLUMN_DATETIME + " ASC";
                 builder.setTables(CallEntry.TABLE_NAME +
-                        " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.TABLE_NAME + "." + CallStudentLinkEntry._ID +
+                        " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.COLUMN_CALL_ID +
                         " JOIN " + StudentEntry.TABLE_NAME + " ON " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + StudentEntry.TABLE_NAME + "." + StudentEntry._ID +
                         " JOIN " + ClassStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassStudentLinkEntry.COLUMN_CLASS_ID +
                         " AND " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + ClassStudentLinkEntry.COLUMN_STUDENT_ID);
                 break;
             case EXPORT_STUDENTS:
-                groupBy = StudentEntry.COLUMN_LASTNAME;
+                groupBy = StudentEntry.TABLE_NAME + "." + StudentEntry._ID;
                 sortOrder = StudentEntry.COLUMN_LASTNAME + " ASC";
                 builder.setTables(CallEntry.TABLE_NAME +
-                        " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.TABLE_NAME + "." + CallStudentLinkEntry._ID +
+                        " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.COLUMN_CALL_ID +
                         " JOIN " + StudentEntry.TABLE_NAME + " ON " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + StudentEntry.TABLE_NAME + "." + StudentEntry._ID +
                         " JOIN " + ClassStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassStudentLinkEntry.COLUMN_CLASS_ID +
                         " AND " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + ClassStudentLinkEntry.COLUMN_STUDENT_ID);
                 break;
             case EXPORT_CALLS_STUDENTS:
-                groupBy = CallEntry.COLUMN_DATETIME;
                 sortOrder = CallEntry.COLUMN_DATETIME + " ASC";
                 builder.setTables(CallEntry.TABLE_NAME +
-                        " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.TABLE_NAME + "." + CallStudentLinkEntry._ID +
+                        " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.COLUMN_CALL_ID +
                         " JOIN " + StudentEntry.TABLE_NAME + " ON " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + StudentEntry.TABLE_NAME + "." + StudentEntry._ID +
                         " JOIN " + ClassStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassStudentLinkEntry.COLUMN_CLASS_ID +
                         " AND " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + ClassStudentLinkEntry.COLUMN_STUDENT_ID);
+                break;
+            case STATS:
+                sortOrder = CallEntry.DEFAULT_SORT;
+                groupBy = CallEntry.TABLE_NAME + "." + CallEntry._ID;
+                builder.setTables(CallEntry.TABLE_NAME +
+                        " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.COLUMN_CALL_ID +
+                        " JOIN " + ClassEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassEntry.TABLE_NAME + "." + ClassEntry._ID);
+                break;
+            case STATS_FOR_ONE:
+                builder.setTables(CallEntry.TABLE_NAME +
+                        " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.COLUMN_CALL_ID +
+                        " JOIN " + ClassEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassEntry.TABLE_NAME + "." + ClassEntry._ID);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Log.w(LOG_TAG, builder.buildQuery(projection, selection, groupBy, null, sortOrder, null));
+        Log.e(LOG_TAG, builder.buildQuery(projection, selection, groupBy, null, sortOrder, null));
         Cursor cursor = builder.query(db, projection, selection, selectionArgs, groupBy, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
@@ -232,7 +249,8 @@ public class AppelProvider extends ContentProvider {
             case EXPORT_MONTH:
                 return CallEntry.CONTENT_TYPE;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+                Log.e(LOG_TAG, getContext().getString(R.string.unknown_uri));
+                return null;
         }
     }
 
@@ -241,6 +259,8 @@ public class AppelProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, ContentValues contentValues) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         long id;
+        ArrayList<Uri> urisToNotify = new ArrayList<Uri>();
+        urisToNotify.add(uri);
 
         switch (sUriMatcher.match(uri)) {
             case CLASSES:
@@ -254,19 +274,21 @@ public class AppelProvider extends ContentProvider {
                 break;
             case CALL_STUDENTS:
                 id = db.insert(CallStudentLinkEntry.TABLE_NAME, null, contentValues);
+                urisToNotify.add(CallEntry.STATS_CONTENT_URI);
                 break;
             case CLASS_STUDENTS:
                 id = db.insert(ClassStudentLinkEntry.TABLE_NAME, null, contentValues);
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+                Log.e(LOG_TAG, getContext().getString(R.string.unknown_uri));
+                return null;
         }
 
-        if (id <= 0 ) {
-            throw new android.database.SQLException("Failed to insert row into " + uri);
+        if(id > 0){
+            for(int i = 0; !urisToNotify.isEmpty(); ){
+                getContext().getContentResolver().notifyChange(urisToNotify.remove(i), null);
+            }
         }
-
-        getContext().getContentResolver().notifyChange(uri, null);
         return ContentUris.withAppendedId(uri, id);
     }
 
@@ -299,14 +321,15 @@ public class AppelProvider extends ContentProvider {
                 rowsDeleted = db.update(ClassStudentLinkEntry.TABLE_NAME, contentValues, s, strings);
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+                Log.e(LOG_TAG, getContext().getString(R.string.unknown_uri));
+                rowsDeleted = 0;
         }
 
         if (rowsDeleted != 0) {
-            int i = 0;
-            while(!urisToNotify.isEmpty()){
+            for(int i = 0; !urisToNotify.isEmpty(); ){
                 getContext().getContentResolver().notifyChange(urisToNotify.remove(i), null);
-            }        }
+            }
+        }
         return rowsDeleted;
     }
 
@@ -331,17 +354,18 @@ public class AppelProvider extends ContentProvider {
                 break;
             case CALL_STUDENTS:
                 rowsUpdated = db.update(CallStudentLinkEntry.TABLE_NAME, contentValues, s, strings);
+                urisToNotify.add(CallEntry.STATS_CONTENT_URI);
                 break;
             case CLASS_STUDENTS:
                 rowsUpdated = db.update(ClassStudentLinkEntry.TABLE_NAME, contentValues, s, strings);
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+                Log.e(LOG_TAG, getContext().getString(R.string.unknown_uri));
+                rowsUpdated = 0;
         }
 
         if (rowsUpdated != 0) {
-            int i = 0;
-            while(!urisToNotify.isEmpty()){
+            for(int i = 0; !urisToNotify.isEmpty(); ){
                 getContext().getContentResolver().notifyChange(urisToNotify.remove(i), null);
             }
         }
@@ -402,69 +426,4 @@ public class AppelProvider extends ContentProvider {
                 return super.bulkInsert(uri, values);
         }
     }
-
-    /*public Cursor getCallDatesForExport(long classId, long startDate, long endDate){
-        String[] projection = new String[] { CallEntry._ID, CallEntry.COLUMN_DATETIME };
-        String groupBy = CallEntry.COLUMN_DATETIME;
-        String sortOrder = CallEntry.COLUMN_DATETIME + " ASC";
-
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(CallEntry.TABLE_NAME +
-                " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.TABLE_NAME + "." + CallStudentLinkEntry._ID +
-                " JOIN " + StudentEntry.TABLE_NAME + " ON " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + StudentEntry.TABLE_NAME + "." + StudentEntry._ID +
-                " JOIN " + ClassStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassStudentLinkEntry.COLUMN_CLASS_ID +
-                " AND " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + ClassStudentLinkEntry.COLUMN_STUDENT_ID);
-        builder.appendWhere(CallEntry.COLUMN_DATETIME + " > " + startDate);
-        builder.appendWhere(" AND " + CallEntry.COLUMN_DATETIME + " < " + endDate);
-        builder.appendWhere(" AND " + CallEntry.COLUMN_CLASS_ID + " = " + classId);
-
-        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Log.w(LOG_TAG, builder.buildQuery(projection, null, groupBy, null, sortOrder, null));
-        Cursor cursor = builder.query(db, projection, null, null, groupBy, null, sortOrder);
-        return cursor;
-    }
-
-    public Cursor getStudentsInfoForExport(long classId, long startDate, long endDate){
-        String[] projection = new String[] { StudentEntry._ID, StudentEntry.COLUMN_FIRSTNAME, StudentEntry.COLUMN_LASTNAME, ClassStudentLinkEntry.COLUMN_GRADE };
-        String groupBy = StudentEntry.COLUMN_LASTNAME;
-        String sortOrder = StudentEntry.COLUMN_LASTNAME + " ASC";
-
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(CallEntry.TABLE_NAME +
-                " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.TABLE_NAME + "." + CallStudentLinkEntry._ID +
-                " JOIN " + StudentEntry.TABLE_NAME + " ON " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + StudentEntry.TABLE_NAME + "." + StudentEntry._ID +
-                " JOIN " + ClassStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassStudentLinkEntry.COLUMN_CLASS_ID +
-                " AND " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + ClassStudentLinkEntry.COLUMN_STUDENT_ID);
-        builder.appendWhere(CallEntry.COLUMN_DATETIME + " > " + startDate);
-        builder.appendWhere(" AND " + CallEntry.COLUMN_DATETIME + " < " + endDate);
-        builder.appendWhere(" AND " + CallEntry.COLUMN_CLASS_ID + " = " + classId);
-
-        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Log.w(LOG_TAG, builder.buildQuery(projection, null, groupBy, null, sortOrder, null));
-        Cursor cursor = builder.query(db, projection, null, null, groupBy, null, sortOrder);
-        return cursor;
-    }
-
-    public Cursor getCallsInfoForStudent(long classId, long startDate, long endDate, long studentId, long callId){
-        String[] projection = new String[] { CallStudentLinkEntry.COLUMN_IS_PRESENT, CallStudentLinkEntry.COLUMN_LEAVING_TIME };
-        String groupBy = CallEntry.COLUMN_DATETIME;
-        String sortOrder = CallEntry.COLUMN_DATETIME + " ASC";
-
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables(CallEntry.TABLE_NAME +
-                " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.TABLE_NAME + "." + CallStudentLinkEntry._ID +
-                " JOIN " + StudentEntry.TABLE_NAME + " ON " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + StudentEntry.TABLE_NAME + "." + StudentEntry._ID +
-                " JOIN " + ClassStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassStudentLinkEntry.COLUMN_CLASS_ID +
-                " AND " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + ClassStudentLinkEntry.COLUMN_STUDENT_ID);
-        builder.appendWhere(CallEntry.COLUMN_DATETIME + " > " + startDate);
-        builder.appendWhere(" AND " + CallEntry.COLUMN_DATETIME + " < " + endDate);
-        builder.appendWhere(" AND " + CallEntry.COLUMN_CLASS_ID + " = " + classId);
-        builder.appendWhere(" AND " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + studentId);
-        builder.appendWhere(" AND " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + callId);
-
-        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Log.w(LOG_TAG, builder.buildQuery(projection, null, groupBy, null, sortOrder, null));
-        Cursor cursor = builder.query(db, projection, null, null, groupBy, null, sortOrder);
-        return cursor;
-    }*/
 }

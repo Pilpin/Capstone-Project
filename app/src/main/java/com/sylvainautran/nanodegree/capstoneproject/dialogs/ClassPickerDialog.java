@@ -1,7 +1,6 @@
 package com.sylvainautran.nanodegree.capstoneproject.dialogs;
 
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -12,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -28,6 +28,8 @@ import butterknife.ButterKnife;
 
 public class ClassPickerDialog extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private final String LOG_TAG = this.getClass().getSimpleName();
+    public static final String CLASS_ID = "class_id";
+    public static final String CLASS_NAME = "class_name";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -35,6 +37,7 @@ public class ClassPickerDialog extends DialogFragment implements LoaderManager.L
     TextView emptyView;
 
     private BaseAdapter adapter;
+    private DialogListener mListener;
 
     public ClassPickerDialog(){
     }
@@ -47,11 +50,11 @@ public class ClassPickerDialog extends DialogFragment implements LoaderManager.L
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_picker, null, false);
         ButterKnife.bind(this, view);
-
+        mRecyclerView.setAdapter(new BaseAdapter(getActivity(), null, null, null, null));
         builder.setTitle(R.string.select_class);
         builder.setView(view).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -75,10 +78,10 @@ public class ClassPickerDialog extends DialogFragment implements LoaderManager.L
         HashMap<Long, Character> headers = null;
         if(cursor != null && cursor.moveToFirst()){
             headers = new HashMap<>();
-            char first_letter = cursor.getString(ClassesLoader.Query.COLUMN_NAME).charAt(0);
+            char first_letter = Character.toUpperCase(cursor.getString(ClassesLoader.Query.COLUMN_NAME).charAt(0));
             headers.put(cursor.getLong(ClassesLoader.Query._ID), first_letter);
             while(cursor.moveToNext()){
-                char new_first_letter = cursor.getString(ClassesLoader.Query.COLUMN_NAME).charAt(0);
+                char new_first_letter = Character.toUpperCase(cursor.getString(ClassesLoader.Query.COLUMN_NAME).charAt(0));
                 if(first_letter != new_first_letter){
                     first_letter = new_first_letter;
                     headers.put(cursor.getLong(ClassesLoader.Query._ID), first_letter);
@@ -106,10 +109,14 @@ public class ClassPickerDialog extends DialogFragment implements LoaderManager.L
 
     @Override
     public void onClick(View view) {
-        FragmentManager fragmentManager = getFragmentManager();
-        CallMonthsPickerDialog callMonthsPickerDialog = CallMonthsPickerDialog.newInstance(Long.parseLong((String) view.getTag(R.id.key_class_id)));
-        callMonthsPickerDialog.show(fragmentManager, "dialog");
-        //Toast.makeText(getActivity(), (String) view.getTag(R.id.key_class_id) + " " + (String) view.getTag(R.id.key_class_name), Toast.LENGTH_SHORT).show();
+        Bundle bundle = new Bundle();
+        bundle.putLong(CLASS_ID, (Long) view.getTag(R.id.key_class_id));
+        bundle.putString(CLASS_NAME, (String) view.getTag(R.id.key_class_name));
+        mListener.onDismissDialog(bundle);
         dismiss();
+    }
+
+    public void setListener(DialogListener listener){
+        mListener = listener;
     }
 }

@@ -11,10 +11,6 @@ public class ClassesLoader extends CursorLoader {
         return new ClassesLoader(context, AppelContract.ClassEntry.CONTENT_URI);
     }
 
-    public static ClassesLoader getClassForId(Context context, long id) {
-        return new ClassesLoader(context, AppelContract.ClassEntry.buildClassUri(id));
-    }
-
     private ClassesLoader(Context context, Uri uri) {
         super(context, uri, Query.PROJECTION, null, null, AppelContract.ClassEntry.DEFAULT_SORT);
     }

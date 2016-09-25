@@ -62,10 +62,8 @@ public class CallMonthsAdapter extends BaseAdapter<CallMonthsAdapter.ViewHolder>
         endDate.set(Calendar.DAY_OF_MONTH, startDate.getActualMaximum(Calendar.DAY_OF_MONTH));
         endDate.add(Calendar.DAY_OF_MONTH, 1);
 
-        tagView(holder.itemView, Integer.toString(position),
-                mCursor.getString(CallsLoader.Query._ID),
-                Long.toString(startDate.getTimeInMillis()),
-                Long.toString(endDate.getTimeInMillis()));
+        tagView(holder.itemView, position, mCursor.getLong(CallsLoader.Query._ID), startDate.getTimeInMillis(), endDate.getTimeInMillis(),
+                startDate.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()), mCursor.getInt(CallsLoader.Query.YEAR));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -78,10 +76,12 @@ public class CallMonthsAdapter extends BaseAdapter<CallMonthsAdapter.ViewHolder>
         }
     }
 
-    private void tagView(View v, String position, String callId, String dateStart, String dateEnd){
+    private void tagView(View v, int position, long callId, long dateStart, long dateEnd, String monthName, int year){
         v.setTag(R.id.key_position, position);
         v.setTag(R.id.key_call_id, callId);
         v.setTag(R.id.key_call_date_start, dateStart);
         v.setTag(R.id.key_call_date_end, dateEnd);
+        v.setTag(R.id.key_month_name, monthName);
+        v.setTag(R.id.key_year, year);
     }
 }

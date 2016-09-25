@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sylvainautran.nanodegree.capstoneproject.dialogs.StudentsNewDialog;
+import com.sylvainautran.nanodegree.capstoneproject.utils.DrawerNavigationItemListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,13 +34,13 @@ public class StudentsListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_generic_list);
+        setContentView(R.layout.activity_student_list);
         ButterKnife.bind(this);
 
         if(savedInstanceState == null) {
             StudentsListFragment studentsListFragment = StudentsListFragment.newInstance();
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, studentsListFragment, STUDENTS_LIST)
+                    .add(R.id.list_container, studentsListFragment, STUDENTS_LIST)
                     .commit();
         }
 
@@ -53,7 +54,7 @@ public class StudentsListActivity extends AppCompatActivity {
 
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
         drawerLayout.addDrawerListener(mDrawerToggle);
-        navigationView.setNavigationItemSelectedListener(new DrawerNavigationItemListener(this));
+        navigationView.setNavigationItemSelectedListener(new DrawerNavigationItemListener(this, drawerLayout));
         navigationView.setCheckedItem(R.id.navigation_students);
     }
 
@@ -66,12 +67,18 @@ public class StudentsListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.add_student){
-            FragmentManager fragmentManager = getFragmentManager();
-            StudentsNewDialog newFragment = StudentsNewDialog.newInstance(R.string.add_student);
+            if(getResources().getBoolean(R.bool.tablet)){
+                FragmentManager fragmentManager = getFragmentManager();
+                StudentsNewDialog studentsNewDialog = StudentsNewDialog.newInstance(R.string.add_student);
+                studentsNewDialog.show(fragmentManager, "dialog");
+            }else {
+                FragmentManager fragmentManager = getFragmentManager();
+                StudentsNewDialog studentsNewDialog = StudentsNewDialog.newInstance(R.string.add_student);
 
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            transaction.add(R.id.drawer_layout, newFragment, "dialog").addToBackStack(null).commit();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                transaction.add(R.id.drawer_layout, studentsNewDialog, "dialog").addToBackStack(null).commit();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -88,5 +95,9 @@ public class StudentsListActivity extends AppCompatActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
 }

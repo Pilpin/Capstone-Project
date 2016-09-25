@@ -27,8 +27,6 @@ public class ClassNewDialog extends DialogFragment {
     public static final String CLASS_ID = "class_id";
     public static final String CLASS_NAME = "class_name";
 
-    @BindView((R.id.title))
-    TextView title;
     @BindView(R.id.name)
     TextInputEditText name;
     @BindView(R.id.name_container)
@@ -43,23 +41,17 @@ public class ClassNewDialog extends DialogFragment {
         bundle.putString(CLASS_ID, Long.toString(class_id));
         bundle.putString(CLASS_NAME, class_name);
         fragment.setArguments(bundle);
-        Log.d("FRAG", "In Fragment");
         return fragment;
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "onCreateDialog");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_class_new, null);
         ButterKnife.bind(this, view);
-        title.setText(R.string.add_class);
-        if(getArguments() != null && getArguments().containsKey(CLASS_ID)){
-            title.setText(R.string.edit_class);
-            name.setText(getArguments().getString(CLASS_NAME));
-        }
+
         builder.setView(view)
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
@@ -70,6 +62,13 @@ public class ClassNewDialog extends DialogFragment {
                         ClassNewDialog.this.dismiss();
                     }
                 });
+
+        builder.setTitle(R.string.add_class);
+        if(getArguments() != null && getArguments().containsKey(CLASS_ID)){
+            builder.setTitle(R.string.edit_class);
+            name.setText(getArguments().getString(CLASS_NAME));
+        }
+
         Dialog dialog = builder.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         return dialog;

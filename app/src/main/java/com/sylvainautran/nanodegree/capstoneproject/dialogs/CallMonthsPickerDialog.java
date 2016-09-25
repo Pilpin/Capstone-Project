@@ -29,6 +29,10 @@ import butterknife.ButterKnife;
 public class CallMonthsPickerDialog extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private final String LOG_TAG = this.getClass().getSimpleName();
     public static final String CLASS_ID = "class_id";
+    public static final String MONTH_NAME = "month_name";
+    public static final String YEAR = "year";
+    public static final String CALLS_START_DATE = "call_start_date";
+    public static final String CALLS_END_DATE = "call_end_date";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -36,6 +40,7 @@ public class CallMonthsPickerDialog extends DialogFragment implements LoaderMana
     TextView emptyView;
 
     private BaseAdapter adapter;
+    private DialogListener mListener;
 
     public CallMonthsPickerDialog(){
     }
@@ -51,11 +56,11 @@ public class CallMonthsPickerDialog extends DialogFragment implements LoaderMana
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_picker, null, false);
         ButterKnife.bind(this, view);
-
+        mRecyclerView.setAdapter(new BaseAdapter(getActivity(), null, null, null, null));
         builder.setTitle(R.string.select_month);
         builder.setView(view).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -109,7 +114,16 @@ public class CallMonthsPickerDialog extends DialogFragment implements LoaderMana
 
     @Override
     public void onClick(View view) {
-        Toast.makeText(getActivity(), (String) view.getTag(R.id.key_call_date_start) + " " + (String) view.getTag(R.id.key_call_date_end), Toast.LENGTH_SHORT).show();
+        Bundle bundle = new Bundle();
+        bundle.putString(MONTH_NAME, (String) view.getTag(R.id.key_month_name));
+        bundle.putInt(YEAR, (Integer) view.getTag(R.id.key_year));
+        bundle.putLong(CALLS_START_DATE, (Long) view.getTag(R.id.key_call_date_start));
+        bundle.putLong(CALLS_END_DATE, (Long) view.getTag(R.id.key_call_date_end));
+        mListener.onDismissDialog(bundle);
         dismiss();
+    }
+
+    public void setListener(DialogListener listener){
+        mListener = listener;
     }
 }

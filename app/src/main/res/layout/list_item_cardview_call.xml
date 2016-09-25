@@ -79,7 +79,7 @@
                 android:id="@+id/leaving_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:theme="@style/AppTheme.Button.Leaving"
+                android:theme="@style/AppTheme.Button.Present"
                 android:text="@string/leaving"
                 style="@style/Widget.AppCompat.Button.Borderless"/>
 

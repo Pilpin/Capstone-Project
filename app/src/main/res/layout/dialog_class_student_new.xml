@@ -23,6 +23,7 @@
                 android:layout_width="@dimen/icon_size_toolbar_left_width"
                 android:layout_height="@dimen/icon_size"
                 android:src="@drawable/ic_clear"
+                android:contentDescription="@string/close_edit"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
@@ -75,13 +76,16 @@
             android:id="@+id/grade"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textCapSentences"
             android:hint="@string/student_grade"/>
+
     </android.support.design.widget.TextInputLayout>
 
     <LinearLayout
         android:id="@+id/list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:minHeight="300dp"
         android:layout_marginBottom="@dimen/screen_edge_margin"
         android:layout_marginLeft="@dimen/screen_edge_margin"
         android:layout_marginStart="@dimen/screen_edge_margin"

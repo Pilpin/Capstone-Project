@@ -28,7 +28,6 @@ import butterknife.OnClick;
 
 public class ClassStudentsListActivity extends AppCompatActivity {
     private final String LOG_TAG = this.getClass().getSimpleName();
-    private static final String STUDENTS_LIST = "students_list";
     public static final String CLASS_NAME = "class_name";
 
     @BindView(R.id.toolbar)
@@ -44,7 +43,7 @@ public class ClassStudentsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_class_students_list);
         classId = 0;
-        className = "Unknown Class";
+        className = getString(R.string.unknown_class);
         if(getIntent() != null){
             classId = Long.parseLong(getIntent().getData().getLastPathSegment());
             className = getIntent().getStringExtra(CLASS_NAME);
@@ -54,7 +53,7 @@ public class ClassStudentsListActivity extends AppCompatActivity {
         if(savedInstanceState == null) {
             StudentsListFragment fragment = StudentsListFragment.newInstance(classId);
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, fragment, STUDENTS_LIST)
+                    .add(R.id.list_container, fragment, "students_list")
                     .commit();
         }
 
@@ -80,12 +79,18 @@ public class ClassStudentsListActivity extends AppCompatActivity {
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.add_student:
-                FragmentManager fragmentManager = getFragmentManager();
-                ClassStudentsNewDialog newFragment = ClassStudentsNewDialog.newInstance(R.string.add_student_to_class, classId);
+                if(getResources().getBoolean(R.bool.tablet)){
+                    FragmentManager fragmentManager = getFragmentManager();
+                    ClassStudentsNewDialog classStudentsNewDialog = ClassStudentsNewDialog.newInstance(R.string.add_student_to_class, classId);
+                    classStudentsNewDialog.show(fragmentManager, "dialog");
+                }else {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    ClassStudentsNewDialog classStudentsNewDialog = ClassStudentsNewDialog.newInstance(R.string.add_student_to_class, classId);
 
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.add(R.id.container, newFragment, "dialog").addToBackStack(null).commit();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    transaction.add(R.id.container, classStudentsNewDialog, "dialog").addToBackStack(null).commit();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -93,8 +98,6 @@ public class ClassStudentsListActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab)
     public void fabOnClick(){
-        Log.d(LOG_TAG, "startCall");
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog);
         builder.setTitle(R.string.start_call)
                 .setItems(R.array.call_select_option, new DialogInterface.OnClickListener() {
@@ -113,8 +116,16 @@ public class ClassStudentsListActivity extends AppCompatActivity {
         cv.put(AppelContract.CallEntry.COLUMN_LEAVING_TIME_OPTION, option);
         long callId = Long.parseLong(getContentResolver().insert(AppelContract.CallEntry.CONTENT_URI, cv).getLastPathSegment());
         Intent intent = new Intent(Intent.ACTION_VIEW, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(classId, callId));
-        intent.putExtra(CallsDetailsActivity.CLASS_NAME, className);
-        intent.putExtra(CallsDetailsActivity.CALL_DATE, cal.getTimeInMillis());
+        intent.putExtra(getString(R.string.intent_extra_class_name), className);
+        intent.putExtra(getString(R.string.intent_extra_call_date), cal.getTimeInMillis());
+        intent.putExtra(getString(R.string.intent_extra_call_id), callId);
+        intent.putExtra(getString(R.string.intent_extra_class_id), classId);
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

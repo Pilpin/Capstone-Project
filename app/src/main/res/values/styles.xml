@@ -11,19 +11,18 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+
         <item name="android:statusBarColor" tools:targetApi="21">@color/colorPrimaryDark</item>
         <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="21">true</item>
 
         <item name="android:alertDialogTheme">@style/AppTheme.AlertDialog</item>
+        <item name="android:colorBackground">@color/main_background</item>
     </style>
+
+    <!-- Alert Dialog -->
 
     <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowTitleStyle">@style/AppTheme.AlertDialog.Title</item>
-    </style>
-
-    <style name="AppTheme.AlertDialog.Title" parent="TextAppearance.AppCompat.Title">
-        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.AlertDialog.Title.Text" parent="TextAppearance.AppCompat.Title">
@@ -40,8 +39,15 @@
         <item name="android:textColor">@color/colorAbsent</item>
     </style>
 
-    <style name="AppTheme.Button.Leaving" parent="Base.Widget.AppCompat.Button.Borderless">
-        <item name="android:textColor">@color/colorLeaving</item>
+    <style name="AppTheme.Button.Birthdate" parent="Base.Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/colorAccent</item>
+    </style>
+
+    <style name="WidgetStatsTextStyle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#FFF</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>
