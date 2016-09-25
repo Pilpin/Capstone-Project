@@ -8,19 +8,21 @@ import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
 public class CallsLoader extends CursorLoader {
     public static CallsLoader getAllCalls(Context context) {
-        return new CallsLoader(context, AppelContract.CallEntry.CONTENT_URI, Query.PROJECTION, AppelContract.CallEntry.MULTIPLE_SORT);
+        return new CallsLoader(context, AppelContract.CallEntry.CONTENT_URI, Query.PROJECTION, null, null, AppelContract.CallEntry.MULTIPLE_SORT);
     }
 
     public static CallsLoader getAllCallDetails(Context context, long callId, long classId){
-        return new CallsLoader(context, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(classId, callId), Query.PROJECTION_DETAILS, AppelContract.StudentEntry.DEFAULT_SORT);
+        return new CallsLoader(context, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(classId, callId), Query.PROJECTION_DETAILS, null, null,
+                AppelContract.StudentEntry.DEFAULT_SORT);
     }
 
     public static CallsLoader getAllCallMonthsFromClass(Context context, long classId){
-        return new CallsLoader(context, AppelContract.CallEntry.buildExportMonths(classId), Query.PROJECTION_EXPORT_MONTHS, AppelContract.CallEntry.DEFAULT_SORT);
+        return new CallsLoader(context, AppelContract.CallEntry.buildExportMonths(classId), Query.PROJECTION_EXPORT_MONTHS, AppelContract.CallEntry.COLUMN_CLASS_ID + " = ?",
+                new String[] { Long.toString(classId) }, AppelContract.CallEntry.DEFAULT_SORT);
     }
 
-    private CallsLoader(Context context, Uri uri, String[] projection, String sort) {
-        super(context, uri, projection, null, null, sort);
+    private CallsLoader(Context context, Uri uri, String[] projection, String selection, String[] selectionArgs, String sort) {
+        super(context, uri, projection, selection, selectionArgs, sort);
     }
 
     public interface Query {
