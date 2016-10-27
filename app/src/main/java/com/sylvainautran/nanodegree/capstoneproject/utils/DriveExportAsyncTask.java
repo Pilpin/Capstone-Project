@@ -22,6 +22,7 @@ import java.util.Locale;
 
 public class DriveExportAsyncTask extends ApiClientAsyncTask<DriveFile, Void, Boolean> {
     private final String LOG_TAG = this.getClass().getSimpleName();
+    private final String MATERNELLE = "PS MS GS ps ms gs Ps Ms Gs pS Ms Gs";
     public static int SUCCESS = 1;
     public static int FAIL = 0;
     private Context mContext;
@@ -44,6 +45,8 @@ public class DriveExportAsyncTask extends ApiClientAsyncTask<DriveFile, Void, Bo
     @Override
     protected Boolean doInBackgroundConnected(DriveFile... args) {
         String separator = ",";
+        String emptyLine = "";
+        String jumpLine = "\n";
 
         DriveFile file = args[0];
         DriveApi.DriveContentsResult driveContentsResult = file.open(getGoogleApiClient(), DriveFile.MODE_WRITE_ONLY, null).await();
@@ -61,6 +64,14 @@ public class DriveExportAsyncTask extends ApiClientAsyncTask<DriveFile, Void, Bo
         Cursor callDatesCursor = ExportLoader.getCallDatesForExport(mContext, classId, startDate, endDate).loadInBackground();
         Cursor studentsInfoCursor = ExportLoader.getStudentsInfoForExport(mContext, classId, startDate, endDate).loadInBackground();
 
+        int totalMaternelle = 0;
+        int totalPrimaire = 0;
+        int total = studentsInfoCursor.getCount();
+
+        int[] callMaternellesCount = new int[callDatesCursor.getCount()];
+        int[] callPrimairesCount = new int[callDatesCursor.getCount()];
+        int[] callTotalCount = new int[callDatesCursor.getCount()];
+
         try {
             Calendar calendar = Calendar.getInstance();
             outputStream.write((monthYear + separator).getBytes(charset));
@@ -70,14 +81,15 @@ public class DriveExportAsyncTask extends ApiClientAsyncTask<DriveFile, Void, Bo
                         " " + calendar.get(Calendar.DATE)).getBytes(charset));
             }
 
-            outputStream.write("\n".getBytes(charset));
+            outputStream.write(jumpLine.getBytes(charset));
             outputStream.flush();
 
             for (int i = 0; i < callDatesCursor.getCount() + 2; i++) {
-                outputStream.write(separator.getBytes(charset));
+                emptyLine += separator;
             }
 
-            outputStream.write("\n".getBytes(charset));
+            outputStream.write(emptyLine.getBytes(charset));
+            outputStream.write(jumpLine.getBytes(charset));
             outputStream.flush();
 
             String name;
@@ -92,6 +104,12 @@ public class DriveExportAsyncTask extends ApiClientAsyncTask<DriveFile, Void, Bo
                 grade = studentsInfoCursor.getString(ExportLoader.Query.GRADE);
                 outputStream.write((name + separator + grade).getBytes(charset));
 
+                if(MATERNELLE.contains(grade)){
+                    totalMaternelle++;
+                }else {
+                    totalPrimaire++;
+                }
+
                 for (callDatesCursor.moveToFirst(); !callDatesCursor.isAfterLast(); callDatesCursor.moveToNext()) {
                     callId = callDatesCursor.getLong(ExportLoader.Query.CALL_ID);
                     callInfo = ExportLoader.getCallsInfoForStudent(mContext, classId, startDate, endDate, studentId, callId).loadInBackground();
@@ -99,14 +117,24 @@ public class DriveExportAsyncTask extends ApiClientAsyncTask<DriveFile, Void, Bo
                     outputStream.write(separator.getBytes(charset));
                     if(callInfo.moveToFirst()){
                         if(callInfo.getInt(ExportLoader.Query.IS_PRESENT) == AppelContract.CallStudentLinkEntry.PRESENT){
+
+                            callTotalCount[callDatesCursor.getPosition()]++;
+                            if(MATERNELLE.contains(grade)){
+                                callMaternellesCount[callDatesCursor.getPosition()]++;
+                            }else{
+                                callPrimairesCount[callDatesCursor.getPosition()]++;
+                            }
+
                             if(callInfo.isNull(ExportLoader.Query.LEAVING_TIME)){
                                 callState = mContext.getString(R.string.present);
                             }else{
                                 DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault());
                                 callState = df.format(new Date(callInfo.getLong(ExportLoader.Query.LEAVING_TIME)));
                             }
+
+
                         }else{
-                            callState = mContext.getString(R.string.absent);
+                            callState = "";
                         }
                         outputStream.write(callState.getBytes(charset));
                     }
@@ -114,12 +142,36 @@ public class DriveExportAsyncTask extends ApiClientAsyncTask<DriveFile, Void, Bo
                     callInfo.close();
                 }
 
-                outputStream.write("\n".getBytes(charset));
+                outputStream.write(jumpLine.getBytes(charset));
                 outputStream.flush();
             }
             outputStream.flush();
+            outputStream.write(emptyLine.getBytes(charset));
+            outputStream.write(jumpLine.getBytes(charset));
+            outputStream.flush();
 
-        } catch (IOException e) {
+            outputStream.write(("Total Maternelle" + separator + totalMaternelle).getBytes(charset));
+            for (callDatesCursor.moveToFirst(); !callDatesCursor.isAfterLast(); callDatesCursor.moveToNext()) {
+                outputStream.write((separator + callMaternellesCount[callDatesCursor.getPosition()]).getBytes(charset));
+            }
+
+            outputStream.write(jumpLine.getBytes(charset));
+            outputStream.flush();
+
+            outputStream.write(("Total Primaire" + separator + totalPrimaire).getBytes(charset));
+            for (callDatesCursor.moveToFirst(); !callDatesCursor.isAfterLast(); callDatesCursor.moveToNext()) {
+                outputStream.write((separator + callPrimairesCount[callDatesCursor.getPosition()]).getBytes(charset));
+            }
+
+            outputStream.write(jumpLine.getBytes(charset));
+            outputStream.flush();
+
+            outputStream.write(("Total" + separator + total).getBytes(charset));
+            for (callDatesCursor.moveToFirst(); !callDatesCursor.isAfterLast(); callDatesCursor.moveToNext()) {
+                outputStream.write((separator + callTotalCount[callDatesCursor.getPosition()]).getBytes(charset));
+            }
+
+            } catch (IOException e) {
             Log.e(LOG_TAG, mContext.getString(R.string.io_exception), e);
         } finally {
             callDatesCursor.close();

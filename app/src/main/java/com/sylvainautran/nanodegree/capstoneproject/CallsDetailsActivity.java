@@ -111,7 +111,7 @@ public class CallsDetailsActivity extends AppCompatActivity implements CallsDeta
         }else {
             presentTV.setText(getString(R.string.stats_present, present));
         }
-        absentTV.setText(getString(R.string.stats_absent, present));
+        absentTV.setText(getString(R.string.stats_absent, absent));
         isCallEnded();
     }
 

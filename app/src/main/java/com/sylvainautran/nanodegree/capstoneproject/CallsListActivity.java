@@ -193,7 +193,7 @@ public class CallsListActivity extends AppCompatActivity implements DialogListen
                 if (resultCode == RESULT_OK) {
                     DriveId driveId = data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
                     DriveFile file = driveId.asDriveFile();
-                    DriveExportAsyncTask driveExportAsyncTask = new DriveExportAsyncTask(this, this, classId, startDate, endDate, monthName + " " + year);
+                    DriveExportAsyncTask driveExportAsyncTask = new DriveExportAsyncTask(this, this, classId, startDate, endDate, monthName.toUpperCase());
                     driveExportAsyncTask.execute(file);
                 }
                 break;
@@ -212,7 +212,7 @@ public class CallsListActivity extends AppCompatActivity implements DialogListen
                 @Override
                 public void onResult(@NonNull DriveApi.DriveContentsResult result) {
                     MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                            .setTitle(year + " " + monthName + " - " + className)
+                            .setTitle(year + " " + monthName + " - " + className + ".csv")
                             .setMimeType("text/csv").build();
                     IntentSender intentSender = Drive.DriveApi
                             .newCreateFileActivityBuilder()

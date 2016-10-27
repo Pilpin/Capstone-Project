@@ -274,13 +274,13 @@ public class CallsListFragment extends Fragment implements LoaderManager.LoaderC
 
     private void editActionModeTitle(){
         if(selectedCalls.size() == 0 || selectedCalls.size() == 1){
-            mActionMode.setTitle(selectedCalls.size() + " " + getString(R.string.student));
+            mActionMode.setTitle(selectedCalls.size() + " " + getString(R.string.call));
             mActionMode.invalidate();
         }else if(selectedCalls.size() == 2){
-            mActionMode.setTitle(selectedCalls.size() + " " + getString(R.string.students));
+            mActionMode.setTitle(selectedCalls.size() + " " + getString(R.string.calls));
             mActionMode.invalidate();
         }else{
-            mActionMode.setTitle(selectedCalls.size() + " " + getString(R.string.students));
+            mActionMode.setTitle(selectedCalls.size() + " " + getString(R.string.calls));
         }
     }
 }

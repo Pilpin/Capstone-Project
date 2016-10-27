@@ -286,13 +286,13 @@ public class ClassesListFragment extends Fragment implements LoaderManager.Loade
 
     private void editActionModeTitle(){
         if(selectedClasses.size() == 0 || selectedClasses.size() == 1){
-            mActionMode.setTitle(selectedClasses.size() + " " + getString(R.string.student));
+            mActionMode.setTitle(selectedClasses.size() + " " + getString(R.string.oneclass));
             mActionMode.invalidate();
         }else if(selectedClasses.size() == 2){
-            mActionMode.setTitle(selectedClasses.size() + " " + getString(R.string.students));
+            mActionMode.setTitle(selectedClasses.size() + " " + getString(R.string.classes));
             mActionMode.invalidate();
         }else{
-            mActionMode.setTitle(selectedClasses.size() + " " + getString(R.string.students));
+            mActionMode.setTitle(selectedClasses.size() + " " + getString(R.string.classes));
         }
     }
 }

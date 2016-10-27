@@ -95,7 +95,7 @@
     <string name="unknown_uri" translatable="false">Unknown uri: <xliff:g id="uri">%s</xliff:g></string>
 
     <!-- SYSTEM -->
-    <string name="app_name" translatable="false">Capstone Project</string>
+    <string name="app_name">Capstone Project</string>
     <string name="content_authority" translatable="false">com.sylvainautran.nanodegree.capstoneproject</string>
     <string name="intent_extra_class_name" translatable="false">com.sylvainautran.nanodegree.capstoneproject.className</string>
     <string name="intent_extra_call_date" translatable="false">com.sylvainautran.nanodegree.capstoneproject.callDate</string>

@@ -98,14 +98,15 @@ public class ClassStudentsListActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab)
     public void fabOnClick(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog);
+        startCall(AppelContract.CallEntry.RECORD_LEAVING_TIME);
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog);
         builder.setTitle(R.string.start_call)
                 .setItems(R.array.call_select_option, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         startCall(which);
                     }
                 });
-        builder.create().show();
+        builder.create().show();*/
     }
 
     private void startCall(int option){
