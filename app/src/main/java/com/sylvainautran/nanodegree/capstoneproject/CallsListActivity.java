@@ -58,6 +58,7 @@ public class CallsListActivity extends AppCompatActivity implements DialogListen
     private long classId;
     private String className;
     private String monthName;
+    private String monthNumber;
     private int year;
     private long startDate;
     private long endDate;
@@ -132,6 +133,7 @@ public class CallsListActivity extends AppCompatActivity implements DialogListen
         if(bundle.containsKey(CallMonthsPickerDialog.CALLS_START_DATE)){
             monthName = bundle.getString(CallMonthsPickerDialog.MONTH_NAME);
             monthName = monthName.substring(0, 1).toUpperCase() + monthName.substring(1);
+            monthNumber = bundle.getString(CallMonthsPickerDialog.MONTH_NUMBER);
             year = bundle.getInt(CallMonthsPickerDialog.YEAR);
             startDate = bundle.getLong(CallMonthsPickerDialog.CALLS_START_DATE);
             endDate = bundle.getLong(CallMonthsPickerDialog.CALLS_END_DATE);
@@ -212,7 +214,7 @@ public class CallsListActivity extends AppCompatActivity implements DialogListen
                 @Override
                 public void onResult(@NonNull DriveApi.DriveContentsResult result) {
                     MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                            .setTitle(year + " " + monthName + " - " + className + ".csv")
+                            .setTitle(year + " " + monthNumber + " " + monthName + " - " + className + ".csv")
                             .setMimeType("text/csv").build();
                     IntentSender intentSender = Drive.DriveApi
                             .newCreateFileActivityBuilder()

@@ -30,6 +30,7 @@ public class CallMonthsPickerDialog extends DialogFragment implements LoaderMana
     private final String LOG_TAG = this.getClass().getSimpleName();
     public static final String CLASS_ID = "class_id";
     public static final String MONTH_NAME = "month_name";
+    public static final String MONTH_NUMBER = "month_number";
     public static final String YEAR = "year";
     public static final String CALLS_START_DATE = "call_start_date";
     public static final String CALLS_END_DATE = "call_end_date";
@@ -115,6 +116,7 @@ public class CallMonthsPickerDialog extends DialogFragment implements LoaderMana
     @Override
     public void onClick(View view) {
         Bundle bundle = new Bundle();
+        bundle.putString(MONTH_NUMBER, (String) view.getTag(R.id.key_month_number));
         bundle.putString(MONTH_NAME, (String) view.getTag(R.id.key_month_name));
         bundle.putInt(YEAR, (Integer) view.getTag(R.id.key_year));
         bundle.putLong(CALLS_START_DATE, (Long) view.getTag(R.id.key_call_date_start));
