@@ -15,17 +15,21 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.adapters.BaseAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.adapters.CallStudentsAdapter;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.CallsLoader;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StatsLoader;
+import com.sylvainautran.nanodegree.capstoneproject.data.loaders.StudentsLoader;
 
 import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +45,8 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
     RecyclerView mRecyclerView;
     @BindView(R.id.empty_view)
     TextView emptyView;
+    @BindView(R.id.fastscroll)
+    FastScroller mFastScroller;
 
     private RecyclerView.Adapter adapter;
 
@@ -67,13 +73,14 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
         if(getResources().getBoolean(R.bool.tablet_land)){
             layout = R.layout.calls_list_fragment;
         }else{
-            layout = R.layout.fragment_generic;
+            layout = R.layout.fragment_calls_details;
         }
 
         View view = inflater.inflate(layout, container, false);
         ButterKnife.bind(this, view);
 
         mRecyclerView.setAdapter(new BaseAdapter(getActivity(), null, null, null, null));
+        mFastScroller.setRecyclerView(mRecyclerView);
 
         if(getArguments() != null && getArguments().containsKey(CLASS_ID) && getArguments().containsKey(CALL_ID)) {
             getLoaderManager().initLoader(CALL_STUDENTS, null, this);
@@ -115,7 +122,16 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
                 }
                 break;
             case CALL_STUDENTS:
-                adapter = new CallStudentsAdapter(getActivity(), cursor);
+                HashMap<Integer, String> letterToPosition = null;
+
+                if(cursor != null){
+                    letterToPosition = new HashMap<>();
+                    while(cursor.moveToNext()){
+                        letterToPosition.put(cursor.getPosition(), cursor.getString(CallsLoader.Query.COLUMN_LASTNAME).substring(0, 1));
+                    }
+                }
+
+                adapter = new CallStudentsAdapter(getActivity(), cursor, letterToPosition);
 
                 if(adapter.getItemCount() > 0){
                     emptyView.setVisibility(View.GONE);
@@ -128,6 +144,7 @@ public class CallsDetailsFragment extends Fragment implements LoaderManager.Load
 
                 adapter.setHasStableIds(true);
                 mRecyclerView.swapAdapter(adapter, false);
+                mFastScroller.setRecyclerView(mRecyclerView);
                 break;
             default:
 

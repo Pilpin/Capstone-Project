@@ -20,22 +20,26 @@ import android.widget.TimePicker;
 import com.sylvainautran.nanodegree.capstoneproject.R;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 import com.sylvainautran.nanodegree.capstoneproject.data.loaders.CallsLoader;
+import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapter.ViewHolder> {
+public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapter.ViewHolder> implements SectionTitleProvider {
     private final String LOG_TAG = this.getClass().getSimpleName();
     private Cursor mCursor;
     private Context mContext;
+    private HashMap<Integer, String> mLetterToPosition;
 
-    public CallStudentsAdapter(Context context, Cursor cursor) {
+    public CallStudentsAdapter(Context context, Cursor cursor, HashMap letterToPosition) {
         mCursor = cursor;
         mContext = context;
+        mLetterToPosition = letterToPosition;
     }
 
     @Override
@@ -98,10 +102,9 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
         String name = mCursor.getString(CallsLoader.Query.COLUMN_FIRSTNAME) + " " + mCursor.getString(CallsLoader.Query.COLUMN_LASTNAME);
         int age = today.get(Calendar.YEAR) - cal.get(Calendar.YEAR);
         String grade = mCursor.getString(CallsLoader.Query.COLUMN_GRADE);
-        grade = grade.isEmpty() ? grade : "- " + grade;
-        String age_grade = mContext.getResources().getString(R.string.age_to_string, age, grade);
+        String age_grade = mContext.getResources().getString(R.string.age_to_string_grade, grade, age);
         if(age < 2){
-            age_grade = mContext.getResources().getString(R.string.age_to_string_singular, age, grade);
+            age_grade = mContext.getResources().getString(R.string.age_to_string_singular_grade, grade, age);
         }
         holder.name.setText(name);
         holder.age_grade.setText(age_grade);
@@ -153,6 +156,11 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
     @Override
     public int getItemCount() {
         return mCursor.getCount();
+    }
+
+    @Override
+    public String getSectionTitle(int position) {
+        return mLetterToPosition.get(position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -61,9 +61,9 @@ public class ClassStudentsAdapter extends BaseAdapter<ClassStudentsAdapter.ViewH
             }
         }else{
             if(age < 2){
-                age_grade = mContext.getResources().getString(R.string.age_to_string_singular_grade, age, grade);
+                age_grade = mContext.getResources().getString(R.string.age_to_string_singular_grade, grade, age);
             }else{
-                age_grade = mContext.getResources().getString(R.string.age_to_string_grade, age, grade);
+                age_grade = mContext.getResources().getString(R.string.age_to_string_grade, grade, age);
             }
         }
         holder.name.setText(name);

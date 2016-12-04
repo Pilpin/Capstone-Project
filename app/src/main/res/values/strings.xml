@@ -28,8 +28,8 @@
     <string name="delete_student">Delete student</string>
     <string name="edit_student">Edit student</string>
     <string name="empty_student_list">No student has been created yet\nAdd one by clicking on the plus sign up there !</string>
-    <string name="age_to_string_grade"><xliff:g id="age">%d</xliff:g> years old - <xliff:g id="grade" example="1st grade">%s</xliff:g></string>
-    <string name="age_to_string_singular_grade"><xliff:g id="age">%d</xliff:g> year old - <xliff:g id="grade" example="1st grade">%s</xliff:g></string>
+    <string name="age_to_string_grade"><xliff:g id="grade" example="1st grade">%s</xliff:g> (<xliff:g id="age">%d</xliff:g> years old)</string>
+    <string name="age_to_string_singular_grade"><xliff:g id="grade" example="1st grade">%s</xliff:g> (<xliff:g id="age">%d</xliff:g> year old)</string>
     <string name="age_to_string"><xliff:g id="age">%d</xliff:g> years old</string>
     <string name="age_to_string_singular"><xliff:g id="age">%d</xliff:g> year old</string>
 

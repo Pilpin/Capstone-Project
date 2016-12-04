@@ -1,0 +1,91 @@
+<resources xmlns:xliff="http://schemas.android.com/tools">
+
+    <string name="oneclass">Classe</string>
+    <string name="classes">Classes</string>
+    <string name="student">Élève</string>
+    <string name="students">Élèves</string>
+    <string name="call">Appel</string>
+    <string name="calls">Appels</string>
+    <string name="save">Enregistrer</string>
+    <string name="openDrawer">Ouvrir la navigation</string>
+    <string name="closeDrawer">Ferme la navigation</string>
+    <string name="close_edit">Retourner à l\'écran précédent sans enregistrer</string>
+    <string name="undo">Annuler</string>
+    <string name="deleted_selection">Sélection supprimée.</string>
+
+    <!-- CLASSES -->
+    <string name="add_class">Ajouter une classe</string>
+    <string name="delete_class">Supprimer la classe</string>
+    <string name="edit_class">Modifier la classe</string>
+    <string name="empty_class_list">Aucune classe n\'a encore été créée\nAjoutez en une en cliquant sur le bouton + !</string>
+    <string name="empty_class_picker_list">Aucune classe n\'a encore été créée</string>
+
+    <string name="class_name">Nom de la classe</string>
+    <string name="class_name_missing">Une classe doit avoir un nom</string>
+
+    <!-- STUDENTS -->
+    <string name="add_student">Nouvel élève</string>
+    <string name="delete_student">Supprimer l\'élève</string>
+    <string name="edit_student">Modifier l\' élève</string>
+    <string name="empty_student_list">Aucun  élève n\'a encore été créé\nAjoutez en un en cliquant sur le bouton + !</string>
+    <string name="age_to_string_grade"><xliff:g id="grade" example="1st grade">%s</xliff:g> (<xliff:g id="age">%d</xliff:g> ans)</string>
+    <string name="age_to_string_singular_grade"><xliff:g id="grade" example="1st grade">%s</xliff:g> (<xliff:g id="age">%d</xliff:g> an)</string>
+    <string name="age_to_string"><xliff:g id="age">%d</xliff:g> ans</string>
+    <string name="age_to_string_singular"><xliff:g id="age">%d</xliff:g> an</string>
+
+    <string name="student_names_ic">Nom de l\'élève</string>
+    <string name="student_birth_date_ic">Date de naissance de l\'élève</string>
+    <string name="student_first_name">Prénom</string>
+    <string name="student_last_name">Nom de famille</string>
+    <string name="student_birth_date">Né(e) le <xliff:g id="birthdate">%s</xliff:g></string>
+    <string name="first_name_missing">Un élève doit avoir un prénom</string>
+    <string name="last_name_missing">Un élève doit avoir un nom de famille</string>
+
+    <!-- CALLS -->
+    <string name="start_call">Commencer l\'appel</string>
+    <string name="delete_call">Supprimer l\'appel</string>
+    <string name="edit_call">Modifier l\'appel de <xliff:g id="student_name">%s</xliff:g></string>
+    <string name="empty_call_list">Aucun appel n\'a encore été fait</string>
+    <string name="empty_call_month_picker_list">Aucun appel n\'a encore été fait pour cette classe</string>
+
+    <string-array name="call_select_option">
+        <item name="no_leaving_time">Je dois juste faire l\'appel</item>
+        <item name="record_leaving_time">Je dois également noter l\'heure de départ des élèves</item>
+    </string-array>
+
+    <string name="stats_total">TOTAL\n<xliff:g id="total">%d</xliff:g></string>
+    <string name="stats_present">PRÉSENT\n<xliff:g id="total">%d</xliff:g></string>
+    <string name="stats_absent">ABSENT\n<xliff:g id="total">%d</xliff:g></string>
+    <string name="publish_call">Exporter vers Google Drive</string>
+    <string name="select_class">Choisir une classe</string>
+    <string name="select_month">Choisir un mois à exporter</string>
+
+    <!-- STUDENT-CLASS SUBSCRIPTION -->
+    <string name="add_student_to_class"></string>
+    <string name="remove_student_from_class">Enlever un élève de cette classe</string>
+    <string name="select_students">Choisir un élève dans la liste ci-dessous</string>
+    <string name="edit_grade">Modifier le niveau</string>
+    <string name="student_grade">Niveau</string>
+    <string name="empty_class_student_list">Aucun élève n\'a encore été ajouté à cette classe.</string>
+    <string name="all_students_are_here">Tous les élèves sont déjà dans cette classe</string>
+    <string name="student_missing">Il vous faut choisir des élèves à ajouter à cette classe.</string>
+    <string name="grade_missing">Le niveau des élèves doit être saisi</string>
+
+    <!-- CALLS DETAILS -->
+    <string name="empty_call_student_list">Aucun élève n\'a encore été ajouté à cette classe.</string>
+    <string name="unknown_class">Classe inconnue</string>
+    <string name="absent">Absent</string>
+    <string name="present">Présent</string>
+    <string name="leaving">Départ</string>
+    <string name="menu_absent">Absent</string>
+    <string name="menu_present">Présent</string>
+    <string name="menu_leaving">Définir l\'heure de départ</string>
+    <string name="leaving_time">Parti(e) à <xliff:g id="time">%s</xliff:g></string>
+
+    <!-- EXPORT -->
+    <string name="drive_export_success">Les appels ont été exportés.</string>
+    <string name="drive_export_fail">L\'export a échoué, réessayez plus tard.</string>
+
+    <!-- SYSTEM -->
+    <string name="app_name">Garderie</string>
+</resources>

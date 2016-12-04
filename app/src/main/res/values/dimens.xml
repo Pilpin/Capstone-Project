@@ -13,11 +13,11 @@
 
     <dimen name="button_side_padding">16dp</dimen>
 
-    <dimen name="card_name_top_padding">16dp</dimen>
-    <dimen name="card_subname_top_padding">8dp</dimen>
-    <dimen name="card_subname_bottom_padding">16dp</dimen>
+    <dimen name="card_name_top_padding">8dp</dimen>
+    <dimen name="card_subname_top_padding">4dp</dimen>
+    <dimen name="card_subname_bottom_padding">8dp</dimen>
     <dimen name="card_titles_side_padding">16dp</dimen>
-    <dimen name="card_buttons_padding">8dp</dimen>
+    <dimen name="card_buttons_padding">6dp</dimen>
     <dimen name="card_view_elevation_times_two">4dp</dimen>
 
     <dimen name="text_headline">24sp</dimen>
