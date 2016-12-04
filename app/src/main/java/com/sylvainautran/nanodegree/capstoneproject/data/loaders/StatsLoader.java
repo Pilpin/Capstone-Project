@@ -8,13 +8,14 @@ import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
 public class StatsLoader extends CursorLoader {
 
-    public static StatsLoader getStatsForOne(Context context, long callId){
+    public static StatsLoader getStatsForOne(Context context, long callId, String selection){
+        selection = selection == null ? "" : " AND " + selection;
         return new StatsLoader(
                 context,
                 AppelContract.CallEntry.buildCallStatsForOneUri(callId),
                 Query.PROJECTION,
-                AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID + " = ?",
-                new String[] { Long.toString(callId) },
+                AppelContract.CallEntry.TABLE_NAME + "." + AppelContract.CallEntry._ID + " = " + Long.toString(callId) + selection,
+                null,
                 AppelContract.CallEntry.COLUMN_DATETIME + " ASC");
     }
 

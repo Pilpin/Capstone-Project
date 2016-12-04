@@ -201,7 +201,9 @@ public class AppelProvider extends ContentProvider {
             case STATS_FOR_ONE:
                 builder.setTables(CallEntry.TABLE_NAME +
                         " JOIN " + CallStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.TABLE_NAME + "." + CallEntry._ID + " = " + CallStudentLinkEntry.COLUMN_CALL_ID +
-                        " JOIN " + ClassEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassEntry.TABLE_NAME + "." + ClassEntry._ID);
+                        " JOIN " + ClassEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassEntry.TABLE_NAME + "." + ClassEntry._ID +
+                        " JOIN " + ClassStudentLinkEntry.TABLE_NAME + " ON " + CallEntry.COLUMN_CLASS_ID + " = " + ClassStudentLinkEntry.COLUMN_CLASS_ID +
+                        " AND " + CallStudentLinkEntry.COLUMN_STUDENT_ID + " = " + ClassStudentLinkEntry.COLUMN_STUDENT_ID);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

@@ -2,11 +2,14 @@ package com.sylvainautran.nanodegree.capstoneproject;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewGroupCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,32 +22,26 @@ import android.widget.TextView;
 import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CallsDetailsActivity extends AppCompatActivity implements CallsDetailsFragment.UpdateUI {
+public class CallsDetailsActivity extends AppCompatActivity {
     private final String LOG_CAT = this.getClass().getSimpleName();
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.bottomBar)
-    ViewGroup bottombar;
-    @BindView(R.id.total)
-    TextView totalTV;
-    @BindView(R.id.present)
-    TextView presentTV;
-    @BindView(R.id.absent)
-    TextView absentTV;
-
-    private int total, present, absent, left;
-    private boolean option;
+    @BindView(R.id.viewpager)
+    ViewPager viewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call_students_list);
+
+        ButterKnife.bind(this);
 
         String className = getString(R.string.unknown_class);
         long callDate = 0;
@@ -55,15 +52,16 @@ public class CallsDetailsActivity extends AppCompatActivity implements CallsDeta
             long callId = getIntent().getLongExtra(getString(R.string.intent_extra_call_id), 0);
             long classId = getIntent().getLongExtra(getString(R.string.intent_extra_class_id), 0);
 
-            if(savedInstanceState == null) {
+            PagerAdapter pagerAdapter = new PagerAdapter(getFragmentManager(), callId, classId);
+            viewPager.setAdapter(pagerAdapter);
+
+            /*if(savedInstanceState == null) {
                 CallsDetailsFragment fragment = CallsDetailsFragment.newInstance(callId, classId);
                 getFragmentManager().beginTransaction()
                         .add(R.id.list_container, fragment, "call_details")
                         .commit();
-            }
+            }*/
         }
-
-        ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -93,51 +91,35 @@ public class CallsDetailsActivity extends AppCompatActivity implements CallsDeta
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
-    @Override
-    public void updateTotal(int total) {
-        this.total = total;
-        totalTV.setText(getString(R.string.stats_total, total));
-        isCallEnded();
-    }
+    private class PagerAdapter extends FragmentStatePagerAdapter {
+        ArrayList<Fragment> fragments;
+        ArrayList<CharSequence> fragmentsTitle;
 
-    @Override
-    public void updateCall(int present, int absent, int left, boolean option) {
-        this.present = present;
-        this.absent = absent;
-        this.left = left;
-        this.option = option;
-        if (option) {
-            presentTV.setText(getString(R.string.stats_present, present) + " [" + left + "]");
-        }else {
-            presentTV.setText(getString(R.string.stats_present, present));
+        public PagerAdapter(FragmentManager fm, long callId, long classId) {
+            super(fm);
+            fragments = new ArrayList<>(3);
+            fragmentsTitle = new ArrayList<>(3);
+            fragments.add(CallsDetailsFragment.newInstance(callId, classId, CallsDetailsFragment.SELECT_ALL_STUDENTS));
+            fragmentsTitle.add("Tous les élèves");
+            fragments.add(CallsDetailsFragment.newInstance(callId, classId, CallsDetailsFragment.SELECT_MATERNELLE));
+            fragmentsTitle.add("Maternelle");
+            fragments.add(CallsDetailsFragment.newInstance(callId, classId, CallsDetailsFragment.SELECT_PRIMAIRE));
+            fragmentsTitle.add("Primaire");
         }
-        absentTV.setText(getString(R.string.stats_absent, absent));
-        isCallEnded();
-    }
 
-    private void isCallEnded(){
-        if(option){
-            if(total != 0 && total == left + absent){
-                animateBottomBar();
-            }
-        }else{
-            if(total != 0 && total == present + absent){
-                animateBottomBar();
-            }
+        @Override
+        public Fragment getItem(int i) {
+            return fragments.get(i);
         }
-    }
 
-    private void animateBottomBar(){
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
 
-        Integer colorFrom = getResources().getColor(R.color.colorPrimary);
-        Integer colorTo = getResources().getColor(R.color.colorPresent);
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                bottombar.setBackgroundColor((Integer) animator.getAnimatedValue());
-            }
-        });
-        colorAnimation.start();
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return fragmentsTitle.get(position);
+        }
     }
 }

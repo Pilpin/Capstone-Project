@@ -11,8 +11,8 @@ public class CallsLoader extends CursorLoader {
         return new CallsLoader(context, AppelContract.CallEntry.CONTENT_URI, Query.PROJECTION, null, null, AppelContract.CallEntry.MULTIPLE_SORT);
     }
 
-    public static CallsLoader getAllCallDetails(Context context, long callId, long classId){
-        return new CallsLoader(context, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(classId, callId), Query.PROJECTION_DETAILS, null, null,
+    public static CallsLoader getAllCallDetails(Context context, long callId, long classId, String selection){
+        return new CallsLoader(context, AppelContract.CallStudentLinkEntry.buildCallStudentLinkUriWithCallAndClass(classId, callId), Query.PROJECTION_DETAILS, selection, null,
                 AppelContract.StudentEntry.DEFAULT_SORT);
     }
 
