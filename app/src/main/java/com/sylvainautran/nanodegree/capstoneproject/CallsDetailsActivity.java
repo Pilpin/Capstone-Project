@@ -1,25 +1,16 @@
 package com.sylvainautran.nanodegree.capstoneproject;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-
-import com.sylvainautran.nanodegree.capstoneproject.data.AppelContract;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -54,13 +45,6 @@ public class CallsDetailsActivity extends AppCompatActivity {
 
             PagerAdapter pagerAdapter = new PagerAdapter(getFragmentManager(), callId, classId);
             viewPager.setAdapter(pagerAdapter);
-
-            /*if(savedInstanceState == null) {
-                CallsDetailsFragment fragment = CallsDetailsFragment.newInstance(callId, classId);
-                getFragmentManager().beginTransaction()
-                        .add(R.id.list_container, fragment, "call_details")
-                        .commit();
-            }*/
         }
 
         setSupportActionBar(toolbar);

@@ -78,7 +78,7 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
             public void onClick(View v) {
                 PopupMenu popup = new PopupMenu(mContext, v);
                 popup.setOnMenuItemClickListener(new PopupMenuClickListener(v));
-                if(v != null && v.getTag(R.id.options) != null){
+                if(v.getTag(R.id.options) != null){
                     switch((Integer) v.getTag(R.id.options)) {
                         case AppelContract.CallEntry.RECORD_LEAVING_TIME:
                             popup.inflate(R.menu.calls_students_edit_record);
@@ -126,31 +126,24 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
             if(mCursor.getInt(CallsLoader.Query.COLUMN_IS_PRESENT) == AppelContract.CallStudentLinkEntry.PRESENT){
                 if(!mCursor.isNull(CallsLoader.Query.COLUMN_LEAVING_TIME)){
                     leavingTime = mCursor.getLong(CallsLoader.Query.COLUMN_LEAVING_TIME);
-                    tagView(v, callId, studentId, callDate, leavingTime, callStudentId, option);
-                    animateLeft(holder.absent, holder.present, holder.leaving, v);
+                    tagView(v, callId, studentId, callDate, leavingTime, callStudentId, option, holder);
+                    holder.setLeft(leavingTime);
                 }else {
-                    tagView(v, callId, studentId, callDate, null, callStudentId, option);
-                    animatePresent(holder.absent, holder.present, holder.leaving, v);
+                    tagView(v, callId, studentId, callDate, null, callStudentId, option, holder);
+                    holder.setPresent(option);
                 }
             }else{
-                tagView(v, callId, studentId, callDate, null, callStudentId, option);
-                animateAbsent(holder.absent, holder.present, holder.leaving);
+                tagView(v, callId, studentId, callDate, null, callStudentId, option, holder);
+                holder.setAbsent();
             }
         }else{
-            holder.present.setVisibility(View.VISIBLE);
-            holder.present.setClickable(true);
-            holder.present.setAlpha(1f);
-            holder.absent.setVisibility(View.VISIBLE);
-            holder.absent.setClickable(true);
-            holder.absent.setAlpha(1f);
-            holder.leaving.setVisibility(View.GONE);
-            holder.leaving.setClickable(true);
-            holder.leaving.setAlpha(1f);
+            holder.init();
         }
-        tagView(holder.present, callId, studentId, callDate, leavingTime, callStudentId, option);
-        tagView(holder.absent, callId, studentId, callDate, leavingTime, callStudentId, option);
-        tagView(holder.leaving, callId, studentId, callDate, leavingTime, callStudentId, option);
-        tagView(holder.options, callId, studentId, callDate, leavingTime, callStudentId, option);
+
+        tagView(holder.present, callId, studentId, callDate, leavingTime, callStudentId, option, holder);
+        tagView(holder.absent, callId, studentId, callDate, leavingTime, callStudentId, option, holder);
+        tagView(holder.leaving, callId, studentId, callDate, leavingTime, callStudentId, option, holder);
+        tagView(holder.options, callId, studentId, callDate, leavingTime, callStudentId, option, holder);
     }
 
     @Override
@@ -175,6 +168,58 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+        }
+
+        public void init(){
+            present.setAlpha(1f);
+            present.setClickable(true);
+            present.setVisibility(View.VISIBLE);
+            absent.setAlpha(1f);
+            absent.setClickable(true);
+            absent.setVisibility(View.VISIBLE);
+            leaving.setAlpha(1f);
+            leaving.setClickable(true);
+            leaving.setVisibility(View.GONE);
+        }
+
+        public void hideAll(){
+            absent.setVisibility(View.GONE);
+            present.setVisibility(View.GONE);
+            leaving.setVisibility(View.GONE);
+        }
+
+        public void setPresent(int options){
+            hideAll();
+            switch(options){
+                case AppelContract.CallEntry.RECORD_LEAVING_TIME:
+                    leaving.setText(R.string.leaving);
+                    leaving.setAlpha(1f);
+                    leaving.setClickable(true);
+                    leaving.setVisibility(View.VISIBLE);
+                    break;
+                case AppelContract.CallEntry.DO_NOT_RECORD_LEAVING_TIME:
+                    present.setAlpha(.5f);
+                    present.setClickable(false);
+                    present.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }
+
+        public void setAbsent(){
+            hideAll();
+            absent.setAlpha(.5f);
+            absent.setClickable(false);
+            absent.setVisibility(View.VISIBLE);
+        }
+
+        public void setLeft(long leavingTime){
+            hideAll();
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(leavingTime);
+            DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault());
+            leaving.setText(mContext.getString(R.string.leaving_time, df.format(cal.getTime())));
+            leaving.setAlpha(.5f);
+            leaving.setVisibility(View.VISIBLE);
         }
     }
 
@@ -214,16 +259,19 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
         }
     }
 
-    private void tagView(View v, long callId, long studentId, long callDate, @Nullable Long leavingTime, @Nullable Long callStudentId, int option){
+    private void tagView(View v, long callId, long studentId, long callDate, @Nullable Long leavingTime, @Nullable Long callStudentId, int option, ViewHolder vh){
         v.setTag(R.id.key_call_id, callId);
         v.setTag(R.id.key_student_id, studentId);
         v.setTag(R.id.key_call_datetime, callDate);
         v.setTag(R.id.key_leaving_time, leavingTime);
         v.setTag(R.id.key_call_student_id, callStudentId);
         v.setTag(R.id.options, option);
+        v.setTag(R.id.view_holder, vh);
     }
 
     private void setAbsent(View v){
+        ViewHolder vh = (ViewHolder) v.getTag(R.id.view_holder);
+        animateAbsent(vh.absent, vh.present, vh.leaving);
         ContentValues cv = new ContentValues();
         cv.put(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID, (Long) v.getTag(R.id.key_call_id));
         cv.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, (Long) v.getTag(R.id.key_student_id));
@@ -238,30 +286,22 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
     }
 
     private void animateAbsent(Button absent, Button present, Button leaving){
-        if(absent.getVisibility() == View.GONE) {
-            absent.setAlpha(0f);
-            absent.setVisibility(View.VISIBLE);
-            absent.setClickable(false);
-        }
+        present.setVisibility(View.GONE);
+        leaving.setVisibility(View.GONE);
+        absent.setVisibility(View.GONE);
+        absent.setAlpha(0f);
+        absent.setClickable(false);
+        absent.setVisibility(View.VISIBLE);
 
-        present.animate()
-                .alpha(0f)
-                .setDuration(500);
-        leaving.animate()
-                .alpha(0f)
-                .setDuration(500);
         absent.animate()
                 .alpha(.5f)
                 .setDuration(500);
-
-        present.setVisibility(View.GONE);
-        present.setClickable(true);
-        leaving.setVisibility(View.GONE);
-        leaving.setClickable(true);
     }
 
     private void setPresent(View v){
-            ContentValues cv = new ContentValues();
+        ViewHolder vh = (ViewHolder) v.getTag(R.id.view_holder);
+        animatePresent(vh.absent, vh.present, vh.leaving, (Integer) v.getTag(R.id.options));
+        ContentValues cv = new ContentValues();
             cv.put(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID, (Long) v.getTag(R.id.key_call_id));
             cv.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, (Long) v.getTag(R.id.key_student_id));
             cv.put(AppelContract.CallStudentLinkEntry.COLUMN_IS_PRESENT, AppelContract.CallStudentLinkEntry.PRESENT);
@@ -273,50 +313,31 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
             }
     }
 
-    private void animatePresent(Button absent, Button present, Button leaving, View v){
+    private void animatePresent(Button absent, Button present, Button leaving, int options){
+        present.setVisibility(View.GONE);
+        leaving.setVisibility(View.GONE);
+        absent.setVisibility(View.GONE);
         leaving.setText(R.string.leaving);
-        switch((Integer) v.getTag(R.id.options)){
-            case AppelContract.CallEntry.RECORD_LEAVING_TIME:
-                if(leaving.getVisibility() == View.GONE) {
-                    leaving.setAlpha(0f);
-                    leaving.setVisibility(View.VISIBLE);
-                    leaving.setClickable(true);
-                }
 
-                present.animate()
-                        .alpha(0f)
-                        .setDuration(250);
-                absent.animate()
-                        .alpha(0f)
-                        .setDuration(500);
+        switch(options){
+            case AppelContract.CallEntry.RECORD_LEAVING_TIME:
+                leaving.setClickable(true);
+                leaving.setAlpha(0f);
+                leaving.setVisibility(View.VISIBLE);
+
                 leaving.animate()
                         .alpha(1f)
                         .setDuration(500);
 
-                absent.setVisibility(View.GONE);
-                absent.setClickable(true);
                 break;
             case AppelContract.CallEntry.DO_NOT_RECORD_LEAVING_TIME:
-                if(present.getVisibility() == View.GONE) {
-                    present.setAlpha(0f);
-                    present.setVisibility(View.VISIBLE);
-                    present.setClickable(false);
-                }
+                present.setClickable(false);
+                present.setAlpha(0f);
+                present.setVisibility(View.VISIBLE);
 
-                leaving.animate()
-                        .alpha(0f)
-                        .setDuration(500);
-                absent.animate()
-                        .alpha(0f)
-                        .setDuration(500);
                 present.animate()
                         .alpha(.5f)
                         .setDuration(500);
-
-                absent.setVisibility(View.GONE);
-                absent.setClickable(true);
-                leaving.setVisibility(View.GONE);
-                leaving.setClickable(true);
                 break;
         }
     }
@@ -326,6 +347,10 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
         if(v.getTag(R.id.key_leaving_time) != null){
             cal.setTimeInMillis((Long) v.getTag(R.id.key_leaving_time));
         }
+
+        ViewHolder vh = (ViewHolder) v.getTag(R.id.view_holder);
+        animateLeft(vh.absent, vh.present, vh.leaving, cal);
+
         ContentValues cv = new ContentValues();
         cv.put(AppelContract.CallStudentLinkEntry.COLUMN_CALL_ID, (Long) v.getTag(R.id.key_call_id));
         cv.put(AppelContract.CallStudentLinkEntry.COLUMN_STUDENT_ID, (Long) v.getTag(R.id.key_student_id));
@@ -338,34 +363,19 @@ public class CallStudentsAdapter extends RecyclerView.Adapter<CallStudentsAdapte
         }
     }
 
-    private void animateLeft(Button absent, Button present, Button leaving, View v){
-        Calendar cal = Calendar.getInstance();
-        if(v.getTag(R.id.key_leaving_time) != null){
-            cal.setTimeInMillis((Long) v.getTag(R.id.key_leaving_time));
-        }
-
-        if(leaving.getVisibility() == View.GONE) {
-            leaving.setAlpha(0f);
-            leaving.setVisibility(View.VISIBLE);
-            leaving.setClickable(false);
-        }
+    private void animateLeft(Button absent, Button present, Button leaving, Calendar cal){
+        present.setVisibility(View.GONE);
+        leaving.setVisibility(View.GONE);
+        absent.setVisibility(View.GONE);
+        leaving.setClickable(false);
+        leaving.setAlpha(0f);
+        leaving.setVisibility(View.VISIBLE);
 
         DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault());
         leaving.setText(mContext.getString(R.string.leaving_time, df.format(cal.getTime())));
 
-        present.animate()
-                .alpha(0f)
-                .setDuration(500);
-        absent.animate()
-                .alpha(0f)
-                .setDuration(500);
         leaving.animate()
                 .alpha(.5f)
                 .setDuration(500);
-
-        absent.setVisibility(View.GONE);
-        absent.setClickable(true);
-        present.setVisibility(View.GONE);
-        present.setClickable(true);
     }
 }

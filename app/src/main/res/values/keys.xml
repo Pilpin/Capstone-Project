@@ -6,6 +6,7 @@
     <item type="id" name="key_student_id" />
     <item type="id" name="key_class_student_id" />
     <item type="id" name="key_call_student_id" />
+    <item type="id" name="view_holder" />
 
     <item type="id" name="key_leaving_time" />
 
